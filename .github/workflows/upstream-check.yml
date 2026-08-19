@@ -1,0 +1,96 @@
+name: Check upstream releases
+
+# Mira una vez por dia si alguno de los firmwares de versions.yml tiene release nueva upstream.
+# Es generico: para cubrir una app nueva alcanza con agregarle su entrada a versions.yml.
+# Si hay novedad abre un PR que bumpea versions.yml, el ARG del Dockerfile y el "version:"
+# del manifest. Mergear ese PR dispara el build y el repinneo de digests (images.yml).
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Buscar tags nuevos y armar el bump
+        id: bump
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          : > /tmp/body.md
+
+          for key in $(yq '.firmwares | keys | .[]' versions.yml); do
+            repo=$(yq ".firmwares.${key}.repo" versions.yml)
+            filter=$(yq ".firmwares.${key}.tag_filter" versions.yml)
+            old_tag=$(yq ".firmwares.${key}.tag" versions.yml)
+            old_ver=$(yq ".firmwares.${key}.version" versions.yml)
+            version_from=$(yq ".firmwares.${key}.version_from" versions.yml)
+            app=$(yq ".firmwares.${key}.app" versions.yml)
+            dockerfile=$(yq ".firmwares.${key}.dockerfile" versions.yml)
+            build_arg=$(yq ".firmwares.${key}.build_arg" versions.yml)
+
+            # Los repos upstream suelen mezclar tags de otras cosas (bootloader, GPU, otros
+            # modelos), por eso cada entrada trae su propio filtro. Los de Coldcard arrancan
+            # con la fecha, asi que sort -Vr sirve para los dos formatos.
+            new_tag=$(gh api --paginate "repos/${repo}/tags" --jq '.[].name' \
+              | grep -E "$filter" | sort -Vr | head -1)
+            if [ -z "$new_tag" ]; then
+              echo "::warning::sin tags que matcheen ${filter} en ${repo}"
+              continue
+            fi
+
+            echo "${key}: ${old_tag} -> ${new_tag}"
+            [ "$new_tag" = "$old_tag" ] && continue
+
+            case "$version_from" in
+              after-last-v) new_ver="${new_tag##*-v}" ;;
+              *)            new_ver="$new_tag" ;;
+            esac
+
+            yq -i ".firmwares.${key}.tag = \"${new_tag}\" | .firmwares.${key}.version = \"${new_ver}\"" versions.yml
+            sed -i -E "s#^(ARG ${build_arg}=).*#\1${new_tag}#" "$dockerfile"
+            sed -i -E "s#^(version: ).*#\1\"${new_ver}\"#" "${app}/umbrel-app.yml"
+            echo "- ${app}: \`${old_ver}\` -> \`${new_ver}\` (tag \`${new_tag}\`)" >> /tmp/body.md
+          done
+
+          if [ ! -s /tmp/body.md ]; then
+            echo "Todo al dia."
+            echo "has_bump=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          {
+            echo "has_bump=true"
+            echo "branch=upstream-bump-$(date +%Y%m%d)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Abrir el PR
+        if: steps.bump.outputs.has_bump == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.bump.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit -am "Bump del firmware upstream"
+          git push -f origin "$BRANCH"
+          {
+            echo "Firmware nuevo upstream:"
+            echo
+            cat /tmp/body.md
+            echo
+            echo "Al mergear, el CI reconstruye las imagenes y pinnea los digests nuevos en los compose."
+            echo "Antes de mergear conviene: revisar el changelog upstream, escribir \`releaseNotes\` en el"
+            echo "manifest (en ingles y espanol) y probar el simulador con la imagen nueva."
+          } > /tmp/pr.md
+          gh pr create --title "Bump del firmware upstream" --body-file /tmp/pr.md \
+            --base "${GITHUB_REF_NAME}" --head "$BRANCH" 2>&1 | tee /tmp/out || \
+            grep -q "already exists" /tmp/out

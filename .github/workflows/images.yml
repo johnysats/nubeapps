@@ -5,20 +5,37 @@ on:
     branches: [main]
     paths:
       - "images/**"
+      - "versions.yml"
       - ".github/workflows/images.yml"
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  # tag del firmware upstream que se compila dentro de la imagen del simulador
-  FIRMWARE_TAG: 2026-07-31T1605-v6.6.0QX
-  SIM_VERSION: 6.6.0QX
-  # firmware de SeedSigner: no se compila nada nativo, solo se clona por tag
-  SEEDSIGNER_TAG: "0.8.7"
 
 jobs:
+  # Las versiones upstream viven en versions.yml (una sola fuente de verdad) y salen
+  # de aca como outputs para el resto de los jobs.
+  versions:
+    runs-on: ubuntu-24.04
+    outputs:
+      owner: ${{ steps.v.outputs.owner }}
+      firmware_tag: ${{ steps.v.outputs.firmware_tag }}
+      sim_version: ${{ steps.v.outputs.sim_version }}
+      seedsigner_tag: ${{ steps.v.outputs.seedsigner_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          {
+            echo "owner=${GITHUB_REPOSITORY_OWNER,,}"
+            echo "firmware_tag=$(yq '.firmwares.ccq1.tag' versions.yml)"
+            echo "sim_version=$(yq '.firmwares.ccq1.version' versions.yml)"
+            echo "seedsigner_tag=$(yq '.firmwares.seedsigner.tag' versions.yml)"
+          } >> "$GITHUB_OUTPUT"
+
   # El simulador compila el firmware: runners nativos por arquitectura, no QEMU.
   simulator:
+    needs: versions
     strategy:
       fail-fast: false
       matrix:
@@ -34,9 +51,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - id: vars
-        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-
       - uses: docker/setup-buildx-action@v3
 
       - uses: docker/login-action@v3
@@ -50,10 +64,10 @@ jobs:
         with:
           context: images/ccq1-simulator
           platforms: ${{ matrix.platform }}
-          build-args: FIRMWARE_TAG=${{ env.FIRMWARE_TAG }}
+          build-args: FIRMWARE_TAG=${{ needs.versions.outputs.firmware_tag }}
           cache-from: type=gha,scope=sim-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=sim-${{ matrix.platform }}
-          outputs: type=image,name=${{ env.REGISTRY }}/${{ steps.vars.outputs.owner }}/ccq1-simulator,push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/ccq1-simulator,push-by-digest=true,name-canonical=true,push=true
 
       - run: |
           mkdir -p /tmp/digests
@@ -68,14 +82,11 @@ jobs:
           retention-days: 1
 
   simulator-manifest:
-    needs: simulator
+    needs: [versions, simulator]
     runs-on: ubuntu-24.04
     permissions:
       packages: write
     steps:
-      - id: vars
-        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-
       - uses: actions/download-artifact@v4
         with:
           path: /tmp/digests
@@ -90,23 +101,23 @@ jobs:
 
       - name: Create multi-arch manifest
         working-directory: /tmp/digests
+        env:
+          IMAGE: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/ccq1-simulator
+          SIM_VERSION: ${{ needs.versions.outputs.sim_version }}
         run: |
-          IMAGE="${REGISTRY}/${{ steps.vars.outputs.owner }}/ccq1-simulator"
           docker buildx imagetools create -t "${IMAGE}:${SIM_VERSION}" \
             $(printf "${IMAGE}@sha256:%s " *)
           docker buildx imagetools inspect "${IMAGE}:${SIM_VERSION}"
 
   # Solo COPY sobre nginx:alpine: no necesita runner nativo ni QEMU.
   web:
+    needs: versions
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
-
-      - id: vars
-        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-buildx-action@v3
 
@@ -121,20 +132,18 @@ jobs:
           context: images/ccq1-web
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ steps.vars.outputs.owner }}/ccq1-web:${{ env.SIM_VERSION }}
+          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/ccq1-web:${{ needs.versions.outputs.sim_version }}
 
   # Simulador de SeedSigner: solo clona el firmware (python puro) e instala wheels,
   # asi que buildx con QEMU alcanza y no hacen falta runners por arquitectura.
   seedsigner:
+    needs: versions
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
-
-      - id: vars
-        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-qemu-action@v3
 
@@ -150,8 +159,53 @@ jobs:
         with:
           context: images/seedsigner-sim
           platforms: linux/amd64,linux/arm64
-          build-args: SEEDSIGNER_TAG=${{ env.SEEDSIGNER_TAG }}
+          build-args: SEEDSIGNER_TAG=${{ needs.versions.outputs.seedsigner_tag }}
           cache-from: type=gha,scope=seedsigner
           cache-to: type=gha,mode=max,scope=seedsigner
           push: true
-          tags: ${{ env.REGISTRY }}/${{ steps.vars.outputs.owner }}/seedsigner-sim:${{ env.SEEDSIGNER_TAG }}
+          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/seedsigner-sim:${{ needs.versions.outputs.seedsigner_tag }}
+
+  # Umbrel exige el digest del indice multi-arch pinneado en el compose. Lo escribe el CI
+  # para que no haya que copiarlo a mano ni se desincronicen las dos apps (comparten ccq1-web).
+  pin:
+    needs: [versions, simulator-manifest, web, seedsigner]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pin digests in docker-compose.yml
+        env:
+          OWNER: ${{ needs.versions.outputs.owner }}
+        run: |
+          set -euo pipefail
+          # Recorre todas las imagenes de versions.yml, asi una app nueva no necesita tocar esto.
+          yq '.firmwares[] | .version as $v | .images[] | $v + " " + .' versions.yml |
+          while read -r tag repo; do
+            image="${REGISTRY}/${OWNER}/${repo}"
+            digest=$(docker buildx imagetools inspect "${image}:${tag}" --format '{{.Manifest.Digest}}')
+            case "$digest" in sha256:*) ;; *) echo "digest raro para ${image}:${tag}: $digest" >&2; exit 1;; esac
+            echo "${image}:${tag}@${digest}"
+            sed -i -E "s#(image: )${image}:.*#\\1${image}:${tag}@${digest}#" nubeapps-*/docker-compose.yml
+          done
+
+      - name: Commit
+        run: |
+          if git diff --quiet -- nubeapps-*/docker-compose.yml; then
+            echo "Los digests ya estaban al dia."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "CI: pinnear digests de las imagenes recien publicadas"
+          git push
