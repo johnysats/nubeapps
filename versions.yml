@@ -1,0 +1,37 @@
+# Fuente unica de verdad de los firmwares upstream que empaquetamos.
+# Una entrada por app. Al cambiar un "tag" aca, el workflow "Build app images" reconstruye
+# las imagenes y repinnea sus digests en los docker-compose.yml. El bump lo suele proponer
+# el workflow "Check upstream releases" con un pull request.
+#
+# Campos:
+#   repo         repositorio upstream en GitHub
+#   tag_filter   regex (grep -E) de los tags que nos interesan de ese repo
+#   tag          tag empaquetado hoy
+#   version_from "tag" si la version visible es el tag tal cual, o "after-last-v" para
+#                sacarla de un tag tipo 2026-07-31T1605-v6.6.0QX -> 6.6.0QX
+#   version      version visible: tag de las imagenes en GHCR y "version:" del manifest
+#   app          carpeta de la app en este repo
+#   dockerfile / build_arg   donde vive el tag para los builds locales
+#   images       imagenes de GHCR que se publican con "version" como tag
+firmwares:
+  ccq1:
+    repo: Coldcard/firmware
+    tag_filter: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{4}-v[0-9.]+QX$'
+    tag: 2026-07-31T1605-v6.6.0QX
+    version_from: after-last-v
+    version: "6.6.0QX"
+    app: nubeapps-ccq1
+    dockerfile: images/ccq1-simulator/Dockerfile
+    build_arg: FIRMWARE_TAG
+    # ccq1-web es la carcasa nginx: la comparten ccq1 y seedsigner, y se versiona con ccq1
+    images: [ccq1-simulator, ccq1-web]
+  seedsigner:
+    repo: SeedSigner/seedsigner
+    tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    tag: "0.8.7"
+    version_from: tag
+    version: "0.8.7"
+    app: nubeapps-seedsigner
+    dockerfile: images/seedsigner-sim/Dockerfile
+    build_arg: SEEDSIGNER_TAG
+    images: [seedsigner-sim]

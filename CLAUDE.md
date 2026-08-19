@@ -13,7 +13,9 @@ una app instalable. `id` del store: `nubeapps` (prefija obligatoriamente cada ap
 | `images/ccq1-simulator/` | Dockerfile del simulador (firmware compilado dentro de la imagen) |
 | `images/ccq1-web/` | nginx que rutea `/` → sim:6080 y `/files` → filebrowser (lo usan las dos apps) |
 | `images/seedsigner-sim/` | firmware de SeedSigner upstream + el shim `ssemu` que reemplaza el hardware |
-| `.github/workflows/images.yml` | build multi-arch en runners nativos → GHCR |
+| `versions.yml` | tags upstream que se empaquetan (fuente única de verdad) |
+| `.github/workflows/images.yml` | build multi-arch en runners nativos → GHCR + pin de digests |
+| `.github/workflows/upstream-check.yml` | chequeo diario de releases upstream → PR de bump |
 
 ## Reglas duras de Umbrel (no negociables)
 
@@ -101,6 +103,27 @@ Decisiones que no son obvias:
 - El único enganche que depende de nombres internos de upstream es
   `PSBTSignedQRDisplayView.run` (volcado del PSBT firmado a `/files`); si cambia en 0.9.0, el
   import falla ruidosamente al arrancar.
+
+## Actualizar el firmware
+
+`versions.yml` en la raíz es la única fuente de verdad: una entrada por firmware upstream, con
+su repo, el filtro de tags que le sirve, el tag empaquetado, la versión visible, la carpeta de la
+app, el `ARG` del Dockerfile y las imágenes de GHCR que se tagean con esa versión.
+
+1. `.github/workflows/upstream-check.yml` (cron diario) recorre **todas** las entradas de
+   `versions.yml`, compara contra el último tag upstream que pasa el filtro y, si hay novedad,
+   abre un PR que bumpea `versions.yml`, el `ARG` del Dockerfile y el `version:` del manifest.
+2. Al mergear, `images.yml` reconstruye las imágenes y el job `pin` recorre otra vez
+   `versions.yml` para escribir el digest del índice multi-arch en los `docker-compose.yml`
+   (el sed toca `nubeapps-*`, así `ccq1-web` queda igual en las dos apps que lo usan).
+3. Queda manual a propósito: changelog upstream, `releaseNotes` (EN/ES) y probar el simulador.
+   umbrelOS ofrece la actualización cuando cambia `version:` del manifest.
+
+Bump a mano: editar `versions.yml` y pushear a `main` (o `workflow_dispatch`).
+
+**App nueva:** agregarle su entrada a `versions.yml` (con eso ya entra al chequeo diario y al pin
+de digests) y sumar su job de build en `images.yml` — eso sí es específico de cada imagen, porque
+define contexto, plataformas y si compila nativo o alcanza QEMU.
 
 ## Probar
 

@@ -3,8 +3,34 @@ id: nubeapps-ccq1
 category: Bitcoin
 name: Coldcard Q1 Simulator
 version: "6.6.0QX"
-tagline: El simulador oficial de la Coldcard Q1, en tu navegador
+tagline: The official Coldcard Q1 simulator in your browser / El simulador oficial de la Coldcard Q1, en tu navegador
 description: >-
+  WARNING: this is a simulator for learning and testing. It is not a secure wallet and it does
+  not run on secure hardware. Never import a real seed and never sign with real funds.
+
+
+  It runs the official Coldcard Q1 simulator (upstream Coinkite firmware, compiled as-is) inside
+  Umbrel and shows it in your browser. The keypad and the touchscreen work with your keyboard
+  and your mouse.
+
+
+  It also includes a file explorer at /files over the simulated MicroSD card, for the PSBT flow:
+
+
+  - Upload the unsigned PSBT to the MicroSD from your browser
+
+  - Sign it in the simulator just like you would on the real device
+
+  - Download the signed PSBT from that same explorer
+
+
+  It boots with no seed and PIN 12-12 (the simulator's -l flag). The seed is imported by hand
+  from the device menu.
+
+
+  --- En espanol ---
+
+
   ATENCION: esto es un simulador para aprender y probar. No es una billetera segura y no corre
   en hardware seguro. Nunca importes una seed real ni firmes con fondos reales.
 

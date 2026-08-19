@@ -3,8 +3,36 @@ id: nubeapps-seedsigner
 category: Bitcoin
 name: SeedSigner Simulator
 version: "0.8.7"
-tagline: El firmware de SeedSigner corriendo en tu navegador, sin Raspberry Pi
+tagline: SeedSigner firmware in your browser, no Raspberry Pi / El firmware de SeedSigner en tu navegador, sin Raspberry Pi
 description: >-
+  WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
+  run air-gapped, and the entropy of any seed it generates is not safe to hold funds. Never
+  import a real seed and never sign with real funds.
+
+
+  It runs the SeedSigner firmware (upstream, unpatched) inside Umbrel and shows it in your
+  browser with the device's joystick and its three keys. It also responds to the keyboard:
+  arrows to move, Enter to select, 1/2/3 for KEY1/KEY2/KEY3.
+
+
+  SeedSigner has no file input or output: everything comes in through the camera scanning QRs.
+  Since a container has no camera, the simulator ships a virtual camera fed from the file
+  explorer at /files:
+
+
+  - Upload the PSBT (or a SeedQR, a descriptor, a QR image) to the folder
+
+  - Pick which file the camera points at from that same page
+
+  - Go to Scan on the device and scan it like you would with the real hardware
+
+  - Sign: the signed PSBT comes out as an animated QR on screen, and is also written as
+    <name>-signed.psbt so you can download it from /files
+
+
+  --- En espanol ---
+
+
   ATENCION: esto es un simulador para aprender y probar. No es una billetera segura, no corre
   en hardware air-gapped y la entropia de las seeds que genere no sirve para custodiar fondos.
   Nunca importes una seed real ni firmes con fondos reales.
