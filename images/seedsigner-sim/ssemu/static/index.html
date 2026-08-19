@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>SeedSigner Simulator</title>
+<style>
+  :root {
+    --screen: 360px;
+    --bg: #14171c;
+    --panel: #1e2229;
+    --edge: #2c313a;
+    --text: #e6e8ec;
+    --muted: #8b93a1;
+    --accent: #ff9416;
+  }
+  * { box-sizing: border-box; }
+  /* Misma barra que la interfaz de ccq1: /files lo sirve el mismo app_proxy, o sea
+     el mismo login de Umbrel, sin segunda contrasena. */
+  header {
+    position: sticky; top: 0; z-index: 2; width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 0 14px; height: 44px; flex: none;
+    background: var(--panel); border-bottom: 1px solid var(--edge);
+  }
+  header b { font-weight: 600; }
+  header b span { color: var(--muted); font-weight: 400; }
+  header a {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    border: 1px solid var(--edge); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  header a:hover { border-color: var(--accent); background: #1c1f26; }
+  body {
+    margin: 0; padding: 0 0 40px;
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .device {
+    background: var(--panel); border: 1px solid var(--edge); border-radius: 18px;
+    padding: 20px; margin: 0 16px; display: flex; gap: 22px; align-items: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  .screen {
+    width: var(--screen); height: var(--screen); background: #000;
+    border: 2px solid #0b0d10; border-radius: 6px; overflow: hidden;
+  }
+  .screen img { width: 100%; height: 100%; display: block; }
+  /* 240x240 nativos: a 1x se ve nitido, ampliado conviene suavizar */
+  body[data-zoom="1"] .screen img { image-rendering: pixelated; }
+  .sizes button { width: auto; height: 32px; padding: 0 12px; font-weight: 500; }
+  .sizes button[aria-pressed="true"] { background: var(--accent); color: #14171c; border-color: var(--accent); }
+  .controls { display: flex; gap: 22px; align-items: center; }
+  .dpad { display: grid; grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(3, 52px); gap: 6px; }
+  .keys { display: flex; flex-direction: column; gap: 12px; }
+  button {
+    background: #2b3038; color: var(--text); border: 1px solid var(--edge);
+    border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer;
+    padding: 0; height: 52px; min-width: 52px; touch-action: manipulation;
+    user-select: none;
+  }
+  button:hover { background: #353b45; }
+  button:active, button.hit { background: var(--accent); color: #14171c; border-color: var(--accent); }
+  .dpad .center { border-radius: 50%; }
+  .keys button { width: 78px; }
+  .panel {
+    width: min(760px, calc(100% - 32px)); background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  select {
+    flex: 1 1 240px; background: #14171c; color: var(--text);
+    border: 1px solid var(--edge); border-radius: 8px; padding: 8px 10px; font: inherit;
+  }
+  h2 { margin: 0; font-size: 15px; }
+  p { margin: 0; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  kbd {
+    background: #14171c; border: 1px solid var(--edge); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 5px; font-size: 12px;
+  }
+  @media (max-width: 720px) {
+    .device { flex-direction: column; padding: 14px; }
+    .screen { width: min(90vw, var(--screen)); height: min(90vw, var(--screen)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <b>SeedSigner <span>· simulador</span></b>
+  <a href="files/" target="_blank" rel="noopener">Archivos (MicroSD) ↗</a>
+</header>
+
+<div class="device">
+  <div class="screen"><img id="screen" alt="Pantalla del SeedSigner"></div>
+  <div class="controls">
+    <div class="dpad">
+      <span></span><button data-key="KEY_UP" title="Arriba">▲</button><span></span>
+      <button data-key="KEY_LEFT" title="Izquierda">◀</button>
+      <button data-key="KEY_PRESS" class="center" title="Seleccionar">●</button>
+      <button data-key="KEY_RIGHT" title="Derecha">▶</button>
+      <span></span><button data-key="KEY_DOWN" title="Abajo">▼</button><span></span>
+    </div>
+    <div class="keys">
+      <button data-key="KEY1">KEY1</button>
+      <button data-key="KEY2">KEY2</button>
+      <button data-key="KEY3">KEY3</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Cámara</h2>
+  <p>SeedSigner no lee archivos: todo entra por la cámara. Elegí qué archivo de la MicroSD
+     se le muestra como QR y después entrá a <em>Scan</em> en el dispositivo. Para subir o
+     bajar archivos, usá <b>Archivos (MicroSD)</b> arriba a la derecha.</p>
+  <div class="row">
+    <select id="file"><option value="">Automático (el más reciente)</option></select>
+    <button id="refresh" style="width:auto;padding:0 14px">Actualizar</button>
+  </div>
+  <div class="row sizes">
+    <span style="color:var(--muted);font-size:13px">Pantalla:</span>
+    <button data-zoom="1">240 px</button>
+    <button data-zoom="1.5">360 px</button>
+    <button data-zoom="2">480 px</button>
+  </div>
+  <p id="status">…</p>
+  <p>Teclado: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> mueven,
+     <kbd>Enter</kbd> selecciona, <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> son KEY1/2/3.</p>
+</div>
+
+<script>
+const KEYMAP = {
+  ArrowUp: "KEY_UP", ArrowDown: "KEY_DOWN", ArrowLeft: "KEY_LEFT", ArrowRight: "KEY_RIGHT",
+  Enter: "KEY_PRESS", " ": "KEY_PRESS", "1": "KEY1", "2": "KEY2", "3": "KEY3",
+};
+
+// down/up en vez de un click suelto: mientras mantengas apretado, el pin queda bajo y
+// la repeticion la hace el firmware, igual que en el dispositivo real.
+const held = new Set();
+
+function send(key, action) {
+  fetch("api/button", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: "key=" + key + "&action=" + action,
+  });
+}
+
+function down(key) {
+  if (held.has(key)) return;
+  held.add(key);
+  document.querySelector(`[data-key="${key}"]`)?.classList.add("hit");
+  send(key, "down");
+}
+
+function up(key) {
+  if (!held.delete(key)) return;
+  document.querySelector(`[data-key="${key}"]`)?.classList.remove("hit");
+  send(key, "up");
+}
+
+document.querySelectorAll("[data-key]").forEach(button => {
+  const key = button.dataset.key;
+  button.addEventListener("pointerdown", event => { event.preventDefault(); down(key); });
+  button.addEventListener("pointerup", () => up(key));
+  button.addEventListener("pointerleave", () => up(key));
+  button.addEventListener("pointercancel", () => up(key));
+});
+
+addEventListener("keydown", event => {
+  const key = KEYMAP[event.key];
+  // event.repeat es la repeticion del sistema operativo: la ignoramos porque el pin
+  // ya esta bajo y el firmware repite solo.
+  if (key && !event.repeat) { event.preventDefault(); down(key); }
+});
+
+addEventListener("keyup", event => {
+  const key = KEYMAP[event.key];
+  if (key) { event.preventDefault(); up(key); }
+});
+
+// Si la pestana pierde el foco con una tecla apretada, el pin quedaria bajo.
+addEventListener("blur", () => held.forEach(up));
+document.addEventListener("visibilitychange", () => { if (document.hidden) held.forEach(up); });
+
+// La pantalla se pide de a un frame por vez: el servidor retiene la respuesta hasta que
+// algo cambia (o 1,5 s) y la conexión se cierra. Un MJPEG infinito se atasca en los
+// reverse proxies y deja los clicks encolados detrás.
+const screenImg = document.getElementById("screen");
+
+async function pump() {
+  let seq = -1;
+  let previousUrl = null;
+  while (true) {
+    try {
+      const response = await fetch(`frame.jpg?seq=${seq}`, {cache: "no-store"});
+      if (!response.ok) throw new Error(response.status);
+      seq = Number(response.headers.get("X-Frame-Seq") ?? -1);
+      const url = URL.createObjectURL(await response.blob());
+      screenImg.src = url;
+      if (previousUrl) URL.revokeObjectURL(previousUrl);
+      previousUrl = url;
+    } catch {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+}
+pump();
+
+const zoomButtons = document.querySelectorAll("[data-zoom]");
+function setZoom(zoom) {
+  document.documentElement.style.setProperty("--screen", 240 * Number(zoom) + "px");
+  document.body.dataset.zoom = zoom;
+  zoomButtons.forEach(b => b.setAttribute("aria-pressed", b.dataset.zoom === zoom));
+  localStorage.setItem("ssemu-zoom", zoom);
+}
+zoomButtons.forEach(button => {
+  button.addEventListener("click", () => setZoom(button.dataset.zoom));
+});
+setZoom(localStorage.getItem("ssemu-zoom") || "1.5");
+
+const select = document.getElementById("file");
+const status = document.getElementById("status");
+
+function render(state) {
+  const current = select.value;
+  select.innerHTML = '<option value="">Automático (el más reciente)</option>';
+  for (const name of state.files) {
+    const option = document.createElement("option");
+    option.value = option.textContent = name;
+    select.appendChild(option);
+  }
+  select.value = state.selected || current || "";
+  let text = state.resolved
+    ? `La cámara está mostrando: ${state.resolved}`
+    : "No hay archivos en la carpeta todavía.";
+  if (state.last_signed) text += ` · Último firmado: ${state.last_signed}`;
+  status.textContent = text;
+}
+
+function refresh() { fetch("api/state").then(r => r.json()).then(render); }
+
+select.addEventListener("change", () => {
+  fetch("api/camera", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: "file=" + encodeURIComponent(select.value),
+  }).then(r => r.json()).then(render);
+});
+document.getElementById("refresh").addEventListener("click", refresh);
+
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

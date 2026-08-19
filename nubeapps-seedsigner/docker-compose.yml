@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: nubeapps-seedsigner_web_1
+      APP_PORT: 80
+
+  # Router: / -> carcasa web del simulador, /files -> explorador de la MicroSD.
+  # Misma imagen que nubeapps-ccq1: su nginx ya rutea a sim:6080 y files:80.
+  web:
+    image: ghcr.io/johnysats/ccq1-web:6.6.0QX@sha256:TBD
+    restart: on-failure
+    depends_on:
+      - sim
+      - files
+
+  sim:
+    image: ghcr.io/johnysats/seedsigner-sim:0.8.7@sha256:TBD
+    user: "1000:1000"
+    init: true
+    restart: on-failure
+    environment:
+      # settings.json de seedsigner queda en la raiz de /data; los archivos que ve la
+      # camara (y que expone /files) en /data/MicroSD.
+      SSEMU_DATA_DIR: /data
+      SSEMU_SD_DIR: /data/MicroSD
+      SSEMU_PORT: "6080"
+    volumes:
+      - ${APP_DATA_DIR}/data/work:/data
+
+  files:
+    image: filebrowser/filebrowser:v2.44.0@sha256:f63369420687482dfdf252f80ef675f44ca1d1cd3a631261fb424136214fe629
+    user: "1000:1000"
+    restart: on-failure
+    environment:
+      # sin auth propia: la app ya esta detras del login de Umbrel via app_proxy
+      FB_NOAUTH: "true"
+      FB_BASEURL: /files
+      FB_ROOT: /srv
+      FB_DATABASE: /database/filebrowser.db
+      FB_PORT: "80"
+      FB_ADDRESS: 0.0.0.0
+    volumes:
+      - ${APP_DATA_DIR}/data/work/MicroSD:/srv
+      - ${APP_DATA_DIR}/data/filebrowser:/database

@@ -1,0 +1,7 @@
+# datos de runtime, nunca se commitean
+nubeapps-*/data/**
+!nubeapps-*/data/**/
+!nubeapps-*/data/**/.gitkeep
+
+*.swp
+.DS_Store

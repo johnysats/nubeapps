@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Coldcard Q1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html, body { margin: 0; height: 100%; background: #101014; color: #c9ced8;
+               font: 13px/1 -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; }
+  body { display: flex; flex-direction: column; }
+  header { display: flex; align-items: center; justify-content: space-between;
+           gap: 12px; padding: 0 14px; height: 38px; flex: none;
+           background: #16181d; border-bottom: 1px solid #262a33; }
+  header b { font-weight: 600; color: #e6e9ef; }
+  header span { color: #6b7280; }
+  a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+      color: #f7931a; border: 1px solid #3a3f4b; border-radius: 6px; padding: 6px 10px; }
+  a:hover { border-color: #f7931a; background: #1c1f26; }
+  iframe { display: block; flex: 1; width: 100%; border: 0; }
+</style>
+<header>
+  <b>Coldcard Q1 <span>· simulador</span></b>
+  <!-- /files lo sirve el mismo app_proxy: mismo login de Umbrel, sin segunda contrasena -->
+  <a href="/files/" target="_blank" rel="noopener">Archivos (MicroSD) ↗</a>
+</header>
+<!-- resize=off: 518x853 nativo, nitido 1:1. Con resize=scale el upscale se ve blando. -->
+<iframe src="vnc.html?autoconnect=true&reconnect=true&resize=off&show_dot=true&bell=false"
+        allow="clipboard-read; clipboard-write"></iframe>

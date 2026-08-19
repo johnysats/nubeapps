@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth *)",
+      "Bash(git -C /home/ubuntu/proyectos/CCQ1/firmware describe --tags)",
+      "Bash(git -C /home/ubuntu/proyectos/CCQ1/firmware log -1 --format='%H %cd')",
+      "Bash(docker version *)",
+      "Bash(python3 -V)"
+    ]
+  }
+}
