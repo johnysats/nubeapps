@@ -16,7 +16,7 @@ app instalable desde Umbrel.
 ## Instalar el store
 
 En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de este repo
-(`https://github.com/johnysats/nubeapps`). El repo tiene que ser público.
+(`https://github.com/johnysats/nubeapps`).
 
 ## Apps
 
