@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <!-- dado: la entropia por tiradas es la puerta de entrada de la herramienta -->
+  <rect x="36" y="112" width="96" height="96" rx="20" fill="#23262e" stroke="#3a3f4b" stroke-width="3"/>
+  <circle cx="62" cy="138" r="9" fill="#f7931a"/>
+  <circle cx="106" cy="138" r="9" fill="#f7931a"/>
+  <circle cx="84" cy="160" r="9" fill="#f7931a"/>
+  <circle cx="62" cy="182" r="9" fill="#f7931a"/>
+  <circle cx="106" cy="182" r="9" fill="#f7931a"/>
+  <!-- semilla brotando: de la entropia sale la seed -->
+  <path d="M168 200 V118" stroke="#5eb87a" stroke-width="10" stroke-linecap="round"/>
+  <path d="M168 150 C168 118 142 104 122 100 C124 132 146 148 168 150 Z" fill="#5eb87a"/>
+  <path d="M168 132 C168 100 196 84 220 82 C218 116 192 132 168 132 Z" fill="#7fd39b"/>
+  <!-- linea de derivacion: los cuadrados de un QR/arbol de claves -->
+  <rect x="188" y="176" width="14" height="14" rx="3" fill="#3a3f4b"/>
+  <rect x="208" y="176" width="14" height="14" rx="3" fill="#3a3f4b"/>
+  <rect x="188" y="196" width="14" height="14" rx="3" fill="#3a3f4b"/>
+  <rect x="208" y="196" width="14" height="14" rx="3" fill="#f7931a"/>
+</svg>

@@ -46,3 +46,13 @@ firmwares:
     dockerfile: images/krux-sim/Dockerfile
     build_arg: KRUX_TAG
     images: [krux-sim]
+  seedtool:
+    repo: BitcoinQnA/seedtool
+    tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    tag: "2.3.0"
+    version_from: tag
+    version: "2.3.0"
+    app: nubeapps-seedtool
+    dockerfile: images/seedtool/Dockerfile
+    build_arg: SEEDTOOL_TAG
+    images: [seedtool]

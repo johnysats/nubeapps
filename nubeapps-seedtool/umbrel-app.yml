@@ -1,0 +1,108 @@
+manifestVersion: 1
+id: nubeapps-seedtool
+category: Bitcoin
+name: Bitcoin Seed Tool
+version: "2.3.0"
+tagline: Learn how seeds, entropy and derivation work / Aprende como funcionan las seeds, la entropia y la derivacion
+description: >-
+  WARNING: this is a learning and verification tool that runs in your browser. It is not a
+  hardware wallet and it is not air-gapped. Never type a seed that holds real funds, and never
+  use a seed generated here to store bitcoin unless you know exactly what you are doing.
+
+
+  Bitcoin Seed Tool by Bitcoin QnA is a single self-contained HTML page: no CDN, no external
+  fonts, no analytics. Everything is computed in your browser. What you can do with it:
+
+
+  - See how entropy turns into a seed, and generate one from dice rolls, coin flips or cards
+
+  - Verify the entropy you fed into an external signing device produced the seed it shows
+
+  - Generate and check BIP85 child seeds
+
+  - Generate BIP47 payment codes, PayNym avatars and addresses between two payment codes
+
+  - Verify address derivation from a given seed and passphrase
+
+  - Test for a forgotten or mistyped passphrase, if you know one receive address
+
+
+  About this package:
+
+
+  - The page is not built from source: the signed index.html from the upstream release is
+    downloaded at build time and its PGP signature is verified against Bitcoin QnA's key.
+    You get exactly the file the community audits.
+
+  - Spanish: an ES/EN switch sits in the top bar. Upstream has no i18n, so the translation is
+    a dictionary layer injected by this package; anything not covered stays in English.
+
+
+  - Offline copy: open /download to save the page from your own Umbrel, so you can carry it
+    to an air-gapped machine without going through GitHub.
+
+  - Two features do reach the network from your browser: PayNym avatars (opt-in checkbox) and
+    the BIP-353 DNS resolver. Everything else is local.
+
+
+  --- En espanol ---
+
+
+  ATENCION: esto es una herramienta de aprendizaje y verificacion que corre en tu navegador.
+  No es una billetera de hardware ni corre air-gapped. Nunca escribas una seed con fondos
+  reales, y no uses una seed generada aca para guardar bitcoin salvo que sepas exactamente lo
+  que estas haciendo.
+
+
+  Bitcoin Seed Tool, de Bitcoin QnA, es una unica pagina HTML autocontenida: sin CDN, sin
+  fuentes externas, sin analytics. Todo se calcula en tu navegador. Que podes hacer:
+
+
+  - Ver como la entropia se convierte en una seed, y generar una con dados, monedas o cartas
+
+  - Verificar que la entropia que cargaste en un firmante externo dio la seed que muestra
+
+  - Generar y comprobar seeds hijas BIP85
+
+  - Generar codigos de pago BIP47, avatares PayNym y direcciones entre dos codigos de pago
+
+  - Verificar la derivacion de direcciones a partir de una seed y su passphrase
+
+  - Probar una passphrase olvidada o mal tipeada, si conoces una direccion de recepcion
+
+
+  Sobre este paquete:
+
+
+  - La pagina no se compila desde fuente: se descarga el index.html firmado del release
+    upstream y se verifica su firma PGP contra la clave de Bitcoin QnA. Tenes exactamente el
+    archivo que audita la comunidad.
+
+  - Espanol: hay un selector ES/EN en la barra superior. Upstream no tiene i18n, asi que la
+    traduccion es una capa de diccionario que inyecta este paquete; lo que no este cubierto
+    queda en ingles.
+
+
+  - Copia offline: abri /download para guardar la pagina desde tu propio Umbrel y llevarla a
+    una maquina airgapped sin pasar por GitHub.
+
+  - Dos funciones si tocan la red desde tu navegador: los avatares PayNym (con un checkbox
+    que hay que marcar) y el resolver DNS de BIP-353. Todo lo demas es local.
+releaseNotes: ""
+
+developer: Bitcoin QnA / SuperPhatArrow (herramienta) / NubeApps (paquete)
+website: https://bitcoiner.guide/seed
+dependencies: []
+repo: https://github.com/BitcoinQnA/seedtool
+support: https://github.com/johnysats/nubeapps/issues
+
+port: 8615
+icon: https://raw.githubusercontent.com/johnysats/nubeapps/main/assets/seedtool.svg
+gallery: []
+path: ""
+
+defaultUsername: ""
+defaultPassword: ""
+
+submitter: NubeApps
+submission: ""
