@@ -9,7 +9,7 @@
   <rect x="0" y="0" width="1200" height="6" fill="#f7931a"/>
 
   <text x="60" y="118" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="64" font-weight="700" fill="#f2f2f2">Nube<tspan fill="#f7931a">Apps</tspan></text>
-  <text x="61" y="156" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#9aa1ad">Umbrel Community App Store — simuladores y herramientas Bitcoin</text>
+  <text x="61" y="156" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#9aa1ad">Umbrel Community App Store — simuladores, herramientas y utilidades</text>
 
   <!-- ccq1 -->
   <g transform="translate(60,190)">

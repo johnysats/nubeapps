@@ -10,8 +10,9 @@ App store comunitario para [umbrelOS](https://umbrel.com). Cada subcarpeta `nube
 app instalable desde Umbrel.
 
 > **Nota:** este store no es oficial ni está afiliado a Umbrel. Lo mantengo yo solo,
-> independiente del store oficial. Todas las apps son simuladores de hardware firmware/software
-> real, pensados para aprender y probar sin tocar fondos ni seeds reales.
+> independiente del store oficial. Por ahora las apps son simuladores de hardware de Bitcoin,
+> pensados para aprender y probar sin tocar fondos ni seeds reales, pero la idea es ir sumando
+> también otras herramientas y utilidades sin relación con Bitcoin.
 
 ## Instalar el store
 
