@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Krux Simulator</title>
+<style>
+  :root {
+    --device-width: 360px;
+    --bg: #14171c;
+    --panel: #1e2229;
+    --edge: #2c313a;
+    --text: #e6e8ec;
+    --muted: #8b93a1;
+    --accent: #f7931a;
+  }
+  * { box-sizing: border-box; }
+  /* Misma barra que las otras apps del store: /files lo sirve el mismo app_proxy, o sea
+     el mismo login de Umbrel, sin segunda contrasena. */
+  header {
+    position: sticky; top: 0; z-index: 2; width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 0 14px; height: 44px; flex: none;
+    background: var(--panel); border-bottom: 1px solid var(--edge);
+  }
+  header b { font-weight: 600; }
+  header b span { color: var(--muted); font-weight: 400; }
+  header a {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    border: 1px solid var(--edge); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  header a:hover { border-color: var(--accent); background: #1c1f26; }
+  body {
+    margin: 0; padding: 0 0 40px;
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .device {
+    background: var(--panel); border: 1px solid var(--edge); border-radius: 18px;
+    padding: 20px; margin: 0 16px; display: flex; gap: 22px; align-items: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  .screenwrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  #device {
+    width: var(--device-width); display: block; border-radius: 8px;
+    touch-action: none; cursor: crosshair; user-select: none; -webkit-user-drag: none;
+  }
+  .hint {
+    margin: 0; max-width: var(--device-width); text-align: center; font-size: 13px;
+    color: var(--accent); border: 1px dashed #4a3a22; border-radius: 8px; padding: 5px 10px;
+    transition: opacity .4s;
+  }
+  /* Una vez que tocó la pantalla ya entendió: el cartel se apaga pero no desaparece. */
+  .hint.used { color: var(--muted); border-color: transparent; opacity: .6; }
+  .keys { display: flex; flex-direction: column; gap: 12px; }
+  /* Apagado el dispositivo, el boton de encendido es lo unico que responde: se enciende
+     en naranja y late, porque la pantalla negra no da ninguna otra pista. */
+  #power { margin-top: 18px; display: grid; place-items: center; }
+  #power[disabled] { opacity: .3; cursor: default; }
+  #power:not([disabled]) {
+    color: var(--accent); border-color: var(--accent); animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { background: #3a2d18; } }
+  @media (prefers-reduced-motion: reduce) { #power { animation: none; } }
+  button {
+    background: #2b3038; color: var(--text); border: 1px solid var(--edge);
+    border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer;
+    padding: 0 14px; height: 52px; min-width: 52px; touch-action: manipulation;
+    user-select: none;
+  }
+  button:hover { background: #353b45; }
+  button:active, button.hit { background: var(--accent); color: #14171c; border-color: var(--accent); }
+  .panel {
+    width: min(760px, calc(100% - 32px)); background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .sizes button { height: 32px; padding: 0 12px; font-weight: 500; }
+  .sizes button[aria-pressed="true"] { background: var(--accent); color: #14171c; border-color: var(--accent); }
+  select {
+    flex: 1 1 240px; background: #14171c; color: var(--text);
+    border: 1px solid var(--edge); border-radius: 8px; padding: 8px 10px; font: inherit;
+  }
+  h2 { margin: 0; font-size: 15px; }
+  p { margin: 0; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  kbd {
+    background: #14171c; border: 1px solid var(--edge); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 5px; font-size: 12px;
+  }
+  @media (max-width: 720px) {
+    .device { flex-direction: column; padding: 14px; }
+    .keys { flex-direction: row; }
+    #device { width: min(88vw, var(--device-width)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <b>Krux <span>· simulador</span></b>
+  <a href="files/" target="_blank" rel="noopener">Archivos (MicroSD) ↗</a>
+</header>
+
+<div class="device">
+  <div class="screenwrap">
+    <img id="device" alt="Maix Amigo: tocá la pantalla para operarlo">
+    <!-- Sin esto la gente usa solo los botones de al lado: el Amigo es tactil y casi todo
+         el firmware se maneja tocando la pantalla. -->
+    <p class="hint" id="hint">👆 La pantalla es táctil: hacé click directo sobre ella</p>
+  </div>
+  <div class="keys">
+    <button data-key="PAGE_PREV" title="Anterior">▲</button>
+    <button data-key="ENTER" title="Seleccionar">●</button>
+    <button data-key="PAGE" title="Siguiente">▼</button>
+    <!-- Boton de encendido: como en el dispositivo, siempre esta; solo hace algo cuando
+         la pantalla esta apagada (despues de un Shutdown). -->
+    <!-- El simbolo de encendido va dibujado, no como caracter: el glifo unicode (⏻) no
+         esta en todas las fuentes y se ve como un cuadradito. -->
+    <button id="power" disabled title="El dispositivo está encendido" aria-label="Encender">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <path d="M12 3.5v8"/>
+        <path d="M6.8 7a7.5 7.5 0 1 0 10.4 0"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Cámara</h2>
+  <p>Elegí qué archivo de la MicroSD ve la cámara como QR y después entrá a
+     <em>Scan</em> (o a <em>Load Mnemonic → Via Camera</em>) en el dispositivo. Los PSBT y
+     los descriptores largos salen como QR animado. Para subir o bajar archivos, usá
+     <b>Archivos (MicroSD)</b> arriba a la derecha: es la misma carpeta que el dispositivo
+     ve como <code>/sd</code>.</p>
+  <div class="row">
+    <select id="file"><option value="">Automático (el más reciente)</option></select>
+    <button id="refresh" style="height:38px">Actualizar</button>
+  </div>
+  <div class="row sizes">
+    <span style="color:var(--muted);font-size:13px">Tamaño:</span>
+    <button data-size="300">Chico</button>
+    <button data-size="360">Mediano</button>
+    <button data-size="460">Grande</button>
+  </div>
+  <p id="status">…</p>
+  <p>Los botones de al lado de la pantalla son los físicos del dispositivo (el ⏻ solo
+     responde después de un <em>Shutdown</em>), y el teclado también sirve: <kbd>↑</kbd>
+     anterior, <kbd>↓</kbd> siguiente, <kbd>Enter</kbd> selecciona. Arrastrar sobre la
+     pantalla es un swipe.</p>
+</div>
+
+<script>
+const KEYMAP = {ArrowUp: "PAGE_PREV", ArrowDown: "PAGE", Enter: "ENTER", " ": "ENTER"};
+
+function post(path, body) {
+  return fetch(path, {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body,
+  });
+}
+
+function press(key) {
+  const button = document.querySelector(`[data-key="${key}"]`);
+  button?.classList.add("hit");
+  setTimeout(() => button?.classList.remove("hit"), 120);
+  post("api/button", "key=" + key);
+}
+
+document.querySelectorAll("[data-key]").forEach(button => {
+  button.addEventListener("click", () => press(button.dataset.key));
+});
+
+addEventListener("keydown", event => {
+  const key = KEYMAP[event.key];
+  if (key && !event.repeat) { event.preventDefault(); press(key); }
+});
+
+// La pantalla tactil: se manda la posicion relativa (0..1) porque el tamano en pantalla
+// depende del zoom, y el servidor la traduce a coordenadas del LCD.
+const deviceImg = document.getElementById("device");
+
+function touch(event, action) {
+  const rect = deviceImg.getBoundingClientRect();
+  const x = (event.clientX - rect.left) / rect.width;
+  const y = (event.clientY - rect.top) / rect.height;
+  post("api/touch", `x=${x.toFixed(4)}&y=${y.toFixed(4)}&action=${action}`);
+}
+
+deviceImg.addEventListener("pointerdown", event => {
+  event.preventDefault();
+  deviceImg.setPointerCapture(event.pointerId);
+  document.getElementById("hint").classList.add("used");
+  touch(event, "down");
+});
+// Arrastrar = swipe: krux los usa para pasar de pantalla.
+deviceImg.addEventListener("pointermove", event => {
+  if (deviceImg.hasPointerCapture(event.pointerId)) touch(event, "move");
+});
+deviceImg.addEventListener("pointerup", event => touch(event, "up"));
+deviceImg.addEventListener("pointercancel", event => touch(event, "up"));
+
+// La pantalla se pide de a un frame por vez: el servidor retiene la respuesta hasta que
+// algo cambia (o 1,5 s). Un MJPEG infinito se atasca en los reverse proxies y deja los
+// clicks encolados detrás.
+async function pump() {
+  let seq = -1;
+  let previousUrl = null;
+  while (true) {
+    try {
+      const response = await fetch(`frame.jpg?seq=${seq}`, {cache: "no-store"});
+      if (!response.ok) throw new Error(response.status);
+      seq = Number(response.headers.get("X-Frame-Seq") ?? -1);
+      const url = URL.createObjectURL(await response.blob());
+      deviceImg.src = url;
+      if (previousUrl) URL.revokeObjectURL(previousUrl);
+      previousUrl = url;
+    } catch {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+}
+pump();
+
+const sizeButtons = document.querySelectorAll("[data-size]");
+function setSize(size) {
+  document.documentElement.style.setProperty("--device-width", size + "px");
+  sizeButtons.forEach(b => b.setAttribute("aria-pressed", b.dataset.size === size));
+  localStorage.setItem("kxemu-size", size);
+}
+sizeButtons.forEach(button => button.addEventListener("click", () => setSize(button.dataset.size)));
+setSize(localStorage.getItem("kxemu-size") || "360");
+
+const select = document.getElementById("file");
+const status = document.getElementById("status");
+
+function render(state) {
+  const current = select.value;
+  select.innerHTML = '<option value="">Automático (el más reciente)</option>';
+  for (const name of state.files) {
+    const option = document.createElement("option");
+    option.value = option.textContent = name;
+    select.appendChild(option);
+  }
+  select.value = state.selected || current || "";
+  // Shutdown apaga el dispositivo de verdad: la pantalla queda negra hasta que lo encendés.
+  power.disabled = !state.powered_off;
+  power.title = state.powered_off ? "Encender" : "El dispositivo está encendido";
+  status.textContent = state.powered_off
+    ? "El dispositivo está apagado."
+    : state.resolved
+      ? `La cámara está mostrando: ${state.resolved}`
+      : "No hay archivos en la carpeta todavía.";
+}
+
+function refresh() { fetch("api/state").then(r => r.json()).then(render); }
+
+select.addEventListener("change", () => {
+  post("api/camera", "file=" + encodeURIComponent(select.value))
+    .then(r => r.json()).then(render);
+});
+document.getElementById("refresh").addEventListener("click", refresh);
+
+// Encender = rearrancar el firmware; el servidor se cae un segundo y el long-poll reconecta.
+const power = document.getElementById("power");
+power.addEventListener("click", () => {
+  power.disabled = true;
+  status.textContent = "Encendiendo…";
+  post("api/power", "");
+  setTimeout(refresh, 4000);
+});
+
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

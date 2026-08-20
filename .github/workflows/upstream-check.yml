@@ -51,6 +51,7 @@ jobs:
 
             case "$version_from" in
               after-last-v) new_ver="${new_tag##*-v}" ;;
+              strip-v)      new_ver="${new_tag#v}" ;;
               *)            new_ver="$new_tag" ;;
             esac
 

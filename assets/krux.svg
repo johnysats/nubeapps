@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <!-- cuerpo del Maix Amigo: pantalla tactil vertical -->
+  <rect x="62" y="28" width="132" height="200" rx="20" fill="#23262e" stroke="#3a3f4b" stroke-width="3"/>
+  <!-- camara -->
+  <circle cx="128" cy="46" r="6" fill="#0f1216" stroke="#4b5566" stroke-width="2"/>
+  <!-- pantalla -->
+  <rect x="76" y="62" width="104" height="140" rx="6" fill="#0f1216" stroke="#4b5566" stroke-width="2"/>
+  <!-- barra de estado con la huella del wallet -->
+  <rect x="84" y="70" width="88" height="12" rx="3" fill="#39404e"/>
+  <rect x="90" y="74" width="34" height="4" rx="2" fill="#00d0c0"/>
+  <!-- menu -->
+  <g fill="#5b6577">
+    <rect x="88" y="96" width="80" height="5" rx="2.5"/>
+    <rect x="88" y="122" width="62" height="5" rx="2.5"/>
+    <rect x="88" y="148" width="70" height="5" rx="2.5"/>
+  </g>
+  <rect x="88" y="174" width="46" height="5" rx="2.5" fill="#f7931a"/>
+  <!-- botones fisicos del lateral -->
+  <g fill="#39404e">
+    <rect x="196" y="96" width="8" height="26" rx="4"/>
+    <rect x="196" y="132" width="8" height="26" rx="4"/>
+  </g>
+</svg>
