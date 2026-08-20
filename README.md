@@ -26,7 +26,7 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 | <img height="30" src="assets/seedsigner.svg" /> | [SeedSigner Simulator](nubeapps-seedsigner/) | Simulador SeedSigner en el navegador; la cámara virtual lee los QR de los archivos que subís a `/files` | 8612 |
 | <img height="30" src="assets/krux.svg" /> | [Krux Simulator](nubeapps-krux/) | Simulador Krux (Maix Amigo) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual | 8613 |
 | <img height="30" src="assets/jadeplus.svg" /> | [Jade Plus Simulator](nubeapps-jadeplus/) | Simulador Blockstream Jade Plus: el firmware real de ESP32 en el emulador QEMU de upstream, con cámara virtual desde `/files` | 8614 |
-| <img height="30" src="assets/seedtool.svg" /> | [Bitcoin Seed Tool](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA): entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español | 8615 |
+| <img height="30" src="assets/seedtool.svg" /> | [Bitcoin Seed Tool en Español](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA): entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español | 8615 |
 
 ## ¿Te sirvió?
 
