@@ -10,14 +10,14 @@ services:
   # Router: / -> carcasa web del simulador, /files -> explorador de la MicroSD.
   # Misma imagen que nubeapps-ccq1: su nginx ya rutea a sim:6080 y files:80.
   web:
-    image: ghcr.io/johnysats/ccq1-web:6.6.0QX@sha256:1153e83f4b2e8f5ff7b2b35b325477ebfe1f532ab1c25518b544ce83a57d5801
+    image: ghcr.io/johnysats/ccq1-web:6.6.0QX@sha256:e8e782e3ad1beb385fa8eff4f77f102dcdbe7d1e3fa9cfda673af11ce93a4d7e
     restart: on-failure
     depends_on:
       - sim
       - files
 
   sim:
-    image: ghcr.io/johnysats/krux-sim:26.08.0@sha256:3e30d5924ac98c3f7974781c2a9d02f5bf131db64883d705b3311e2a303ab57c
+    image: ghcr.io/johnysats/krux-sim:26.08.0@sha256:7251c3f558ef6a411ecd2c33eff4bcd4ee0b0f11fa719686e86819d7ccd553f9
     user: "1000:1000"
     init: true
     restart: on-failure
