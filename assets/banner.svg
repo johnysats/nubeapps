@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" width="1200" height="280">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111318"/>
+      <stop offset="1" stop-color="#0a0b0e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="280" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#f7931a"/>
+
+  <text x="60" y="118" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="64" font-weight="700" fill="#f2f2f2">Nube<tspan fill="#f7931a">Apps</tspan></text>
+  <text x="61" y="156" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#9aa1ad">Umbrel Community App Store — simuladores y herramientas Bitcoin</text>
+
+  <!-- ccq1 -->
+  <g transform="translate(60,190)">
+    <rect width="64" height="64" rx="16" fill="#16181d"/>
+    <rect x="20" y="10" width="24" height="44" rx="4" fill="#23262e" stroke="#3a3f4b" stroke-width="1.5"/>
+    <rect x="25" y="16" width="14" height="10" rx="2" fill="#f7931a"/>
+    <rect x="25" y="32" width="14" height="4" rx="2" fill="#5b6577"/>
+    <rect x="25" y="40" width="14" height="4" rx="2" fill="#5b6577"/>
+  </g>
+
+  <!-- seedsigner -->
+  <g transform="translate(148,190)">
+    <rect width="64" height="64" rx="16" fill="#16181d"/>
+    <rect x="17" y="10" width="30" height="44" rx="4" fill="#23262e" stroke="#3a3f4b" stroke-width="1.5"/>
+    <rect x="21" y="16" width="22" height="16" rx="2" fill="#0f1216" stroke="#ff9416" stroke-width="1.5"/>
+    <circle cx="32" cy="24" r="4" fill="#ff9416"/>
+    <rect x="21" y="38" width="22" height="4" rx="2" fill="#5b6577"/>
+    <rect x="21" y="46" width="14" height="4" rx="2" fill="#5b6577"/>
+  </g>
+
+  <!-- krux -->
+  <g transform="translate(236,190)">
+    <rect width="64" height="64" rx="16" fill="#16181d"/>
+    <rect x="14" y="14" width="36" height="36" rx="6" fill="#23262e" stroke="#3a3f4b" stroke-width="1.5"/>
+    <rect x="19" y="19" width="26" height="18" rx="2" fill="#0f1216"/>
+    <path d="M23 32 l6 -8 l4 5 l4 -6 l6 9" stroke="#00d0c0" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="19" y="40" width="26" height="4" rx="2" fill="#5b6577"/>
+  </g>
+
+  <!-- jadeplus -->
+  <g transform="translate(324,190)">
+    <rect width="64" height="64" rx="16" fill="#16181d"/>
+    <rect x="20" y="10" width="24" height="44" rx="4" fill="#23262e" stroke="#3a3f4b" stroke-width="1.5"/>
+    <rect x="24" y="16" width="16" height="14" rx="2" fill="#0f1216" stroke="#00b45a" stroke-width="1.5"/>
+    <path d="M27 30 l3 4 l7 -8" stroke="#00b45a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="24" y="36" width="16" height="4" rx="2" fill="#5b6577"/>
+    <rect x="24" y="43" width="10" height="4" rx="2" fill="#5b6577"/>
+  </g>
+
+  <!-- seedtool -->
+  <g transform="translate(412,190)">
+    <rect width="64" height="64" rx="16" fill="#16181d"/>
+    <circle cx="32" cy="30" r="16" fill="#23262e" stroke="#3a3f4b" stroke-width="1.5"/>
+    <path d="M32 20 v20 M24 26 q8 -5 16 0 M24 34 q8 5 16 0" stroke="#5eb87a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <text x="1140" y="255" text-anchor="end" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#565d69">github.com/johnysats/nubeapps</text>
+</svg>
