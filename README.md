@@ -1,7 +1,17 @@
-# NubeApps — Umbrel Community App Store
+<p align="center">
+  <img src="assets/banner.svg" alt="NubeApps banner" width="100%">
+</p>
+
+<p align="center">
+<a href="https://github.com/johnysats/nubeapps"><img src="https://img.shields.io/badge/Open%20App%20Store-github.com%2Fjohnysats%2Fnubeapps-f7931a?style=for-the-badge&logo=umbrel&logoColor=white" alt="Abrir NubeApps"></a>
+</p>
 
 App store comunitario para [umbrelOS](https://umbrel.com). Cada subcarpeta `nubeapps-*` es una
 app instalable desde Umbrel.
+
+> **Nota:** este store no es oficial ni está afiliado a Umbrel. Lo mantengo yo solo,
+> independiente del store oficial. Todas las apps son simuladores de hardware firmware/software
+> real, pensados para aprender y probar sin tocar fondos ni seeds reales.
 
 ## Instalar el store
 
@@ -10,13 +20,19 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 
 ## Apps
 
-| App | Qué es |
-|---|---|
-| [`nubeapps-ccq1`](nubeapps-ccq1/) | Simulador Coldcard Q1 en el navegador + explorador de la MicroSD para subir/bajar PSBTs |
-| [`nubeapps-seedsigner`](nubeapps-seedsigner/) | Simulador SeedSigner en el navegador; la cámara virtual lee los QR de los archivos que subís a `/files` |
-| [`nubeapps-krux`](nubeapps-krux/) | Simulador Krux (Maix Amigo) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual |
-| [`nubeapps-jadeplus`](nubeapps-jadeplus/) | Simulador Blockstream Jade Plus: el firmware real de ESP32 en el emulador QEMU de upstream, con cámara virtual desde `/files` |
-| [`nubeapps-seedtool`](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA) servido desde tu Umbrel: entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español |
+| Logo | App | Descripción | Puerto |
+|:---:|---|---|:---:|
+| <img height="30" src="assets/ccq1.svg" /> | [Coldcard Q1 Simulator](nubeapps-ccq1/) | Simulador Coldcard Q1 en el navegador + explorador de la MicroSD para subir/bajar PSBTs | 8611 |
+| <img height="30" src="assets/seedsigner.svg" /> | [SeedSigner Simulator](nubeapps-seedsigner/) | Simulador SeedSigner en el navegador; la cámara virtual lee los QR de los archivos que subís a `/files` | 8612 |
+| <img height="30" src="assets/krux.svg" /> | [Krux Simulator](nubeapps-krux/) | Simulador Krux (Maix Amigo) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual | 8613 |
+| <img height="30" src="assets/jadeplus.svg" /> | [Jade Plus Simulator](nubeapps-jadeplus/) | Simulador Blockstream Jade Plus: el firmware real de ESP32 en el emulador QEMU de upstream, con cámara virtual desde `/files` | 8614 |
+| <img height="30" src="assets/seedtool.svg" /> | [Bitcoin Seed Tool](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA): entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español | 8615 |
+
+## ¿Te sirvió?
+
+Si alguna de estas apps te resultó útil, podés invitarme un café en sats:
+
+[![Lightning](https://img.shields.io/badge/⚡%20Lightning-pay.blink.sv%2Fjohnysats-f7931a?style=for-the-badge)](https://pay.blink.sv/johnysats)
 
 ## Estructura
 
