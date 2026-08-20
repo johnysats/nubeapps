@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <!-- cuerpo del Jade Plus: caja apaisada con la pantalla centrada -->
+  <rect x="26" y="70" width="204" height="116" rx="18" fill="#23262e" stroke="#3a3f4b" stroke-width="3"/>
+  <!-- pantalla 320x170: la misma proporcion que el panel real -->
+  <rect x="46" y="88" width="148" height="79" rx="5" fill="#0f1216" stroke="#4b5566" stroke-width="2"/>
+  <!-- el rombo facetado del logo de Jade, dibujado en la pantalla -->
+  <path d="M92 127 L110 104 L128 127 L110 150 Z" fill="#00b45a"/>
+  <path d="M110 104 L128 127 L110 127 Z" fill="#7fd8b0"/>
+  <!-- dos tiles de menu, como el dashboard del dispositivo -->
+  <rect x="138" y="104" width="48" height="18" rx="3" fill="#00b45a"/>
+  <rect x="138" y="130" width="48" height="18" rx="3" fill="#3a3f4b"/>
+  <!-- rueda y boton frontal, los tres controles -->
+  <circle cx="212" cy="112" r="11" fill="#0f1216" stroke="#4b5566" stroke-width="3"/>
+  <circle cx="212" cy="146" r="7" fill="#00b45a"/>
+</svg>

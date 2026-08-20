@@ -15,6 +15,7 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 | [`nubeapps-ccq1`](nubeapps-ccq1/) | Simulador Coldcard Q1 en el navegador + explorador de la MicroSD para subir/bajar PSBTs |
 | [`nubeapps-seedsigner`](nubeapps-seedsigner/) | Simulador SeedSigner en el navegador; la cámara virtual lee los QR de los archivos que subís a `/files` |
 | [`nubeapps-krux`](nubeapps-krux/) | Simulador Krux (Maix Amigo) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual |
+| [`nubeapps-jadeplus`](nubeapps-jadeplus/) | Simulador Blockstream Jade Plus: el firmware real de ESP32 en el emulador QEMU de upstream, con cámara virtual desde `/files` |
 | [`nubeapps-seedtool`](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA) servido desde tu Umbrel: entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español |
 
 ## Estructura
@@ -35,6 +36,9 @@ Umbrel exige imágenes públicas ya construidas, con `linux/amd64` **y** `linux/
 por digest. El workflow [`images.yml`](.github/workflows/images.yml) publica en GHCR: el
 simulador de Coldcard compila firmware, así que va en runners nativos (`ubuntu-24.04` y
 `ubuntu-24.04-arm`); el de SeedSigner es Python puro y sale de un buildx multi-arch normal.
+El de Jade compila el firmware de ESP32 en un stage fijado a `linux/amd64` (la toolchain de
+Blockstream solo existe para esa arquitectura) y el binario que sale de ahí vale para las dos
+plataformas, porque lo ejecuta qemu.
 
 Después de cada build hay que actualizar el digest en el `docker-compose.yml` de la app:
 

@@ -15,6 +15,8 @@ una app instalable. `id` del store: `nubeapps` (prefija obligatoriamente cada ap
 | `images/ccq1-web/` | nginx que rutea `/` → sim:6080 y `/files` → filebrowser (lo usan las tres apps) |
 | `images/seedsigner-sim/` | firmware de SeedSigner upstream + el shim `ssemu` que reemplaza el hardware |
 | `images/krux-sim/` | firmware de Krux upstream + el shim `kxemu` que lo corre headless |
+| `nubeapps-jadeplus/` | app: simulador Blockstream Jade Plus (firmware real en QEMU) + cámara virtual desde `/files` |
+| `images/jade-sim/` | firmware de Jade compilado para QEMU + el shim `jxemu` que le pone carcasa web |
 | `nubeapps-seedtool/` | app: Bitcoin Seed Tool servido como estatico + capa de traduccion ES |
 | `images/seedtool/` | nginx + el `index.html` firmado del release, con `i18n/` inyectado por `sub_filter` |
 | `versions.yml` | tags upstream que se empaquetan (fuente única de verdad) |
@@ -168,6 +170,51 @@ Decisiones que no son obvias:
   (`enter_sleep_mode`) y `reboot()` no. Con Shutdown la pantalla queda negra y la página
   muestra **Encender** (`POST /api/power`), que es lo que rearranca.
 
+## nubeapps-jadeplus
+
+```
+app_proxy → web (misma imagen ccq1-web) ─┬─ /      → sim:6080  (carcasa web, long-poll)
+                                          └─ /files → files:80  (filebrowser)
+```
+
+Acá no hay shim de hardware: upstream ya emula el dispositivo entero. El firmware real de
+ESP32 corre en `qemu-system-xtensa` (el build de Espressif, que existe para amd64 y arm64) y
+expone pantalla, botones y cámara por un WebSocket dentro del contenedor. `jxemu` es solo el
+puente entre eso y el navegador:
+
+| Upstream | Qué le pone jxemu |
+|---|---|
+| `display.html` que pide la webcam del navegador | `webui.py` + `static/`: pantalla por long-poll, sin `getUserMedia` (Umbrel sirve por HTTP y ahí no existe) |
+| WebSocket del firmware | `device.py`: frames RGB565 → PIL, botones y camara |
+| cámara real | `camera.py`: un archivo de `/files` como QR (UR `crypto-psbt` animado si es PSBT, SeedQR si son 12/24 palabras) |
+
+Decisiones que no son obvias:
+
+- **La config `BOARD_TYPE_QEMU_LARGER` es la del Jade Plus**: 320x170, la misma que
+  `BOARD_TYPE_JADE_V2_ANY`. Se activa con `switch_to.sh qemu --dev --psram --webdisplay-larger`
+  y pide una imagen de carcasa (`main/qemu/jadel.png`) que **upstream no tiene en el repo**: sin
+  ese archivo el build de CMake se cae, así que va uno de 1x1 (la página de upstream no se usa).
+  La máquina de QEMU es `esp32`, no `esp32s3`: es el firmware de Jade con la pantalla del Plus.
+- **La cámara es *pull***: el firmware manda el comando `1` cada vez que quiere un frame y se
+  queda bloqueado en la cola (`esp_camera_fb_get`). Mandarle frames de motu proprio le cuelga
+  el servidor web de adentro y el dispositivo deja de responder: uno por pedido.
+- **El framebuffer es RGB565 big-endian**: leerlo little-endian no rompe nada visible a primera
+  vista —los grises salen bien— pero desteñe todos los colores, porque el verde queda partido
+  entre los dos bytes. Y los 5 bits se estiran replicando los altos (31 → 255), no con un shift.
+- **La toolchain va atada al tag**: cada release declara en su `Dockerfile.qemu` con qué imagen
+  `blockstream/jade_builder` se compila. Con la de otra versión el firmware ni linkea
+  (`implicit declaration of esp_image_bootloader_offset_set`), así que `images.yml` saca ese
+  digest del tag que se está empaquetando en vez de pinnearlo a mano.
+- **El `RUN` del firmware corre con bash**: `export.sh` del IDF 5.5 falla con dash
+  ("Activation script failed") y después no existe `idf.py`. Y el script que arma la imagen de
+  flash cambió de nombre entre releases (`make-flash-img.sh` / `make_flash_img.sh`) y en las
+  viejas no acepta argumentos: se lo llama por glob y sin parámetros.
+- **El binario de qemu viene con símbolos de debug**: 72 MB que `strip` deja en 17.
+- **El puerto 30121 (serial sobre TCP) no se publica**: es la vía para conectar Green o
+  Sparrow, pero sería un puerto sin la autenticación de Umbrel. La app es solo por QR.
+- **El encoder de UR no está en PyPI**: el paquete llamado `ur` es una librería de notebooks
+  sin relación (y arrastra Jupyter). Se copia el de Foundation Devices, pinneado por commit.
+
 ## nubeapps-seedtool
 
 ```
@@ -307,6 +354,25 @@ curl -XPOST localhost:6080/api/button -d key=ENTER      # ENTER / PAGE / PAGE_PR
 curl -XPOST localhost:6080/api/camera -d file=seed.txt  # a qué archivo apunta la cámara
 curl -s localhost:6080/frame.png -o /tmp/shot.png       # la pantalla, para inspeccionarla
 ```
+
+Para el simulador de Jade hay que tener en cuenta que el firmware tarda ~50 min en compilar
+(1351 objetos) y que el stage que lo compila es amd64: en un server arm64 hay que registrar
+binfmt (`docker run --privileged --rm tonistiigi/binfmt --install amd64`). Para iterar sobre
+`jxemu` sin recompilarlo, conviene guardar el `flash_image.bin` de un build anterior y armar
+un Dockerfile que empiece en el `FROM python` y lo copie del contexto:
+
+```sh
+docker build -t jade-sim:test images/jade-sim
+docker run -d --name jxtest -p 127.0.0.1:6080:6080 -v /tmp/jxdata:/data jade-sim:test
+
+curl -XPOST localhost:6080/api/button -d key=next       # prev / next (rueda) / select (frontal)
+curl -XPOST localhost:6080/api/camera -d file=seed.txt  # a qué archivo apunta la cámara
+curl -s "localhost:6080/frame.png?scale=3&smooth=1" -o /tmp/shot.png   # la pantalla
+```
+
+El recorrido que prueba todo: un `.txt` con 12 palabras en `/tmp/jxdata/files` y
+`Scan SeedQR` (la wallet queda activa con su fingerprint), y después un PSBT en la misma
+carpeta y `Scan QR`, que tiene que llegar a mostrar las salidas y el monto.
 
 El recorrido que prueba las tres vías de una: `Load Mnemonic → Via Camera → QR Code` con un
 `.txt` de 12 palabras en `/tmp/kxdata/sd` (cámara), y después `Sign → PSBT → Load from SD card`

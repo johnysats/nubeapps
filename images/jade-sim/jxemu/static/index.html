@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Jade Plus Simulator</title>
+<style>
+  :root {
+    --device-scale: 2;
+    --device-width: 640px; /* 320 x --device-scale: siempre un multiplo exacto */
+    --bg: #14171c;
+    --panel: #1e2229;
+    --edge: #2c313a;
+    --text: #e6e8ec;
+    --muted: #8b93a1;
+    --accent: #00b45a; /* el verde de Blockstream Jade */
+  }
+  * { box-sizing: border-box; }
+  /* Misma barra que las otras apps del store: /files lo sirve el mismo app_proxy, o sea
+     el mismo login de Umbrel, sin segunda contrasena. */
+  header {
+    position: sticky; top: 0; z-index: 2; width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 0 14px; height: 44px; flex: none;
+    background: var(--panel); border-bottom: 1px solid var(--edge);
+  }
+  header b { font-weight: 600; }
+  header b span { color: var(--muted); font-weight: 400; }
+  header a {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    border: 1px solid var(--edge); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  header a:hover { border-color: var(--accent); background: #1c1f26; }
+  body {
+    margin: 0; padding: 0 0 40px;
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .device {
+    background: var(--panel); border: 1px solid var(--edge); border-radius: 18px;
+    padding: 20px; margin: 0 16px; display: flex; gap: 22px; align-items: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  /* Carcasa: el Jade Plus es una caja negra con la pantalla apaisada centrada. */
+  .shell {
+    background: #0b0d10; border: 1px solid #34394400; border-radius: 14px;
+    padding: 16px 18px; box-shadow: inset 0 0 0 1px #2a2f37;
+  }
+  #device {
+    width: var(--device-width); display: block; border-radius: 4px;
+    user-select: none; -webkit-user-drag: none;
+    max-width: 100%; image-rendering: pixelated;
+  }
+  .keys { display: flex; flex-direction: column; gap: 12px; }
+  button {
+    background: #2b3038; color: var(--text); border: 1px solid var(--edge);
+    border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer;
+    padding: 0 14px; height: 52px; min-width: 52px; touch-action: manipulation;
+    user-select: none;
+  }
+  button:hover { background: #353b45; }
+  button:active, button.hit { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
+  .panel {
+    width: min(760px, calc(100% - 32px)); background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .sizes button { height: 32px; padding: 0 12px; font-weight: 500; }
+  .sizes button[aria-pressed="true"] { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
+  select {
+    flex: 1 1 240px; background: #14171c; color: var(--text);
+    border: 1px solid var(--edge); border-radius: 8px; padding: 8px 10px; font: inherit;
+  }
+  h2 { margin: 0; font-size: 15px; }
+  p { margin: 0; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  kbd {
+    background: #14171c; border: 1px solid var(--edge); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 5px; font-size: 12px;
+  }
+  @media (max-width: 720px) {
+    .device { flex-direction: column; padding: 14px; }
+    .keys { flex-direction: row; }
+    #device { width: min(84vw, var(--device-width)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <b>Jade Plus <span>· simulador</span></b>
+  <a href="files/" target="_blank" rel="noopener">Archivos ↗</a>
+</header>
+
+<div class="device">
+  <div class="shell"><img id="device" alt="Pantalla del Jade Plus"></div>
+  <div class="keys">
+    <!-- Los tres controles del dispositivo: la rueda hacia cada lado y el boton frontal. -->
+    <button data-key="prev" title="Rueda hacia la izquierda">▲</button>
+    <button data-key="select" title="Botón frontal (seleccionar)">●</button>
+    <button data-key="next" title="Rueda hacia la derecha">▼</button>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Cámara</h2>
+  <p>Elegí qué archivo ve la cámara como QR y después entrá a una pantalla de escaneo del
+     dispositivo (<em>Scan SeedQR</em>, <em>Scan QR</em>). Un PSBT sale como QR animado
+     (UR <code>crypto-psbt</code>) y un archivo con 12 o 24 palabras sale como SeedQR. Para
+     subir o bajar archivos usá <b>Archivos</b> arriba a la derecha.</p>
+  <div class="row">
+    <select id="file"><option value="">Ninguno</option></select>
+    <button id="refresh" style="height:38px">Actualizar</button>
+  </div>
+  <div class="row sizes">
+    <span style="color:var(--muted);font-size:13px">Tamaño:</span>
+    <button data-size="1">Chico</button>
+    <button data-size="2">Mediano</button>
+    <button data-size="3">Grande</button>
+    <!-- La pantalla real son 320x170 y las fuentes del firmware son bitmap: no hay más
+         resolución que sacarle, solo se elige cómo se agranda. -->
+    <button id="smooth" aria-pressed="false" title="Suaviza las diagonales de letras y números (EPX)">Suavizado</button>
+  </div>
+  <p id="status">…</p>
+  <p>El teclado también sirve: <kbd>↑</kbd> y <kbd>↓</kbd> mueven la rueda,
+     <kbd>Enter</kbd> es el botón frontal.</p>
+</div>
+
+<script>
+const KEYMAP = {ArrowUp: "prev", ArrowLeft: "prev", ArrowDown: "next", ArrowRight: "next",
+                Enter: "select", " ": "select"};
+
+function post(path, body) {
+  return fetch(path, {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body,
+  });
+}
+
+function press(key) {
+  const button = document.querySelector(`[data-key="${key}"]`);
+  button?.classList.add("hit");
+  setTimeout(() => button?.classList.remove("hit"), 120);
+  post("api/button", "key=" + key);
+}
+
+document.querySelectorAll("[data-key]").forEach(button => {
+  button.addEventListener("click", () => press(button.dataset.key));
+});
+
+addEventListener("keydown", event => {
+  const key = KEYMAP[event.key];
+  if (key && !event.repeat) { event.preventDefault(); press(key); }
+});
+
+const deviceImg = document.getElementById("device");
+
+// La pantalla se pide de a un frame por vez: el servidor retiene la respuesta hasta que
+// algo cambia (o 1,5 s). Un MJPEG infinito se atasca en los reverse proxies y deja los
+// clicks encolados detrás.
+async function pump() {
+  let seq = -1;
+  let previousUrl = null;
+  while (true) {
+    try {
+      // El servidor amplía el frame a factor entero: así el texto de un píxel de grosor
+      // llega nítido en vez de que lo interpole el navegador. Se pide más grande de lo que
+      // se muestra (por el devicePixelRatio) porque con un ratio fraccionario —1,25 o 1,5,
+      // o el zoom del navegador— el reescalado del navegador se come filas enteras de
+      // píxeles y las letras aparecen mordidas.
+      const response = await fetch(
+        `frame.png?seq=${seq}&scale=${scale * pixelRatio}&smooth=${smooth ? 1 : 0}`,
+        {cache: "no-store"});
+      if (!response.ok) throw new Error(response.status);
+      seq = Number(response.headers.get("X-Frame-Seq") ?? -1);
+      const url = URL.createObjectURL(await response.blob());
+      deviceImg.src = url;
+      if (previousUrl) URL.revokeObjectURL(previousUrl);
+      previousUrl = url;
+    } catch {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+}
+pump();
+
+// El tamaño es el factor de ampliación, no un ancho libre: el ancho en pantalla es
+// exactamente 320 x factor, para que un píxel del dispositivo sean N píxeles enteros.
+const sizeButtons = document.querySelectorAll("[data-size]");
+let scale = 2;
+// Techo de 8 en el servidor: pasado ×4 de zoom el supersampling ya no aporta nada visible.
+const pixelRatio = Math.min(3, Math.max(1, Math.ceil(window.devicePixelRatio || 1)));
+let smooth = localStorage.getItem("jxemu-smooth") === "1";
+function setSize(size) {
+  scale = Number(size);
+  document.documentElement.style.setProperty("--device-width", 320 * scale + "px");
+  sizeButtons.forEach(b => b.setAttribute("aria-pressed", b.dataset.size === size));
+  localStorage.setItem("jxemu-scale", size);
+}
+sizeButtons.forEach(button => button.addEventListener("click", () => setSize(button.dataset.size)));
+setSize(localStorage.getItem("jxemu-scale") || "2");
+
+const smoothButton = document.getElementById("smooth");
+function setSmooth(value) {
+  smooth = value;
+  smoothButton.setAttribute("aria-pressed", String(value));
+  localStorage.setItem("jxemu-smooth", value ? "1" : "0");
+}
+smoothButton.addEventListener("click", () => setSmooth(!smooth));
+setSmooth(smooth);
+
+const select = document.getElementById("file");
+const status = document.getElementById("status");
+
+function render(state) {
+  const current = select.value;
+  select.innerHTML = '<option value="">Ninguno</option>';
+  for (const name of state.files) {
+    const option = document.createElement("option");
+    option.value = option.textContent = name;
+    select.appendChild(option);
+  }
+  select.value = state.selected || current || "";
+  status.textContent = !state.connected
+    ? "Arrancando el dispositivo…"
+    : state.resolved
+      ? `La cámara está mostrando: ${state.resolved}`
+      : "No hay ningún archivo elegido para la cámara.";
+}
+
+function refresh() { fetch("api/state").then(r => r.json()).then(render); }
+
+select.addEventListener("change", () => {
+  post("api/camera", "file=" + encodeURIComponent(select.value))
+    .then(r => r.json()).then(render);
+});
+document.getElementById("refresh").addEventListener("click", refresh);
+
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

@@ -24,6 +24,7 @@ jobs:
       seedsigner_tag: ${{ steps.v.outputs.seedsigner_tag }}
       krux_tag: ${{ steps.v.outputs.krux_tag }}
       krux_version: ${{ steps.v.outputs.krux_version }}
+      jade_tag: ${{ steps.v.outputs.jade_tag }}
       seedtool_tag: ${{ steps.v.outputs.seedtool_tag }}
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +37,7 @@ jobs:
             echo "seedsigner_tag=$(yq '.firmwares.seedsigner.tag' versions.yml)"
             echo "krux_tag=$(yq '.firmwares.krux.tag' versions.yml)"
             echo "krux_version=$(yq '.firmwares.krux.version' versions.yml)"
+            echo "jade_tag=$(yq '.firmwares.jade.tag' versions.yml)"
             echo "seedtool_tag=$(yq '.firmwares.seedtool.tag' versions.yml)"
           } >> "$GITHUB_OUTPUT"
 
@@ -202,6 +204,54 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/krux-sim:${{ needs.versions.outputs.krux_version }}
 
+  # Simulador de Jade: el firmware de ESP32 se compila en un stage fijado a amd64 (la
+  # toolchain que publica Blockstream solo existe para esa arquitectura) y el binario que
+  # sale de ahi sirve para las dos plataformas, porque lo ejecuta qemu. Lo unico que corre
+  # emulado es el stage final -apt, curl y wheels-, asi que un runner amd64 alcanza.
+  jade:
+    needs: versions
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Cada release de Jade se compila con la imagen de toolchain que ella misma declara:
+      # con la de otra version el firmware no linkea. El digest sale del tag, asi que el PR
+      # de bump no tiene que acordarse de actualizarlo.
+      - id: builder
+        env:
+          TAG: ${{ needs.versions.outputs.jade_tag }}
+        run: |
+          set -euo pipefail
+          digest=$(curl -fsSL "https://raw.githubusercontent.com/Blockstream/Jade/${TAG}/Dockerfile.qemu" \
+                   | sed -n 's|^FROM blockstream/jade_builder@||p')
+          case "$digest" in sha256:*) ;; *) echo "no encontre el builder del tag ${TAG}" >&2; exit 1;; esac
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: images/jade-sim
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            JADE_VERSION=${{ needs.versions.outputs.jade_tag }}
+            JADE_BUILDER=${{ steps.builder.outputs.digest }}
+          cache-from: type=gha,scope=jade
+          cache-to: type=gha,mode=max,scope=jade
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/jade-sim:${{ needs.versions.outputs.jade_tag }}
+
   # Bitcoin Seed Tool: la imagen es nginx + un HTML descargado y verificado por firma.
   # Nada compila, asi que no hace falta QEMU: el stage que descarga corre en la plataforma
   # del builder y el resto es COPY.
@@ -233,7 +283,7 @@ jobs:
   # Umbrel exige el digest del indice multi-arch pinneado en el compose. Lo escribe el CI
   # para que no haya que copiarlo a mano ni se desincronicen las dos apps (comparten ccq1-web).
   pin:
-    needs: [versions, simulator-manifest, web, seedsigner, krux, seedtool]
+    needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
