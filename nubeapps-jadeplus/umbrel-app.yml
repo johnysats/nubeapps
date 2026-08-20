@@ -1,0 +1,70 @@
+manifestVersion: 1
+id: nubeapps-jadeplus
+category: Bitcoin
+name: Jade Plus Simulator
+version: "1.0.40"
+tagline: Blockstream Jade firmware in your browser, no device / El firmware de Blockstream Jade en tu navegador, sin dispositivo
+description: >-
+  WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
+  run air-gapped, and the entropy of any seed it generates is not safe to hold funds. Never
+  import a real seed and never sign with real funds.
+
+
+  It runs the official Blockstream Jade firmware (upstream, unpatched) inside Umbrel: the real
+  ESP32 firmware executing in the QEMU emulator that Blockstream ships in the Jade repository,
+  with the 320x170 screen of the Jade Plus. You drive it from the page with the three controls
+  of the device: the wheel each way and the front button (or the keyboard: arrows move, Enter
+  selects).
+
+
+  There is no webcam in a container, so a virtual camera shows the device a QR made from the
+  file you pick on the page: a PSBT goes as an animated UR crypto-psbt, a file with 12 or 24
+  words goes as a SeedQR, and anything else as plain text. Upload and download files from
+  /files, the explorer in the top right corner.
+
+
+  The emulated flash persists in the app data, so the PIN, the encrypted seed and the settings
+  survive a restart, exactly like the real device.
+
+
+  --- En espanol ---
+
+
+  ATENCION: esto es un simulador para aprender y probar. No es una billetera segura, no corre
+  en hardware air-gapped y la entropia de las seeds que genere no sirve para custodiar fondos.
+  Nunca importes una seed real ni firmes con fondos reales.
+
+
+  Corre el firmware oficial de Blockstream Jade (upstream, sin parches) dentro de Umbrel: el
+  firmware real de ESP32 ejecutandose en el emulador QEMU que Blockstream publica en el
+  repositorio de Jade, con la pantalla de 320x170 del Jade Plus. Lo manejas desde la pagina con
+  los tres controles del dispositivo: la rueda para cada lado y el boton frontal (o el teclado:
+  las flechas mueven y Enter selecciona).
+
+
+  En un contenedor no hay webcam, asi que una camara virtual le muestra al dispositivo un QR
+  armado con el archivo que elegis en la pagina: un PSBT va como UR crypto-psbt animado, un
+  archivo con 12 o 24 palabras va como SeedQR, y cualquier otra cosa como texto plano. Subis y
+  bajas archivos desde /files, el explorador de arriba a la derecha.
+
+
+  La flash emulada se guarda en los datos de la app, asi que el PIN, la seed cifrada y la
+  configuracion sobreviven a un reinicio, igual que en el dispositivo real.
+releaseNotes: ""
+
+developer: Blockstream (firmware) / NubeApps (paquete)
+website: https://blockstream.com/jade/
+dependencies: []
+repo: https://github.com/Blockstream/Jade
+support: https://github.com/johnysats/nubeapps/issues
+
+port: 8614
+icon: https://raw.githubusercontent.com/johnysats/nubeapps/main/assets/jadeplus.svg
+gallery: []
+path: ""
+
+defaultUsername: ""
+defaultPassword: ""
+
+submitter: NubeApps
+submission: ""
