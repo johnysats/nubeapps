@@ -14,6 +14,7 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 |---|---|
 | [`nubeapps-ccq1`](nubeapps-ccq1/) | Simulador Coldcard Q1 en el navegador + explorador de la MicroSD para subir/bajar PSBTs |
 | [`nubeapps-seedsigner`](nubeapps-seedsigner/) | Simulador SeedSigner en el navegador; la cámara virtual lee los QR de los archivos que subís a `/files` |
+| [`nubeapps-krux`](nubeapps-krux/) | Simulador Krux (Maix Amigo) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual |
 
 ## Estructura
 

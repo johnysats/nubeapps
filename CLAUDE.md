@@ -10,9 +10,11 @@ una app instalable. `id` del store: `nubeapps` (prefija obligatoriamente cada ap
 | `umbrel-app-store.yml` | id + name del store |
 | `nubeapps-ccq1/` | app: simulador Coldcard Q1 + explorador de la MicroSD para PSBTs |
 | `nubeapps-seedsigner/` | app: simulador SeedSigner + cámara virtual alimentada desde `/files` |
+| `nubeapps-krux/` | app: simulador Krux (Maix Amigo táctil) + MicroSD y cámara virtual desde `/files` |
 | `images/ccq1-simulator/` | Dockerfile del simulador (firmware compilado dentro de la imagen) |
-| `images/ccq1-web/` | nginx que rutea `/` → sim:6080 y `/files` → filebrowser (lo usan las dos apps) |
+| `images/ccq1-web/` | nginx que rutea `/` → sim:6080 y `/files` → filebrowser (lo usan las tres apps) |
 | `images/seedsigner-sim/` | firmware de SeedSigner upstream + el shim `ssemu` que reemplaza el hardware |
+| `images/krux-sim/` | firmware de Krux upstream + el shim `kxemu` que lo corre headless |
 | `versions.yml` | tags upstream que se empaquetan (fuente única de verdad) |
 | `.github/workflows/images.yml` | build multi-arch en runners nativos → GHCR + pin de digests |
 | `.github/workflows/upstream-check.yml` | chequeo diario de releases upstream → PR de bump |
@@ -104,6 +106,66 @@ Decisiones que no son obvias:
   `PSBTSignedQRDisplayView.run` (volcado del PSBT firmado a `/files`); si cambia en 0.9.0, el
   import falla ruidosamente al arrancar.
 
+## nubeapps-krux
+
+```
+app_proxy → web (misma imagen ccq1-web) ─┬─ /      → sim:6080  (carcasa web, long-poll + táctil)
+                                          └─ /files → files:80  (filebrowser sobre la MicroSD)
+```
+
+Upstream ya trae en `simulator/kruxsim/` los mocks de todo el hardware del K210 (los usa su CI
+para las capturas de la doc). Lo que agrega `images/krux-sim/kxemu/` es solo lo que falta para
+servirlo en Umbrel, sin tocar el árbol de upstream:
+
+| Upstream | Qué le pone kxemu |
+|---|---|
+| ventana SDL + `update_screen()` | `screen.py`: `SDL_VIDEODRIVER=dummy` y el frame publicado por HTTP |
+| teclas y mouse de pygame | `remote.py`: se registra donde va el "sequence executor" |
+| `VideoCapture(0)` del mock `sensor` | `camera.py`: QR armado con un archivo de la MicroSD |
+
+Decisiones que no son obvias:
+
+- **El enganche es `register_sequence_executor()`**, la API que upstream usa para guionar
+  capturas: `buttons` y `sensor` le leen `.key` y `.camera_image` a ese objeto. **No se
+  registra en `pmu`**: el botón de encendido también consume `key == K_UP`, así que
+  compartirlo con PAGE_PREV apagaría el dispositivo cada dos por tres.
+- **El táctil no pasa por ahí**: `TCOMMON.current_point()` lee el mouse de SDL, así que se
+  reemplaza por el último `POST /api/touch`. La página manda la posición relativa (0..1)
+  porque el tamaño en pantalla depende del zoom; `to_screen_pos()` de upstream la traduce de
+  la ventana al LCD. El punto se mantiene hasta que el firmware lo lee al menos una vez (con
+  timeout de 2 s), si no un click rápido se pierde entre dos renders.
+- **`sys.modules["qrcode"]` es del firmware, no de PyPI**: el mock lo pisa con el módulo que
+  usa el dispositivo para dibujar sus propios QR. `start.py` guarda antes la librería de PyPI
+  como `kxemu_qrcode`; sin eso la cámara virtual devuelve MagicMocks y la pantalla muestra
+  `ValueError: cannot determine region size`.
+- **Nada de `pathlib` en el shim**: el mock `uos` parchea `os.stat()` para reescribir las
+  rutas `/sd`, y un `PosixPath` ahí revienta con `AttributeError: startswith`.
+- **Los QR de la cámara van en formato `pXofN`**, el mismo que anima el firmware: partir un
+  PSBT en base64 en trozos de 240 bytes evita el QR gigante de una sola pieza. El mock pone
+  `camera_image = None` cuando decodifica una parte, y ese setter es el que avanza a la
+  siguiente.
+- **El modo entropía se detecta por el stack de llamadas** (igual que en seedsigner): si viene
+  de `pages/capture_entropy.py` se sirve ruido de `os.urandom`, porque esa pantalla mide la
+  desviación de píxeles y un QR no pasa el umbral.
+- **`sd` y `flash` son symlinks**: upstream corre desde `simulator/` (busca ahí `assets/` y
+  las fuentes `.bdf`), pero krux guarda en rutas relativas al cwd. Los symlinks apuntan a los
+  bind mounts en vez de mover ninguna de las dos convenciones.
+- **De MaixPy solo se clonan los `board.py`** (sparse checkout del commit que el tag pinnea) y
+  el módulo nativo `uUR` se instala desde su repo (`selfcustody/cUR`, 1.8 MB): clonar MaixPy
+  entero serían más de 2 GB para tres archivos.
+- **La imagen pesa 553 MB y el 45% son ruedas que no se pueden achicar**: opencv (87 MB, lo
+  importan los mocks `lcd` y `sensor`), numpy (68 MB), pygame (45 MB), Pillow (25 MB). Lo que
+  sí se recortó: de las fuentes `.bdf` solo quedan las dos del Amigo (`unifont-16` y
+  `FusionPixel-14` son de los modelos a botones y sumaban 13 MB), pip se borra del venv y no
+  se instalan las libSDL de apt, porque la rueda de pygame ya trae las suyas en `pygame.libs`.
+- **`machine.reset()` no puede terminar el proceso**: cambiar el tema, restaurar settings de
+  fábrica o apagar pasan por ahí, y el mock lo traduce a un `QUIT` de pygame. Upstream cierra
+  la ventana y sale; acá eso dejaba el contenedor muerto y la pantalla congelada. `screen.py`
+  lo trata como el reset del K210 y hace `os.execv` del proceso. Apagar y reiniciar se
+  distinguen por un solo dato: `PowerManager.shutdown()` duerme el PMU antes
+  (`enter_sleep_mode`) y `reboot()` no. Con Shutdown la pantalla queda negra y la página
+  muestra **Encender** (`POST /api/power`), que es lo que rearranca.
+
 ## Actualizar el firmware
 
 `versions.yml` en la raíz es la única fuente de verdad: una entrada por firmware upstream, con
@@ -153,6 +215,25 @@ curl -XPOST localhost:6080/api/camera -d file=unsigned.psbt
 curl -s localhost:6080/frame.png -o /tmp/shot.png       # la pantalla, para inspeccionarla
 docker logs sstest | grep Executing                     # qué View está corriendo
 ```
+
+Para el simulador de Krux, igual (montar `kxemu/` como volumen evita rebuildear en cada
+cambio). El táctil se maneja con coordenadas relativas al frame, así que se puede guiar a
+ciegas mirando `frame.png`:
+
+```sh
+docker build -t krux-sim:test images/krux-sim
+docker run -d --name kxtest -p 127.0.0.1:6080:6080 -v /tmp/kxdata:/data \
+  -v "$PWD/images/krux-sim/kxemu:/app/kxemu:ro" krux-sim:test
+
+curl -XPOST localhost:6080/api/touch -d "x=0.5&y=0.27&action=down"   # y &action=up para soltar
+curl -XPOST localhost:6080/api/button -d key=ENTER      # ENTER / PAGE / PAGE_PREV
+curl -XPOST localhost:6080/api/camera -d file=seed.txt  # a qué archivo apunta la cámara
+curl -s localhost:6080/frame.png -o /tmp/shot.png       # la pantalla, para inspeccionarla
+```
+
+El recorrido que prueba las tres vías de una: `Load Mnemonic → Via Camera → QR Code` con un
+`.txt` de 12 palabras en `/tmp/kxdata/sd` (cámara), y después `Sign → PSBT → Load from SD card`
+con un PSBT en la misma carpeta, que deja el firmado como `<nombre>-signed.psbt` (MicroSD).
 
 Verificación real = instalar por umbrelOS (`umbreld client apps.install.mutate --appId
 nubeapps-ccq1`), abrir en el navegador, subir y firmar un PSBT, reiniciar y confirmar que los

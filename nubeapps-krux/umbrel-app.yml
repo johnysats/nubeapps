@@ -1,0 +1,74 @@
+manifestVersion: 1
+id: nubeapps-krux
+category: Bitcoin
+name: Krux Simulator
+version: "26.08.0"
+tagline: Krux firmware in your browser, no K210 device / El firmware de Krux en tu navegador, sin dispositivo K210
+description: >-
+  WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
+  run air-gapped, and the entropy of any seed it generates is not safe to hold funds. Never
+  import a real seed and never sign with real funds.
+
+
+  It runs the Krux firmware (upstream, unpatched) inside Umbrel and shows it in your browser
+  as a Maix Amigo: click the screen to touch it, and use the buttons next to it (or the
+  keyboard: arrows page through menus, Enter selects).
+
+
+  Krux takes input two ways, and the simulator has both:
+
+
+  - MicroSD: the file explorer at /files is what the device sees as /sd. Drop a PSBT there,
+    sign it with Sign > PSBT > Load from SD card, and the signed one comes back to the same
+    folder as <name>-signed.psbt. Descriptors, encrypted mnemonics and settings persist there
+    too, so they survive a restart
+
+  - Camera: there is no webcam in a container, so a virtual one shows the device a QR made
+    from the file you pick on the page (animated in parts when it is a PSBT or a long
+    descriptor). Point it at a file and go to Load Mnemonic > Via Camera, or Sign > PSBT >
+    Load from camera
+
+
+  --- En espanol ---
+
+
+  ATENCION: esto es un simulador para aprender y probar. No es una billetera segura, no corre
+  en hardware air-gapped y la entropia de las seeds que genere no sirve para custodiar fondos.
+  Nunca importes una seed real ni firmes con fondos reales.
+
+
+  Corre el firmware de Krux (upstream, sin parches) dentro de Umbrel y lo muestra en el
+  navegador como un Maix Amigo: hace click en la pantalla para tocarla, y usa los botones de
+  al lado (o el teclado: las flechas recorren los menus y Enter selecciona).
+
+
+  Krux recibe datos por dos vias, y el simulador tiene las dos:
+
+
+  - MicroSD: el explorador de archivos en /files es lo que el dispositivo ve como /sd. Dejas
+    ahi un PSBT, lo firmas con Sign > PSBT > Load from SD card y el firmado vuelve a la misma
+    carpeta como <nombre>-signed.psbt. Los descriptores, los mnemonics encriptados y la
+    configuracion tambien quedan ahi, asi que sobreviven a un reinicio
+
+  - Camara: en un contenedor no hay webcam, asi que una virtual le muestra al dispositivo un
+    QR armado con el archivo que elegis en la pagina (animado por partes si es un PSBT o un
+    descriptor largo). Apuntala a un archivo y entra a Load Mnemonic > Via Camera, o a
+    Sign > PSBT > Load from camera
+releaseNotes: ""
+
+developer: Krux contributors (firmware) / NubeApps (paquete)
+website: https://selfcustody.github.io/krux/
+dependencies: []
+repo: https://github.com/selfcustody/krux
+support: https://github.com/johnysats/nubeapps/issues
+
+port: 8613
+icon: https://raw.githubusercontent.com/johnysats/nubeapps/main/assets/krux.svg
+gallery: []
+path: ""
+
+defaultUsername: ""
+defaultPassword: ""
+
+submitter: NubeApps
+submission: ""
