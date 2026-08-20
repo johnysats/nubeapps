@@ -15,6 +15,8 @@ una app instalable. `id` del store: `nubeapps` (prefija obligatoriamente cada ap
 | `images/ccq1-web/` | nginx que rutea `/` → sim:6080 y `/files` → filebrowser (lo usan las tres apps) |
 | `images/seedsigner-sim/` | firmware de SeedSigner upstream + el shim `ssemu` que reemplaza el hardware |
 | `images/krux-sim/` | firmware de Krux upstream + el shim `kxemu` que lo corre headless |
+| `nubeapps-seedtool/` | app: Bitcoin Seed Tool servido como estatico + capa de traduccion ES |
+| `images/seedtool/` | nginx + el `index.html` firmado del release, con `i18n/` inyectado por `sub_filter` |
 | `versions.yml` | tags upstream que se empaquetan (fuente única de verdad) |
 | `.github/workflows/images.yml` | build multi-arch en runners nativos → GHCR + pin de digests |
 | `.github/workflows/upstream-check.yml` | chequeo diario de releases upstream → PR de bump |
@@ -165,6 +167,81 @@ Decisiones que no son obvias:
   distinguen por un solo dato: `PowerManager.shutdown()` duerme el PMU antes
   (`enter_sleep_mode`) y `reboot()` no. Con Shutdown la pantalla queda negra y la página
   muestra **Encender** (`POST /api/power`), que es lo que rearranca.
+
+## nubeapps-seedtool
+
+```
+app_proxy → web (nginx) ─┬─ /          → index.html del release (13 MB, autocontenido)
+                         ├─ /extra/    → compat.js + i18n.js + es.json (inyectados con sub_filter)
+                         └─ /download  → el mismo archivo, sin tocar, como descarga
+```
+
+No es un simulador: Bitcoin Seed Tool es una sola pagina HTML sin CDN ni fuentes externas, asi
+que la app es nginx + un archivo. Sin bind mounts, sin estado, contenedor `read_only`.
+
+Decisiones que no son obvias:
+
+- **No se compila desde fuente**: todas las deps de upstream son rangos `^`, un build propio no
+  seria reproducible ni identico al archivo que audita la comunidad. El Dockerfile descarga el
+  `index.html` del release y verifica su firma PGP contra `RELEASE-SIGNING-KEY.asc` vendorizada
+  **en este repo** (no la del repo upstream: si les comprometen el repo, la clave tambien).
+- **`/download` no pasa por `sub_filter`**: la copia offline tiene que seguir dando el mismo
+  sha256 que publica y firma Bitcoin QnA. Existe porque el boton de descarga de upstream apunta
+  a GitHub, inutil en una maquina airgapped.
+- **Sin HTTPS la pagina no arranca**: `thisBrowserIsShit()` exige `crypto.subtle` y
+  `navigator.clipboard`, que los navegadores solo exponen en un contexto seguro, y umbrelOS
+  publica en `http://umbrel.local:PUERTO`. `extra/compat.js` repone las dos cosas antes de que
+  corra ese chequeo (el firmware lo dispara en `DOMContentLoaded`; nosotros vamos inyectados
+  antes). De WebCrypto solo se usa `digest("SHA-256")` en 5 lugares -checksum de BIP-39, del
+  one-time pad y del split en 3 tarjetas-, asi que el shim implementa solo eso y **rechaza**
+  cualquier otro algoritmo en vez de devolver un hash incorrecto en silencio. `getRandomValues`,
+  que es lo que genera entropia, no se toca: existe igual sin contexto seguro.
+- **La traduccion no forkea nada**: upstream no tiene i18n (1156 strings hardcodeados). El
+  diccionario `extra/es.json` (~1050 entradas, 93% de los caracteres visibles) lo aplica
+  `extra/i18n.js` sobre el DOM, inyectado con `sub_filter` antes de `</body>`. Lo que no este en
+  el diccionario queda en ingles, y un bump de version no rompe nada.
+- **El selector es un ES|EN con las dos opciones a la vista**, metido en la `header.topbar` de
+  upstream (antes del ojo de datos privados). Un boton solo con "EN" no se leia como selector de
+  idioma. La primera visita muestra una burbuja "Espanol / English" que se cierra al primer
+  click; ese enganche se conecta 2,5 s despues de cargar, porque el firmware hace clicks propios
+  al arrancar (abre el panel About) y si no la cerraba solo.
+- **El cartel "Load seed first" no esta en el DOM**: es un `::after` del CSS de upstream, asi
+  que la unica forma de traducirlo es pisar la regla con `html[lang="es"]`.
+- **Traduce por texto completo del nodo**, con los espacios internos colapsados para la
+  busqueda: nunca toca `TEXTAREA`, `CODE`, `PRE`, `SCRIPT` ni nada con `data-no-i18n`, asi los
+  datos del usuario (seeds, xpubs, PSBTs) quedan intactos aunque coincidan con una clave.
+- **El `MutationObserver` se desconecta antes de cada recorrido masivo**: si queda escuchando,
+  las reescrituras del propio `walk()` le vuelven como mutaciones y retraduce lo que se acaba de
+  devolver al ingles.
+- **Dos funciones tocan la red desde el navegador**: los avatares PayNym (`paynym.rs`, con
+  checkbox) y el resolver BIP-353 por DoH. No se bloquean con CSP a proposito -romperlas seria
+  mutilar la herramienta-, se documentan en el manifest.
+
+Probar sin navegador (montar `i18n/` como volumen evita rebuildear):
+
+```sh
+docker build -t seedtool:test images/seedtool
+docker run -d --name sttest --read-only --tmpfs /var/cache/nginx --tmpfs /var/run \
+  -p 127.0.0.1:18615:80 -v "$PWD/images/seedtool/i18n:/usr/share/nginx/i18n:ro" seedtool:test
+
+curl -s localhost:18615/download | sha256sum      # tiene que dar el hash del signature.txt
+curl -s localhost:18615/ | grep -o "/extra/compat.js"   # la inyeccion
+```
+
+Las pruebas viven en `images/seedtool/extra/` y no se copian a la imagen:
+
+| Script | Que verifica |
+|---|---|
+| `sha-test.js` | el SHA-256 del shim contra `node:crypto`: largos de borde, vistas con offset, vectores FIPS y que SHA-512 sea rechazado |
+| `gate-test.js` | que el chequeo de upstream bloquee sin el shim y pase con el, y que `getRandomValues` quede intacto |
+| `ui-test.js` | Playwright: el selector visible en la topbar, el cambio ES/EN, la burbuja de primera visita y el movil |
+| `collect.js` | Playwright: recorre las herramientas y lista el texto visible que **no** cubre `es.json` (es lo que hay que revisar en cada bump) |
+| `shots.js` | Playwright: capturas de varias pantallas en espanol, para leer el texto como lo ve el usuario |
+
+Necesitan `npm i playwright jsdom` (en el server ya estan en `/tmp/pw` y `/tmp/i18ntest`) y el
+preview levantado. La capa ES tambien se probo con jsdom: cargar el `index.html`, evaluar
+`i18n.js` con un `fetch` que devuelva `es.json`, y chequear que el toggle deja el ingles byte a
+byte igual.
 
 ## Actualizar el firmware
 

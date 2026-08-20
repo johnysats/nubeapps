@@ -15,6 +15,7 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 | [`nubeapps-ccq1`](nubeapps-ccq1/) | Simulador Coldcard Q1 en el navegador + explorador de la MicroSD para subir/bajar PSBTs |
 | [`nubeapps-seedsigner`](nubeapps-seedsigner/) | Simulador SeedSigner en el navegador; la cámara virtual lee los QR de los archivos que subís a `/files` |
 | [`nubeapps-krux`](nubeapps-krux/) | Simulador Krux (Maix Amigo) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual |
+| [`nubeapps-seedtool`](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA) servido desde tu Umbrel: entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español |
 
 ## Estructura
 
