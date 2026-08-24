@@ -1,6 +1,7 @@
+// Requiere SEEDTOOL_URL apuntando al preview de la app.
 // Prueba visual del selector de idioma con Playwright contra el preview.
-const { chromium } = require("/tmp/pw/node_modules/playwright");
-const URL = process.env.SEEDTOOL_URL || "http://100.73.0.55:18615/";
+const { chromium } = require("playwright");
+const URL = process.env.SEEDTOOL_URL;
 (async () => {
   const b = await chromium.launch();
   const ctx = await b.newContext({ viewport: { width: 1280, height: 860 }, locale: "es-AR" });

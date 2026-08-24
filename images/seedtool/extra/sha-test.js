@@ -1,6 +1,6 @@
 // Test diferencial del SHA-256 del shim contra node:crypto.
 const fs=require("fs"), crypto=require("crypto"), vm=require("vm");
-const src=fs.readFileSync("/home/ubuntu/proyectos/umbrel/images/seedtool/extra/compat.js","utf8");
+const src=fs.readFileSync(require("path").join(__dirname, "compat.js"),"utf8");
 const ctx={console, TextEncoder, ArrayBuffer, Uint8Array, Uint32Array, Math, Promise, Object, String, TypeError, Error};
 ctx.window={crypto:{}}; ctx.navigator={clipboard:{}}; ctx.document={};
 vm.createContext(ctx); vm.runInContext(src, ctx);

@@ -1,6 +1,6 @@
 // Simula un origen no seguro y comprueba que el chequeo de upstream pasa con el shim puesto.
-const fs=require("fs"), {JSDOM}=require("/tmp/i18ntest/node_modules/jsdom");
-const E="/home/ubuntu/proyectos/umbrel/images/seedtool/extra/";
+const fs=require("fs"), {JSDOM}=require("jsdom");
+const E=require("path").join(__dirname, "/");
 const dom=new JSDOM("<body></body>",{runScripts:"outside-only"});
 const w=dom.window;
 delete w.crypto.subtle; Object.defineProperty(w.crypto,"subtle",{value:undefined,configurable:true});

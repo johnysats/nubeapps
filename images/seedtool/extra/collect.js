@@ -1,8 +1,9 @@
+// Requiere SEEDTOOL_URL apuntando al preview de la app.
 // Junta el texto visible que la app genera desde JS (no esta en el HTML) y no cubre es.json.
-const { chromium } = require("/tmp/pw/node_modules/playwright");
+const { chromium } = require("playwright");
 const fs = require("fs");
-const dict = JSON.parse(fs.readFileSync("/home/ubuntu/proyectos/umbrel/images/seedtool/extra/es.json", "utf8"));
-const URL = "http://100.73.0.55:18615/";
+const dict = JSON.parse(fs.readFileSync(require("path").join(__dirname, "es.json"), "utf8"));
+const URL = process.env.SEEDTOOL_URL;
 const SKIP = /^(SCRIPT|STYLE|TEXTAREA|CODE|PRE|SVG|CANVAS)$/;
 
 const grab = () => `(() => {

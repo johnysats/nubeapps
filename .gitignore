@@ -5,3 +5,9 @@ nubeapps-*/data/**
 
 *.swp
 .DS_Store
+
+# config local de Claude Code
+.claude/
+
+# documentacion interna de trabajo
+CLAUDE.md
