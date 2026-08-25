@@ -10,7 +10,7 @@ services:
   # Un unico servicio: nginx sirviendo el index.html firmado del release de upstream.
   # La app no guarda nada, asi que no hay bind mounts ni usuario 1000:1000 que respetar.
   web:
-    image: ghcr.io/johnysats/seedtool:2.3.0@sha256:f24169a66047f1dc0c4fbe8d76769a85b1a82492a67831d60a5b7df69cf15579
+    image: ghcr.io/johnysats/seedtool:2.3.0@sha256:e36f4ad1666b351157f9fa9782a19cc595a30c7a540a37425ade7007cbd9730c
     restart: on-failure
     read_only: true
     tmpfs:
