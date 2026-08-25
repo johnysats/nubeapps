@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-jadeplus
 category: Bitcoin
 name: Jade Plus Simulator
-version: "1.0.40"
+version: "1.0.41"
 tagline: Blockstream Jade firmware in your browser, no device / El firmware de Blockstream Jade en tu navegador, sin dispositivo
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
