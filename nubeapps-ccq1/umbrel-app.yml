@@ -14,6 +14,11 @@ description: >-
   and your mouse.
 
 
+  The packaged firmware is 6.6.0QX, from Coldcard's Edge line, which supports MiniScript. You
+  can import a descriptor and try out inheritance and timelock policies with wallets like Liana
+  and Nunchuk, signing their PSBTs over the simulated MicroSD.
+
+
   It also includes a file explorer at /files over the simulated MicroSD card, for the PSBT flow:
 
 
@@ -38,6 +43,11 @@ description: >-
   Corre el simulador oficial de la Coldcard Q1 (firmware upstream de Coinkite, compilado tal
   cual) dentro de Umbrel y lo muestra en el navegador. Teclado y pantalla tactil funcionan con
   el teclado y el mouse.
+
+
+  El firmware empaquetado es el 6.6.0QX, de la linea Edge de Coldcard, que soporta MiniScript.
+  Podes importar un descriptor y probar politicas de herencia y timelocks con billeteras como
+  Liana y Nunchuk, firmando sus PSBTs por la MicroSD simulada.
 
 
   Incluye un explorador de archivos en /files sobre la tarjeta MicroSD simulada, para el flujo
