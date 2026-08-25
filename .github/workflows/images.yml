@@ -26,8 +26,17 @@ jobs:
       krux_version: ${{ steps.v.outputs.krux_version }}
       jade_tag: ${{ steps.v.outputs.jade_tag }}
       seedtool_tag: ${{ steps.v.outputs.seedtool_tag }}
+      # Que reconstruir en este push: ver el paso "changed".
+      build_sim: ${{ steps.changed.outputs.sim }}
+      build_web: ${{ steps.changed.outputs.web }}
+      build_seedsigner: ${{ steps.changed.outputs.seedsigner }}
+      build_krux: ${{ steps.changed.outputs.krux }}
+      build_jade: ${{ steps.changed.outputs.jade }}
+      build_seedtool: ${{ steps.changed.outputs.seedtool }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - id: v
         run: |
           {
@@ -41,9 +50,47 @@ jobs:
             echo "seedtool_tag=$(yq '.firmwares.seedtool.tag' versions.yml)"
           } >> "$GITHUB_OUTPUT"
 
+      # Cada imagen se reconstruye solo si cambio algo suyo: su contexto en images/ o el
+      # tag/version que empaqueta. Sin esto, tocar una sola app repinnea los digests de
+      # todas (las imagenes no son reproducibles byte a byte) y mete en el commit cuatro
+      # cambios que nadie probo. Fuera de un push -dispatch manual, rama nueva o sin
+      # historial- se reconstruye todo, igual que antes.
+      # Al agregar una app: sumarle aca su linea con el contexto y su clave de versions.yml.
+      - id: changed
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          all=false
+          if [ "${{ github.event_name }}" != "push" ] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            all=true
+          elif ! git diff --quiet "${BEFORE}" HEAD -- .github/workflows/images.yml; then
+            # Si cambio el workflow mismo, no se puede saber a que imagen afecta.
+            all=true
+          fi
+
+          changed() {  # $1 = contexto de build, $2 = clave en versions.yml
+            if [ "$all" = true ] || ! git diff --quiet "${BEFORE}" HEAD -- "$1"; then
+              echo true; return
+            fi
+            old=$(git show "${BEFORE}:versions.yml" 2>/dev/null | yq ".firmwares.$2 | [.tag, .version] | join(\" \")" - || echo "")
+            new=$(yq ".firmwares.$2 | [.tag, .version] | join(\" \")" versions.yml)
+            if [ "$old" = "$new" ]; then echo false; else echo true; fi
+          }
+
+          {
+            echo "sim=$(changed images/ccq1-simulator ccq1)"
+            echo "web=$(changed images/ccq1-web ccq1)"
+            echo "seedsigner=$(changed images/seedsigner-sim seedsigner)"
+            echo "krux=$(changed images/krux-sim krux)"
+            echo "jade=$(changed images/jade-sim jade)"
+            echo "seedtool=$(changed images/seedtool seedtool)"
+          } | tee -a "$GITHUB_OUTPUT"  # -a: el paso anterior ya escribio ahi
+
   # El simulador compila el firmware: runners nativos por arquitectura, no QEMU.
   simulator:
     needs: versions
+    if: needs.versions.outputs.build_sim == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -91,6 +138,7 @@ jobs:
 
   simulator-manifest:
     needs: [versions, simulator]
+    if: needs.versions.outputs.build_sim == 'true'
     runs-on: ubuntu-24.04
     permissions:
       packages: write
@@ -120,6 +168,7 @@ jobs:
   # Solo COPY sobre nginx:alpine: no necesita runner nativo ni QEMU.
   web:
     needs: versions
+    if: needs.versions.outputs.build_web == 'true'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -146,6 +195,7 @@ jobs:
   # asi que buildx con QEMU alcanza y no hacen falta runners por arquitectura.
   seedsigner:
     needs: versions
+    if: needs.versions.outputs.build_seedsigner == 'true'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -177,6 +227,7 @@ jobs:
   # uUR (un .c chico), asi que QEMU alcanza igual que con seedsigner.
   krux:
     needs: versions
+    if: needs.versions.outputs.build_krux == 'true'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -210,6 +261,7 @@ jobs:
   # emulado es el stage final -apt, curl y wheels-, asi que un runner amd64 alcanza.
   jade:
     needs: versions
+    if: needs.versions.outputs.build_jade == 'true'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -257,6 +309,7 @@ jobs:
   # del builder y el resto es COPY.
   seedtool:
     needs: versions
+    if: needs.versions.outputs.build_seedtool == 'true'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -284,6 +337,10 @@ jobs:
   # para que no haya que copiarlo a mano ni se desincronicen las dos apps (comparten ccq1-web).
   pin:
     needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool]
+    # Corre aunque se hayan salteado builds (los jobs que no cambiaron quedan "skipped"),
+    # pero no si alguno fallo. El sed es idempotente: para una imagen que no se reconstruyo,
+    # su tag en GHCR sigue apuntando al digest que ya esta en el compose.
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write

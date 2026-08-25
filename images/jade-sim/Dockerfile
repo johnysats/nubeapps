@@ -9,10 +9,10 @@
 # master, el 1.0.40 ni linkea-. El workflow saca este digest del tag que se este empaquetando
 # (`sed -n 's|^FROM blockstream/jade_builder@||p' Dockerfile.qemu`); el default de aca es el
 # que le toca al JADE_VERSION de abajo, para los builds a mano.
-ARG JADE_BUILDER=sha256:5db8e13ca640e6b969d66139d708610c27d39a1c4d78ca096ee98f2b4c89130f
+ARG JADE_BUILDER=sha256:8b739db85b6b99664db0e3ece57cddfa4e0fee4101a20ca930c391273f21e2f9
 FROM --platform=linux/amd64 blockstream/jade_builder@${JADE_BUILDER} AS fw
 
-ARG JADE_VERSION=1.0.40
+ARG JADE_VERSION=1.0.41
 WORKDIR /jade
 RUN git clone --depth 1 --branch "${JADE_VERSION}" --recursive \
         https://github.com/Blockstream/Jade.git /jade

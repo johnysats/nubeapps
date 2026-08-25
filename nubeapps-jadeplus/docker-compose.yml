@@ -17,7 +17,7 @@ services:
       - files
 
   sim:
-    image: ghcr.io/johnysats/jade-sim:1.0.40@sha256:b7b56e9ac2cff93c3fa80b2e14917277ee1b904fa1e8f70adb07deb55c391448
+    image: ghcr.io/johnysats/jade-sim:1.0.41@sha256:aaff2c84dc97c40af7ce63b04b59d0a3f0e3ee623b5bdca2b24671c149d70aad
     user: "1000:1000"
     init: true
     restart: on-failure

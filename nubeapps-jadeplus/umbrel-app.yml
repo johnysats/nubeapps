@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-jadeplus
 category: Bitcoin
 name: Jade Plus Simulator
-version: "1.0.40"
+version: "1.0.41"
 tagline: Blockstream Jade firmware in your browser, no device / El firmware de Blockstream Jade en tu navegador, sin dispositivo
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -50,7 +50,38 @@ description: >-
 
   La flash emulada se guarda en los datos de la app, asi que el PIN, la seed cifrada y la
   configuracion sobreviven a un reinicio, igual que en el dispositivo real.
-releaseNotes: ""
+releaseNotes: >-
+  Updates the simulator to Blockstream Jade firmware 1.0.41, an upstream security release: the
+  device now runs the version everyone is asked to upgrade to, so what you practice here matches
+  the real one. It also brings fixes for reboots and hangs when the host is slow or chatty,
+  smoother QR scanning and display updates, less memory use, and a bump of the ESP-IDF framework
+  to 5.5.4. Firmware downgrades below this release are blocked by upstream.
+
+
+  Nothing changes in the package: same controls, same virtual camera, same /files explorer. The
+  emulated flash is kept, so your PIN and the seed stored in the simulator survive the update.
+
+
+  Upstream changelog: https://github.com/Blockstream/Jade/blob/1.0.41/CHANGELOG.md
+
+
+  --- En espanol ---
+
+
+  Actualiza el simulador al firmware 1.0.41 de Blockstream Jade, una release de seguridad de
+  upstream: el dispositivo corre ahora la version que se recomienda instalar en el hardware real,
+  asi lo que practicas aca coincide con el. Ademas trae arreglos de reinicios y cuelgues cuando
+  el host es lento o habla de mas, lectura de QR y refresco de pantalla mas fluidos, menos uso de
+  memoria y una actualizacion del framework ESP-IDF a 5.5.4. Upstream bloquea volver a versiones
+  anteriores a esta.
+
+
+  En el paquete no cambia nada: los mismos controles, la misma camara virtual y el mismo
+  explorador /files. La flash emulada se conserva, asi que el PIN y la seed guardada en el
+  simulador sobreviven a la actualizacion.
+
+
+  Changelog de upstream: https://github.com/Blockstream/Jade/blob/1.0.41/CHANGELOG.md
 
 developer: Blockstream (firmware) / NubeApps (paquete)
 website: https://blockstream.com/jade/
