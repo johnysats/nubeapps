@@ -86,6 +86,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git \
 COPY --from=fw /flash_image.bin /app/flash_image.bin
 COPY --from=fw /qemu_efuse.bin /app/qemu_efuse.bin
 COPY jxemu ./jxemu
+COPY help ./help
 COPY start.py .
 
 # Umbrel crea app-data/<app-id> con owner 1000:1000.

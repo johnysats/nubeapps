@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-ccq1
 category: Bitcoin
 name: Coldcard Q1 Simulator
-version: "6.6.0QX"
+version: "6.6.0QX-2"
 tagline: The official Coldcard Q1 simulator in your browser / El simulador oficial de la Coldcard Q1, en tu navegador
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet and it does
@@ -63,7 +63,39 @@ description: >-
 
   Arranca sin seed, con PIN 12-12 (flag -l del simulador). La seed se importa a mano desde el
   menu del dispositivo.
-releaseNotes: ""
+releaseNotes: >-
+  Explains where the files you need actually come from. The simulator page now has a "Where do
+  I get these files?" section: how your wallet exports a PSBT (Sparrow, Nunchuk, Electrum, Blue
+  Wallet), that both the binary .psbt and the same content in base64 work, and how to drop it in
+  the MicroSD folder, sign it with Ready To Sign and download the signed file. It also says what
+  the Coldcard does not read from a file: the seed, which you type on the device keypad.
+
+
+  A brand new install also starts with a LEEME.txt and a public test seed in the MicroSD folder,
+  so the first screen you open is not an empty explorer. If your folder already has files,
+  nothing is added and nothing is overwritten.
+
+
+  No firmware change: same simulator, same controls, same data.
+
+
+  --- En espanol ---
+
+
+  Explica de donde salen los archivos que hacen falta. La pagina del simulador ahora tiene una
+  seccion "De donde saco los archivos para firmar": como exporta un PSBT tu billetera (Sparrow,
+  Nunchuk, Electrum, Blue Wallet), que sirve tanto el .psbt binario como el mismo contenido en
+  base64, y como subirlo a la MicroSD, firmarlo con Ready To Sign y descargar el firmado.
+  Tambien aclara lo que el Coldcard no lee de un archivo: la seed, que se escribe en el teclado
+  del dispositivo.
+
+
+  Una instalacion nueva ademas arranca con un LEEME.txt y una seed publica de prueba en la
+  MicroSD, asi la primera pantalla no es un explorador vacio. Si tu carpeta ya tiene archivos,
+  no se agrega ni se pisa nada.
+
+
+  No cambia el firmware: el mismo simulador, los mismos controles, los mismos datos.
 
 developer: Coinkite (firmware) / NubeApps (paquete)
 website: https://coldcard.com

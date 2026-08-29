@@ -1,0 +1,32 @@
+Esta carpeta es la MicroSD del Coldcard
+=======================================
+
+Es lo que el firmware ve como /sd. Subí el PSBT acá (o creálo con el botón +
+del explorador), firmalo en el dispositivo con "Ready To Sign" del menú
+principal y el resultado vuelve a esta misma carpeta como
+<nombre>-signed.psbt, listo para descargar.
+
+La seed no se lee de un archivo: se escribe en el teclado del dispositivo con
+Import Existing > 24 Words (o 12).
+
+PSBT (la transacción a firmar)
+------------------------------
+  Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+  (en Sparrow: Send > Create Transaction > Save Transaction; también Nunchuk,
+  Electrum o Blue Wallet). Sirve tanto el .psbt binario como el mismo
+  contenido en base64, en un archivo de texto.
+
+Seed (12 o 24 palabras)
+-----------------------
+  Un archivo .txt con las palabras BIP39 en minúsculas, separadas por espacios
+  y en una sola línea, sin nada más. "ejemplo-seed-publica.txt" tiene una para
+  probar: es la seed de test más conocida que existe, NO le mandes fondos.
+  Para generar la tuya, usá Bitcoin Seed Tool, otra app de esta tienda.
+
+Aviso
+-----
+  Esto es un simulador y lo que dejes acá queda guardado en tu Umbrel sin
+  cifrar. Sirve para aprender y para probar el flujo de firma, no para
+  custodiar una seed con fondos.
+
+Podés borrar este archivo cuando no te sirva más.

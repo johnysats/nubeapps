@@ -6,9 +6,11 @@ instalan en sys.modules y el orden importa), pero sin ventana SDL: la pantalla s
 por HTTP y los controles llegan por POST. Ver kxemu/__init__.py.
 """
 import os
+import shutil
 import sys
 import threading
 
+HELP_DIR = "/app/help"
 KRUX_DIR = os.environ.get("KXEMU_KRUX_DIR", "/krux")
 DATA_DIR = os.environ.get("KXEMU_DATA_DIR", "/data")
 SD_DIR = os.environ.get("KXEMU_SD_DIR", "/data/sd")
@@ -28,6 +30,15 @@ for link, target in (("sd", SD_DIR), ("flash", os.path.join(DATA_DIR, "flash")))
     os.makedirs(target, exist_ok=True)
     if not os.path.islink(link):
         os.symlink(target, link)
+
+# LEEME + seed de ejemplo la primera vez: una MicroSD vacia no dice como se usa. Solo si no
+# hay ningun archivo, asi que si el usuario ya guardo lo suyo (o borro el LEEME) no vuelve.
+try:
+    if not any(name for name in os.listdir(SD_DIR) if not name.startswith(".")):
+        for name in os.listdir(HELP_DIR):
+            shutil.copyfile(os.path.join(HELP_DIR, name), os.path.join(SD_DIR, name))
+except OSError as error:
+    print("kxemu: no pude dejar la ayuda en la MicroSD:", error)
 
 import pygame as pg
 

@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-krux
 category: Bitcoin
 name: Krux Simulator
-version: "26.08.0"
+version: "26.08.0-2"
 tagline: Krux firmware in your browser, no K210 device / El firmware de Krux en tu navegador, sin dispositivo K210
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -54,7 +54,40 @@ description: >-
     QR armado con el archivo que elegis en la pagina (animado por partes si es un PSBT o un
     descriptor largo). Apuntala a un archivo y entra a Load Mnemonic > Via Camera, o a
     Sign > PSBT > Load from camera
-releaseNotes: ""
+releaseNotes: >-
+  Explains where the files you need actually come from. The camera panel now has a "Where do I
+  get these files?" section: how your wallet exports a PSBT (Sparrow, Nunchuk, Electrum, Blue
+  Wallet), that both the binary .psbt and the same content in base64 work, how a seed file looks
+  (12 or 24 BIP39 words, lowercase, one line), and that the same folder is both the camera
+  source and the /sd the device reads, so a PSBT can be signed by camera or with Sign > PSBT >
+  Load from SD card.
+
+
+  A brand new install also starts with a LEEME.txt and a public test seed in the MicroSD folder,
+  so the first screen you open is not an empty explorer. If your folder already has files,
+  nothing is added and nothing is overwritten.
+
+
+  No firmware change: same simulator, same controls, same data.
+
+
+  --- En espanol ---
+
+
+  Explica de donde salen los archivos que hacen falta. El panel de la camara ahora tiene una
+  seccion "De donde saco estos archivos": como exporta un PSBT tu billetera (Sparrow, Nunchuk,
+  Electrum, Blue Wallet), que sirve tanto el .psbt binario como el mismo contenido en base64,
+  como es un archivo de seed (12 o 24 palabras BIP39 en minusculas, en una sola linea) y que la
+  misma carpeta es a la vez lo que ve la camara y el /sd que lee el dispositivo, asi que un PSBT
+  se puede firmar por camara o con Sign > PSBT > Load from SD card.
+
+
+  Una instalacion nueva ademas arranca con un LEEME.txt y una seed publica de prueba en la
+  MicroSD, asi la primera pantalla no es un explorador vacio. Si tu carpeta ya tiene archivos,
+  no se agrega ni se pisa nada.
+
+
+  No cambia el firmware: el mismo simulador, los mismos controles, los mismos datos.
 
 developer: Krux contributors (firmware) / NubeApps (paquete)
 website: https://selfcustody.github.io/krux/

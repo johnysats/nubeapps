@@ -62,6 +62,7 @@ ENV PATH=/opt/venv/bin:$PATH
 
 # el paquete novnc no trae index.html: sin esto la raiz lista el directorio
 COPY index.html /usr/share/novnc/index.html
+COPY help /usr/local/share/ccq1-help
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 

@@ -22,6 +22,7 @@ FLASH_IMAGE = "/app/flash_image.bin"
 EFUSE_IMAGE = "/app/qemu_efuse.bin"
 DATA_DIR = os.environ.get("JADE_DATA_DIR", "/data")
 FILES_DIR = os.environ.get("JADE_FILES_DIR", "/data/files")
+HELP_DIR = "/app/help"
 WEB_PORT = int(os.environ.get("JADE_WEB_PORT", "6080"))
 
 
@@ -38,8 +39,24 @@ def qemu_command(flash, efuse):
     ]
 
 
+def seed_help_files(directory):
+    """LEEME + seed de ejemplo la primera vez: una carpeta vacia no dice como se usa.
+
+    Solo si no hay ningun archivo: si el usuario ya guardo lo suyo (o borro el LEEME),
+    esto no vuelve a aparecer.
+    """
+    try:
+        if any(not name.startswith(".") for name in os.listdir(directory)):
+            return
+        for name in os.listdir(HELP_DIR):
+            shutil.copyfile(os.path.join(HELP_DIR, name), os.path.join(directory, name))
+    except OSError as error:
+        logger.warning("jxemu: no pude dejar la ayuda en %s: %s", directory, error)
+
+
 def main():
     os.makedirs(FILES_DIR, exist_ok=True)
+    seed_help_files(FILES_DIR)
     # La flash y los efuses son el estado persistente del dispositivo: el PIN, la seed
     # cifrada y los ajustes viven ahi, asi que se copian una sola vez y se reusan.
     flash = os.path.join(DATA_DIR, "flash_image.bin")

@@ -39,6 +39,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libzbar0 qrenco
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
 COPY ssemu /app/ssemu
+COPY help /app/help
 COPY start.py /app/start.py
 
 ENV PATH=/opt/venv/bin:$PATH \

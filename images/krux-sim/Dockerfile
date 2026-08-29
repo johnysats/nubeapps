@@ -73,6 +73,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libzbar0 \
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /krux /krux
 COPY kxemu /app/kxemu
+COPY help /app/help
 COPY start.py /app/start.py
 
 ENV PATH=/opt/venv/bin:$PATH \

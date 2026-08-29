@@ -12,6 +12,14 @@ SIM_ARGS="${SIM_ARGS:---q1 -l}"
 
 cd /sim/firmware/unix || exit 1
 
+# LEEME + seed de ejemplo la primera vez: una MicroSD vacia no dice como se usa. Solo si no
+# hay ningun archivo, asi que si el usuario ya guardo lo suyo (o borro el LEEME) no vuelve.
+SD_DIR=work/MicroSD
+mkdir -p "$SD_DIR"
+if [ -z "$(ls -A "$SD_DIR" 2>/dev/null)" ]; then
+    cp /usr/local/share/ccq1-help/* "$SD_DIR"/ || echo "!!! no pude dejar la ayuda en $SD_DIR"
+fi
+
 Xvfb :99 -screen 0 "$SCREEN" -nolisten tcp &
 for _ in $(seq 30); do xdpyinfo -display :99 >/dev/null 2>&1 && break; sleep 0.5; done
 

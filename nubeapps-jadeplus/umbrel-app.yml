@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-jadeplus
 category: Bitcoin
 name: Jade Plus Simulator
-version: "1.0.41"
+version: "1.0.41-2"
 tagline: Blockstream Jade firmware in your browser, no device / El firmware de Blockstream Jade en tu navegador, sin dispositivo
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -51,37 +51,40 @@ description: >-
   La flash emulada se guarda en los datos de la app, asi que el PIN, la seed cifrada y la
   configuracion sobreviven a un reinicio, igual que en el dispositivo real.
 releaseNotes: >-
-  Updates the simulator to Blockstream Jade firmware 1.0.41, an upstream security release: the
-  device now runs the version everyone is asked to upgrade to, so what you practice here matches
-  the real one. It also brings fixes for reboots and hangs when the host is slow or chatty,
-  smoother QR scanning and display updates, less memory use, and a bump of the ESP-IDF framework
-  to 5.5.4. Firmware downgrades below this release are blocked by upstream.
+  Explains where the files you need actually come from. The camera panel now has a "Where do I
+  get these files?" section: how your wallet exports a PSBT (Sparrow, Nunchuk, Electrum, Blue
+  Wallet), that both the binary .psbt and the same content in base64 work, how a seed file looks
+  (12 or 24 BIP39 words, lowercase, one line), and how to upload it or write it straight in the
+  file explorer before showing it to the camera, which is the only way in on a Jade.
 
 
-  Nothing changes in the package: same controls, same virtual camera, same /files explorer. The
-  emulated flash is kept, so your PIN and the seed stored in the simulator survive the update.
+  A brand new install also starts with a LEEME.txt and a public test seed in the shared folder,
+  so the first screen you open is not an empty explorer. If your folder already has files,
+  nothing is added and nothing is overwritten.
 
 
-  Upstream changelog: https://github.com/Blockstream/Jade/blob/1.0.41/CHANGELOG.md
+  No firmware change: still Blockstream Jade 1.0.41, same controls, same emulated flash, so your
+  PIN and the seed stored in the simulator survive the update.
 
 
   --- En espanol ---
 
 
-  Actualiza el simulador al firmware 1.0.41 de Blockstream Jade, una release de seguridad de
-  upstream: el dispositivo corre ahora la version que se recomienda instalar en el hardware real,
-  asi lo que practicas aca coincide con el. Ademas trae arreglos de reinicios y cuelgues cuando
-  el host es lento o habla de mas, lectura de QR y refresco de pantalla mas fluidos, menos uso de
-  memoria y una actualizacion del framework ESP-IDF a 5.5.4. Upstream bloquea volver a versiones
-  anteriores a esta.
+  Explica de donde salen los archivos que hacen falta. El panel de la camara ahora tiene una
+  seccion "De donde saco estos archivos": como exporta un PSBT tu billetera (Sparrow, Nunchuk,
+  Electrum, Blue Wallet), que sirve tanto el .psbt binario como el mismo contenido en base64,
+  como es un archivo de seed (12 o 24 palabras BIP39 en minusculas, en una sola linea) y como
+  subirlo o escribirlo en el explorador antes de mostrarselo a la camara, que en el Jade es la
+  unica via de entrada.
 
 
-  En el paquete no cambia nada: los mismos controles, la misma camara virtual y el mismo
-  explorador /files. La flash emulada se conserva, asi que el PIN y la seed guardada en el
-  simulador sobreviven a la actualizacion.
+  Una instalacion nueva ademas arranca con un LEEME.txt y una seed publica de prueba en la
+  carpeta compartida, asi la primera pantalla no es un explorador vacio. Si tu carpeta ya tiene
+  archivos, no se agrega ni se pisa nada.
 
 
-  Changelog de upstream: https://github.com/Blockstream/Jade/blob/1.0.41/CHANGELOG.md
+  No cambia el firmware: sigue siendo Blockstream Jade 1.0.41, los mismos controles y la misma
+  flash emulada, asi que el PIN y la seed guardada en el simulador sobreviven a la actualizacion.
 
 developer: Blockstream (firmware) / NubeApps (paquete)
 website: https://blockstream.com/jade/

@@ -15,12 +15,40 @@
       color: #f7931a; border: 1px solid #3a3f4b; border-radius: 6px; padding: 6px 10px; }
   a:hover { border-color: #f7931a; background: #1c1f26; }
   iframe { display: block; flex: 1; width: 100%; border: 0; }
+  /* Ayuda de dónde salen los archivos: cerrada ocupa una línea; abierta le come alto
+     al iframe, por eso tiene su propio scroll. */
+  details.howto { flex: none; background: #16181d; border-bottom: 1px solid #262a33;
+                  padding: 8px 14px; max-height: 45%; overflow: auto; line-height: 1.45; }
+  details.howto summary { cursor: pointer; color: #f7931a; list-style: none; }
+  details.howto summary::-webkit-details-marker { display: none; }
+  details.howto summary::before { content: "\25b8\a0\a0"; }
+  details.howto[open] summary::before { content: "\25be\a0\a0"; }
+  details.howto p { margin: 10px 0 0; max-width: 78ch; color: #9aa2ae; }
+  details.howto b { color: #c9ced8; }
+  details.howto code { background: #101014; border: 1px solid #262a33; border-radius: 4px;
+                       padding: 1px 5px; }
 </style>
 <header>
   <b>Coldcard Q1 <span>· simulador</span></b>
   <!-- /files lo sirve el mismo app_proxy: mismo login de Umbrel, sin segunda contrasena -->
   <a href="/files/" target="_blank" rel="noopener">Archivos (MicroSD) ↗</a>
 </header>
+<details class="howto">
+  <summary>¿De dónde saco los archivos para firmar?</summary>
+  <p><b>PSBT.</b> Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+     (en Sparrow: <em>Send → Create Transaction → Save Transaction</em>; también Nunchuk,
+     Electrum o Blue Wallet). Sirve tanto el <code>.psbt</code> binario como el mismo
+     contenido en base64.</p>
+  <p><b>Cómo lo subís.</b> Abrí <b>Archivos (MicroSD)</b> arriba a la derecha y arrastrá el
+     archivo ahí: es lo que el firmware ve como <code>/sd</code>. En el dispositivo se firma
+     con <em>Ready To Sign</em> del menú principal y el resultado vuelve a la misma carpeta
+     como <code>&lt;nombre&gt;-signed.psbt</code>, listo para descargar.</p>
+  <p><b>Seed.</b> El Coldcard no lee la seed de un archivo: la escribís en el teclado con
+     <em>Import Existing → 24 Words</em> (o 12). Si necesitás una para practicar, generala
+     con <b>Bitcoin Seed Tool</b>, otra app de esta tienda.</p>
+  <p>Es un simulador y lo que dejes en la MicroSD queda guardado en tu Umbrel sin cifrar:
+     usalo para aprender y probar, nunca con una seed que tenga fondos.</p>
+</details>
 <!-- resize=off: 518x853 nativo, nitido 1:1. Con resize=scale el upscale se ve blando. -->
 <iframe src="vnc.html?autoconnect=true&reconnect=true&resize=off&show_dot=true&bell=false"
         allow="clipboard-read; clipboard-write"></iframe>

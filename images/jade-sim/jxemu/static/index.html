@@ -84,6 +84,20 @@
     .keys { flex-direction: row; }
     #device { width: min(84vw, var(--device-width)); }
   }
+
+  /* Ayuda de dónde salen los archivos: cerrada por defecto para no empujar el panel. */
+  details.howto { margin-top: 16px; border-top: 1px solid var(--edge); padding-top: 12px; }
+  details.howto summary {
+    cursor: pointer; color: var(--accent); font-size: 14px; list-style: none;
+  }
+  details.howto summary::-webkit-details-marker { display: none; }
+  details.howto summary::before { content: "\25b8\a0\a0"; }
+  details.howto[open] summary::before { content: "\25be\a0\a0"; }
+  details.howto p { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+  details.howto code {
+    background: #0f1216; border: 1px solid var(--edge); border-radius: 4px;
+    padding: 1px 5px; font-size: 13px;
+  }
 </style>
 </head>
 <body>
@@ -125,6 +139,24 @@
   <p id="status">…</p>
   <p>El teclado también sirve: <kbd>↑</kbd> y <kbd>↓</kbd> mueven la rueda,
      <kbd>Enter</kbd> es el botón frontal.</p>
+
+<details class="howto">
+  <summary>¿De dónde saco estos archivos?</summary>
+  <p><b>Seed (12 o 24 palabras).</b> Un archivo <code>.txt</code> con las palabras BIP39 en
+     minúsculas, separadas por espacios y en una sola línea. Podés generar una con
+     <b>Bitcoin Seed Tool</b> —otra app de esta tienda— o copiar la que te dicte el propio
+     dispositivo cuando creás una billetera nueva.</p>
+  <p><b>PSBT.</b> Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+     (en Sparrow: <em>Send → Create Transaction → Save Transaction</em>; también Nunchuk,
+     Electrum o Blue Wallet). Sirve tanto el <code>.psbt</code> binario como el mismo
+     contenido en base64.</p>
+  <p><b>Cómo los subís.</b> Abrí <b>Archivos</b> arriba a la derecha y arrastrá el archivo
+     ahí, o usá el botón <b>+</b> → <em>New file</em> del explorador para escribir las
+     palabras sin salir del navegador. Volvé acá, tocá <b>Actualizar</b> y elegilo en la
+     lista: el Jade no lee archivos, todo entra por la cámara.</p>
+  <p>Es un simulador y estos archivos quedan guardados en tu Umbrel sin cifrar: usalo para
+     aprender y probar, nunca con una seed que tenga fondos.</p>
+</details>
 </div>
 
 <script>

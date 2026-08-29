@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-seedsigner
 category: Bitcoin
 name: SeedSigner Simulator
-version: "0.8.7"
+version: "0.8.7-2"
 tagline: SeedSigner firmware in your browser, no Raspberry Pi / El firmware de SeedSigner en tu navegador, sin Raspberry Pi
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -56,7 +56,38 @@ description: >-
 
   - Firmas: el PSBT firmado sale como QR animado en pantalla y ademas queda como
     <nombre>-signed.psbt para descargarlo desde /files
-releaseNotes: ""
+releaseNotes: >-
+  Explains where the files you need actually come from. The camera panel now has a "Where do I
+  get these files?" section: how your wallet exports a PSBT (Sparrow, Nunchuk, Electrum, Blue
+  Wallet), that both the binary .psbt and the same content in base64 work, how a seed file looks
+  (12 or 24 BIP39 words, lowercase, one line), and how to upload it or write it straight in the
+  file explorer before showing it to the camera.
+
+
+  A brand new install also starts with a LEEME.txt and a public test seed in the MicroSD folder,
+  so the first screen you open is not an empty explorer. If your folder already has files,
+  nothing is added and nothing is overwritten.
+
+
+  No firmware change: same simulator, same controls, same data.
+
+
+  --- En espanol ---
+
+
+  Explica de donde salen los archivos que hacen falta. El panel de la camara ahora tiene una
+  seccion "De donde saco estos archivos": como exporta un PSBT tu billetera (Sparrow, Nunchuk,
+  Electrum, Blue Wallet), que sirve tanto el .psbt binario como el mismo contenido en base64,
+  como es un archivo de seed (12 o 24 palabras BIP39 en minusculas, en una sola linea) y como
+  subirlo o escribirlo en el explorador antes de mostrarselo a la camara.
+
+
+  Una instalacion nueva ademas arranca con un LEEME.txt y una seed publica de prueba en la
+  MicroSD, asi la primera pantalla no es un explorador vacio. Si tu carpeta ya tiene archivos,
+  no se agrega ni se pisa nada.
+
+
+  No cambia el firmware: el mismo simulador, los mismos controles, los mismos datos.
 
 developer: SeedSigner (firmware) / NubeApps (paquete)
 website: https://seedsigner.com
