@@ -116,14 +116,18 @@ def _run():
             if not _pending:
                 return
             pin, release_on_read = _pending.popleft()
+            # Se marca activo antes de esperar el gap, no despues: durante esa espera el pin
+            # no estaba ni en la cola ni en _active, asi que un release que cayera ahi no lo
+            # encontraba y se perdia entero (la tecla quedaba apretada hasta MAX_HOLD_S).
+            # El pin sigue en HIGH mientras tanto, asi que ninguna lectura cuenta todavia.
+            _active = pin
+            _read_at = None
+            _release_requested = release_on_read
 
         _wait_repeat_gap(pin)
 
         with _lock:
             _state[pin] = LOW
-            _active = pin
-            _read_at = None
-            _release_requested = release_on_read
         started = time.monotonic()
 
         while True:

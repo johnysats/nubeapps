@@ -65,6 +65,13 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError:
             return 1
 
+    @staticmethod
+    def _seq(query):
+        try:
+            return int(query["seq"][0])
+        except ValueError:
+            return -1
+
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
@@ -73,7 +80,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send((STATIC_DIR / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif path == "/frame.png":
             if "seq" in query:
-                last_seq = int(query["seq"][0])
+                last_seq = self._seq(query)
                 seq, image = device.framebuffer.wait_for_next(last_seq, timeout=1.5)
             else:
                 seq, image = device.framebuffer.current()

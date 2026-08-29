@@ -63,8 +63,10 @@ class SourceSelector:
         )
 
     def select(self, name):
+        # Solo el nombre: el `file=` viene del navegador y un "../" o una ruta absoluta
+        # sacaria la camara de la carpeta compartida.
         with self._lock:
-            self.selected = name or None
+            self.selected = os.path.basename(name) if name else None
 
     def resolve(self):
         """Ruta completa del archivo que ve la camara, o None si no hay ninguno."""
@@ -206,7 +208,6 @@ class VirtualCamera:
         if self._parts:
             self._index = (self._index + 1) % len(self._parts)
             self._cached = None
-            self._shown_at = 0.0
 
     def frame(self):
         if _in_entropy_capture():
@@ -221,7 +222,10 @@ class VirtualCamera:
             self._load(path)
 
         now = time.monotonic()
-        if self._parts and len(self._parts) > 1 and now - self._shown_at >= PART_INTERVAL:
+        # `_cached is None` = la parte actual todavia no se mostro (recien cargada o recien
+        # decodificada). Sin esa guarda se avanzaba dos veces por cada parte que el firmware
+        # decodificaba, salteando la siguiente: un PSBT tardaba el doble de vueltas.
+        if self._cached is not None and len(self._parts) > 1 and now - self._shown_at >= PART_INTERVAL:
             self._index = (self._index + 1) % len(self._parts)
             self._cached = None
 

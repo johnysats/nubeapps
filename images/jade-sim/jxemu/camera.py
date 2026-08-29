@@ -79,8 +79,10 @@ class Source:
         return entries
 
     def select(self, name):
+        # Solo el nombre: el `file=` viene del navegador y un "../" o una ruta absoluta
+        # sacaria la camara de la carpeta compartida.
         with self._lock:
-            self.selected = name
+            self.selected = os.path.basename(name or "")
             self._scene = None
 
     def resolve(self):

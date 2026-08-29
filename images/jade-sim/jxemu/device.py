@@ -8,7 +8,7 @@ Protocolo de `main/qemu/qemu_display.c`, un byte de comando por mensaje:
 | pagina -> firmware | 1 / 3 | rueda a la izquierda / a la derecha |
 | pagina -> firmware | 4 | boton frontal (seleccionar) |
 | pagina -> firmware | 12 | trozo de frame de camara (320x240, 1 byte por pixel) |
-| firmware -> pagina | 0 | trozo del framebuffer (RGB565, little endian) |
+| firmware -> pagina | 0 | trozo del framebuffer (RGB565, big endian) |
 | firmware -> pagina | 1 / 2 | encender / apagar la camara |
 
 La camara es *pull*: el firmware manda un 1 cada vez que quiere un frame y se queda
@@ -158,7 +158,8 @@ class Device:
                     pending += body
                     if len(pending) >= frame_bytes:
                         self.framebuffer.put(_rgb565_to_image(pending[:frame_bytes]))
-                        pending = b""
+                        # El sobrante ya es del frame siguiente: descartarlo lo desfasaria.
+                        pending = pending[frame_bytes:]
                 elif command == 1:
                     self.camera_on = True
                     await self._send_camera_frame()

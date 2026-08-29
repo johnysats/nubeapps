@@ -51,7 +51,10 @@ class Handler(BaseHTTPRequestHandler):
             self._send((STATIC_DIR / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif path == "/frame.jpg":
             query = parse_qs(urlparse(self.path).query)
-            last_seq = int((query.get("seq") or ["-1"])[0])
+            try:
+                last_seq = int((query.get("seq") or ["-1"])[0])
+            except ValueError:
+                last_seq = -1
             seq, image = screen.framebuffer.wait_for_next(last_seq, timeout=1.5)
             buffer = io.BytesIO()
             image.save(buffer, format="JPEG", quality=90)

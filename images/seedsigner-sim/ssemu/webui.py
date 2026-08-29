@@ -49,11 +49,21 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         logger.debug("ssemu-web: " + fmt, *args)
 
-    def _send(self, body: bytes, content_type: str, status=200):
+    def handle_one_request(self):
+        # La pagina abandona el long-poll de /frame.jpg cada vez que se recarga o se cambia
+        # de pestana; sin esto cada abandono deja un traceback de BrokenPipeError en el log.
+        try:
+            super().handle_one_request()
+        except (BrokenPipeError, ConnectionResetError):
+            self.close_connection = True
+
+    def _send(self, body: bytes, content_type: str, status=200, headers=()):
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        for name, value in headers:
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(body)
 
@@ -68,16 +78,12 @@ class Handler(BaseHTTPRequestHandler):
             # conexion infinita se atasca en cualquier reverse proxy que haya en el medio
             # (y deja los clicks encolados detras). Vuelve apenas cambia la pantalla.
             query = parse_qs(urlparse(self.path).query)
-            last_seq = int((query.get("seq") or ["-1"])[0])
+            try:
+                last_seq = int((query.get("seq") or ["-1"])[0])
+            except ValueError:
+                last_seq = -1
             seq, image = framebuffer.wait_for_next(last_seq, timeout=1.5)
-            body = _jpeg(image, quality=90)
-            self.send_response(200)
-            self.send_header("Content-Type", "image/jpeg")
-            self.send_header("Content-Length", str(len(body)))
-            self.send_header("Cache-Control", "no-store")
-            self.send_header("X-Frame-Seq", str(seq))
-            self.end_headers()
-            self.wfile.write(body)
+            self._send(_jpeg(image, quality=90), "image/jpeg", headers=[("X-Frame-Seq", str(seq))])
         elif path == "/frame.png":
             _, image = framebuffer.current()
             buffer = io.BytesIO()

@@ -43,8 +43,10 @@ class SourceSelector:
         return sorted(files, key=lambda p: p.stat().st_mtime, reverse=True)
 
     def select(self, name):
+        # Solo el nombre: el `file=` viene del navegador y un "../" o una ruta absoluta
+        # sacaria la camara de la carpeta compartida.
         with self._lock:
-            self.selected = name or None
+            self.selected = Path(name).name if name else None
 
     def resolve(self):
         with self._lock:
@@ -197,10 +199,11 @@ class FileQRVideoStream:
 
     def read(self):
         now = time.monotonic()
-        if not self._entropy_mode and source.resolve() != self._path:
+        resolved = None if self._entropy_mode else source.resolve()
+        if not self._entropy_mode and resolved != self._path:
             # Cambiaron el archivo desde la pagina con la pantalla de Scan abierta:
             # apuntamos la camara al nuevo sin salir y volver a entrar.
-            self._load(source.resolve())
+            self._load(resolved)
             self._cached = None
         if self._cached is None or now - self._last_part >= PART_INTERVAL:
             side = min(self.width, self.height)
