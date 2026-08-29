@@ -40,7 +40,7 @@ jobs:
             # modelos), por eso cada entrada trae su propio filtro. Los de Coldcard arrancan
             # con la fecha, asi que sort -Vr sirve para los dos formatos.
             new_tag=$(gh api --paginate "repos/${repo}/tags" --jq '.[].name' \
-              | grep -E "$filter" | sort -Vr | head -1)
+              | grep -E "$filter" | sort -Vr | head -1 || true)
             if [ -z "$new_tag" ]; then
               echo "::warning::sin tags que matcheen ${filter} en ${repo}"
               continue

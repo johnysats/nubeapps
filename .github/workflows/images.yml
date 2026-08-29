@@ -341,6 +341,11 @@ jobs:
     # pero no si alguno fallo. El sed es idempotente: para una imagen que no se reconstruyo,
     # su tag en GHCR sigue apuntando al digest que ya esta en el compose.
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
+    # Serializa solo el pin, no los builds (que tardan ~1 h): dos corridas escribiendo
+    # los mismos docker-compose.yml se pisaban y la segunda fallaba al pushear.
+    concurrency:
+      group: pin-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -380,4 +385,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "CI: pinnear digests de las imagenes recien publicadas"
+          # Aun serializado, la rama pudo avanzar durante el build (merge, otro workflow).
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase origin "${{ github.ref_name }}"
+          done
           git push
