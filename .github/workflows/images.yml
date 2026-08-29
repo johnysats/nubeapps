@@ -14,7 +14,10 @@ env:
 
 jobs:
   # Las versiones upstream viven en versions.yml (una sola fuente de verdad) y salen
-  # de aca como outputs para el resto de los jobs.
+  # de aca como outputs para el resto de los jobs. Ojo con la diferencia: "tag" es lo que
+  # se clona de upstream (va en los build-args) y "version" es con lo que se publica la
+  # imagen en GHCR. Suelen coincidir, pero no cuando un cambio solo del paquete agrega el
+  # sufijo -N: ahi el job tiene que taggear con "version", que es lo que busca el pin.
   versions:
     runs-on: ubuntu-24.04
     outputs:
@@ -22,10 +25,13 @@ jobs:
       firmware_tag: ${{ steps.v.outputs.firmware_tag }}
       sim_version: ${{ steps.v.outputs.sim_version }}
       seedsigner_tag: ${{ steps.v.outputs.seedsigner_tag }}
+      seedsigner_version: ${{ steps.v.outputs.seedsigner_version }}
       krux_tag: ${{ steps.v.outputs.krux_tag }}
       krux_version: ${{ steps.v.outputs.krux_version }}
       jade_tag: ${{ steps.v.outputs.jade_tag }}
+      jade_version: ${{ steps.v.outputs.jade_version }}
       seedtool_tag: ${{ steps.v.outputs.seedtool_tag }}
+      seedtool_version: ${{ steps.v.outputs.seedtool_version }}
       # Que reconstruir en este push: ver el paso "changed".
       build_sim: ${{ steps.changed.outputs.sim }}
       build_web: ${{ steps.changed.outputs.web }}
@@ -44,10 +50,13 @@ jobs:
             echo "firmware_tag=$(yq '.firmwares.ccq1.tag' versions.yml)"
             echo "sim_version=$(yq '.firmwares.ccq1.version' versions.yml)"
             echo "seedsigner_tag=$(yq '.firmwares.seedsigner.tag' versions.yml)"
+            echo "seedsigner_version=$(yq '.firmwares.seedsigner.version' versions.yml)"
             echo "krux_tag=$(yq '.firmwares.krux.tag' versions.yml)"
             echo "krux_version=$(yq '.firmwares.krux.version' versions.yml)"
             echo "jade_tag=$(yq '.firmwares.jade.tag' versions.yml)"
+            echo "jade_version=$(yq '.firmwares.jade.version' versions.yml)"
             echo "seedtool_tag=$(yq '.firmwares.seedtool.tag' versions.yml)"
+            echo "seedtool_version=$(yq '.firmwares.seedtool.version' versions.yml)"
           } >> "$GITHUB_OUTPUT"
 
       # Cada imagen se reconstruye solo si cambio algo suyo: su contexto en images/ o el
@@ -221,7 +230,7 @@ jobs:
           cache-from: type=gha,scope=seedsigner
           cache-to: type=gha,mode=max,scope=seedsigner
           push: true
-          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/seedsigner-sim:${{ needs.versions.outputs.seedsigner_tag }}
+          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/seedsigner-sim:${{ needs.versions.outputs.seedsigner_version }}
 
   # Simulador de Krux: los mocks de upstream son python puro y lo unico nativo es el modulo
   # uUR (un .c chico), asi que QEMU alcanza igual que con seedsigner.
@@ -302,7 +311,7 @@ jobs:
           cache-from: type=gha,scope=jade
           cache-to: type=gha,mode=max,scope=jade
           push: true
-          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/jade-sim:${{ needs.versions.outputs.jade_tag }}
+          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/jade-sim:${{ needs.versions.outputs.jade_version }}
 
   # Bitcoin Seed Tool: la imagen es nginx + un HTML descargado y verificado por firma.
   # Nada compila, asi que no hace falta QEMU: el stage que descarga corre en la plataforma
@@ -331,7 +340,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: SEEDTOOL_TAG=${{ needs.versions.outputs.seedtool_tag }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/seedtool:${{ needs.versions.outputs.seedtool_tag }}
+          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/seedtool:${{ needs.versions.outputs.seedtool_version }}
 
   # Umbrel exige el digest del indice multi-arch pinneado en el compose. Lo escribe el CI
   # para que no haya que copiarlo a mano ni se desincronicen las dos apps (comparten ccq1-web).
