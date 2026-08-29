@@ -10,14 +10,14 @@ services:
   # Router: / -> carcasa web del simulador, /files -> explorador de archivos.
   # Misma imagen que nubeapps-ccq1: su nginx ya rutea a sim:6080 y files:80.
   web:
-    image: ghcr.io/johnysats/ccq1-web:6.6.0QX@sha256:3c77c8a25ad638ecfa9551f8b0cc4e714efbbe4f7f2fe7c1c7cdce5252ec548a
+    image: ghcr.io/johnysats/ccq1-web:6.6.0QX-2@sha256:78efcccd49295b1fe94b3eeecc49b884713bf69fcd47652547987e51cf9c5de3
     restart: on-failure
     depends_on:
       - sim
       - files
 
   sim:
-    image: ghcr.io/johnysats/jade-sim:1.0.41@sha256:013d9ef944be941be0e12e55c387756a31842bd3629f7cdaeaf8450fb689de44
+    image: ghcr.io/johnysats/jade-sim:1.0.41-2@sha256:ddfd7cede52ca2c1e61b7cf57189721d693c4cb7b451b8c8c01eb90a415330e5
     user: "1000:1000"
     init: true
     restart: on-failure
