@@ -28,6 +28,7 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 | <img height="30" src="assets/krux.svg" /> | [Krux Simulator](nubeapps-krux/) | Simulador Krux (Maix Amigo) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual | 8613 |
 | <img height="30" src="assets/jadeplus.svg" /> | [Jade Plus Simulator](nubeapps-jadeplus/) | Simulador Blockstream Jade Plus: el firmware real de ESP32 en el emulador QEMU de upstream, con cámara virtual desde `/files` | 8614 |
 | <img height="30" src="assets/seedtool.svg" /> | [Bitcoin Seed Tool en Español](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA): entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español | 8615 |
+| <img height="30" src="assets/kern.svg" /> | [Kern Simulator](nubeapps-kern/) | Simulador Kern (ESP32-P4, de odudex): pantalla táctil, MicroSD en `/files` y cámara virtual. Firmware experimental, solo para probar | 8616 |
 
 ## ¿Te sirvió?
 
@@ -57,7 +58,8 @@ El de Jade compila el firmware de ESP32 en un stage fijado a `linux/amd64` (la t
 Blockstream solo existe para esa arquitectura) y el binario que sale de ahí vale para las dos
 plataformas, porque lo ejecuta qemu.
 
-Después de cada build hay que actualizar el digest en el `docker-compose.yml` de la app:
+El job `pin` de ese mismo workflow escribe después el digest del índice en el `docker-compose.yml`
+de cada app (fuente única: [`versions.yml`](versions.yml)). A mano se saca así:
 
 ```sh
 docker buildx imagetools inspect ghcr.io/johnysats/ccq1-simulator:6.6.0QX
