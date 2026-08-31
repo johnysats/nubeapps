@@ -9,14 +9,14 @@ services:
 
   # Router: / -> noVNC del simulador, /files -> explorador de la MicroSD.
   web:
-    image: ghcr.io/johnysats/ccq1-web:6.6.0QX-2@sha256:78efcccd49295b1fe94b3eeecc49b884713bf69fcd47652547987e51cf9c5de3
+    image: ghcr.io/johnysats/ccq1-web:6.6.0QX-2@sha256:750d021a2113e4bdf02cb996f77db34b656950f8fd74677b16863390be42c0d0
     restart: on-failure
     depends_on:
       - sim
       - files
 
   sim:
-    image: ghcr.io/johnysats/ccq1-simulator:6.6.0QX-2@sha256:239196e18c2f2efb41b4aa1f54d87a6f612add964f37527ff0824bb2d056a468
+    image: ghcr.io/johnysats/ccq1-simulator:6.6.0QX-2@sha256:c7d3d9cb78d6d1fc8c96aca3e226b28af31c100d792f7c8684762b61ed47e5fe
     user: "1000:1000"
     init: true
     restart: on-failure
