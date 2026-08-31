@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-kern
 category: Bitcoin
 name: Kern
-version: "0.0.18"
+version: "0.0.18-2"
 tagline: The experimental Kern signer in your browser, no ESP32-P4 device / El firmware experimental de Kern en tu navegador, sin dispositivo ESP32-P4
 description: >-
   WARNING: Kern is a research and development project, not a product. Its own author publishes
@@ -76,16 +76,24 @@ description: >-
   viviria en el eFuse del chip aca es una constante fija (asi que las palabras anti-phishing
   tampoco son las que te mostraria un dispositivo de verdad).
 releaseNotes: >-
-  First release. Runs Kern 0.0.18 in Umbrel, with the MicroSD shared through /files and a
-  virtual camera that turns any file in that folder into a QR the device can scan.
+  Adds an ES|EN toggle to the simulator page (top right, both languages always visible). The
+  page around the device -- camera panel, MicroSD help, buttons -- can now be read in English or
+  Spanish; the app description already was, this closes the gap for the page itself. What the
+  firmware draws on the emulated screen is unaffected: Kern's own UI is not translated.
+
+  No firmware change: still Kern 0.0.18, same controls, same simulator.
 
 
   --- En espanol ---
 
 
-  Primera version. Corre Kern 0.0.18 en Umbrel, con la MicroSD compartida por /files y una
-  camara virtual que convierte cualquier archivo de esa carpeta en un QR que el dispositivo
-  puede escanear.
+  Suma un selector ES|EN a la pagina del simulador (arriba a la derecha, los dos idiomas
+  siempre a la vista). La pagina alrededor del dispositivo -panel de camara, ayuda de la
+  MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
+  estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
+  emulada no cambia: la UI propia de Kern no se traduce.
+
+  Sin cambios de firmware: sigue siendo Kern 0.0.18, mismos controles, mismo simulador.
 developer: odudex (firmware) / NubeApps (paquete)
 website: https://github.com/odudex/Kern
 dependencies: []

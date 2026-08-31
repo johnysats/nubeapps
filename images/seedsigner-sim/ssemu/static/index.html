@@ -83,6 +83,13 @@
     .device { flex-direction: column; padding: 14px; }
     .screen { width: min(90vw, var(--screen)); height: min(90vw, var(--screen)); }
   }
+  /* Selector de idioma: las dos opciones siempre a la vista, la activa resaltada. */
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .langsel { display: flex; gap: 4px; }
+  .langsel button { background: transparent; color: var(--muted); border: 1px solid var(--edge);
+                     border-radius: 6px; padding: 3px 7px; font: inherit; font-weight: 600;
+                     font-size: 11px; cursor: pointer; height: auto; min-width: 0; }
+  .langsel button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: transparent; }
 
   /* Ayuda de dónde salen los archivos: cerrada por defecto para no empujar el panel. */
   details.howto { margin-top: 16px; border-top: 1px solid var(--edge); padding-top: 12px; }
@@ -102,19 +109,25 @@
 <body>
 
 <header>
-  <b>SeedSigner <span>· simulador</span></b>
-  <a href="files/" target="_blank" rel="noopener">Archivos (MicroSD) ↗</a>
+  <b>SeedSigner <span data-i18n="subtitle">· simulador</span></b>
+  <div class="header-right">
+    <div class="langsel" role="group" data-i18n-aria-label="lang-group" aria-label="Idioma">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a href="files/" target="_blank" rel="noopener" data-i18n="files-link">Archivos (MicroSD) ↗</a>
+  </div>
 </header>
 
 <div class="device">
-  <div class="screen"><img id="screen" alt="Pantalla del SeedSigner"></div>
+  <div class="screen"><img id="screen" data-i18n-alt="screen-alt" alt="Pantalla del SeedSigner"></div>
   <div class="controls">
     <div class="dpad">
-      <span></span><button data-key="KEY_UP" title="Arriba">▲</button><span></span>
-      <button data-key="KEY_LEFT" title="Izquierda">◀</button>
-      <button data-key="KEY_PRESS" class="center" title="Seleccionar">●</button>
-      <button data-key="KEY_RIGHT" title="Derecha">▶</button>
-      <span></span><button data-key="KEY_DOWN" title="Abajo">▼</button><span></span>
+      <span></span><button data-key="KEY_UP" data-i18n-title="key-up" title="Arriba">▲</button><span></span>
+      <button data-key="KEY_LEFT" data-i18n-title="key-left" title="Izquierda">◀</button>
+      <button data-key="KEY_PRESS" class="center" data-i18n-title="key-select" title="Seleccionar">●</button>
+      <button data-key="KEY_RIGHT" data-i18n-title="key-right" title="Derecha">▶</button>
+      <span></span><button data-key="KEY_DOWN" data-i18n-title="key-down" title="Abajo">▼</button><span></span>
     </div>
     <div class="keys">
       <button data-key="KEY1">KEY1</button>
@@ -125,39 +138,39 @@
 </div>
 
 <div class="panel">
-  <h2>Cámara</h2>
-  <p>SeedSigner no lee archivos: todo entra por la cámara. Elegí qué archivo de la MicroSD
+  <h2 data-i18n="h2-camera">Cámara</h2>
+  <p data-i18n="camera-help">SeedSigner no lee archivos: todo entra por la cámara. Elegí qué archivo de la MicroSD
      se le muestra como QR y después entrá a <em>Scan</em> en el dispositivo. Para subir o
      bajar archivos, usá <b>Archivos (MicroSD)</b> arriba a la derecha.</p>
   <div class="row">
-    <select id="file"><option value="">Automático (el más reciente)</option></select>
-    <button id="refresh" style="width:auto;padding:0 14px">Actualizar</button>
+    <select id="file"><option value="" data-i18n="auto-option">Automático (el más reciente)</option></select>
+    <button id="refresh" style="width:auto;padding:0 14px" data-i18n="btn-refresh">Actualizar</button>
   </div>
   <div class="row sizes">
-    <span style="color:var(--muted);font-size:13px">Pantalla:</span>
+    <span style="color:var(--muted);font-size:13px" data-i18n="screen-label">Pantalla:</span>
     <button data-zoom="1">240 px</button>
     <button data-zoom="1.5">360 px</button>
     <button data-zoom="2">480 px</button>
   </div>
   <p id="status">…</p>
-  <p>Teclado: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> mueven,
+  <p data-i18n="keys-help">Teclado: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> mueven,
      <kbd>Enter</kbd> selecciona, <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> son KEY1/2/3.</p>
 
 <details class="howto">
-  <summary>¿De dónde saco estos archivos?</summary>
-  <p><b>Seed (12 o 24 palabras).</b> Un archivo <code>.txt</code> con las palabras BIP39 en
+  <summary data-i18n="howto-summary">¿De dónde saco estos archivos?</summary>
+  <p data-i18n="howto-seed"><b>Seed (12 o 24 palabras).</b> Un archivo <code>.txt</code> con las palabras BIP39 en
      minúsculas, separadas por espacios y en una sola línea. Podés generar una con
      <b>Bitcoin Seed Tool</b> —otra app de esta tienda— o copiar la que te dicte el propio
      dispositivo cuando creás una billetera nueva.</p>
-  <p><b>PSBT.</b> Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+  <p data-i18n="howto-psbt"><b>PSBT.</b> Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
      (en Sparrow: <em>Send → Create Transaction → Save Transaction</em>; también Nunchuk,
      Electrum o Blue Wallet). Sirve tanto el <code>.psbt</code> binario como el mismo
      contenido en base64.</p>
-  <p><b>Cómo los subís.</b> Abrí <b>Archivos (MicroSD)</b> arriba a la derecha y arrastrá el
+  <p data-i18n="howto-upload"><b>Cómo los subís.</b> Abrí <b>Archivos (MicroSD)</b> arriba a la derecha y arrastrá el
      archivo ahí, o usá el botón <b>+</b> → <em>New file</em> del explorador para escribir
      las palabras sin salir del navegador. Volvé acá, tocá <b>Actualizar</b> y elegilo en la
      lista: SeedSigner no lee la MicroSD, todo entra por la cámara.</p>
-  <p>Es un simulador y estos archivos quedan guardados en tu Umbrel sin cifrar: usalo para
+  <p data-i18n="howto-privacy">Es un simulador y estos archivos quedan guardados en tu Umbrel sin cifrar: usalo para
      aprender y probar, nunca con una seed que tenga fondos.</p>
 </details>
 </div>
@@ -255,10 +268,12 @@ setZoom(localStorage.getItem("ssemu-zoom") || "1.5");
 
 const select = document.getElementById("file");
 const status = document.getElementById("status");
+let lastState = null;
 
 function render(state) {
+  lastState = state;
   const current = select.value;
-  select.innerHTML = '<option value="">Automático (el más reciente)</option>';
+  select.innerHTML = `<option value="">${t("auto-option", "Automático (el más reciente)")}</option>`;
   for (const name of state.files) {
     const option = document.createElement("option");
     option.value = option.textContent = name;
@@ -266,9 +281,9 @@ function render(state) {
   }
   select.value = state.selected || current || "";
   let text = state.resolved
-    ? `La cámara está mostrando: ${state.resolved}`
-    : "No hay archivos en la carpeta todavía.";
-  if (state.last_signed) text += ` · Último firmado: ${state.last_signed}`;
+    ? `${t("status-showing", "La cámara está mostrando")}: ${state.resolved}`
+    : t("status-empty", "No hay archivos en la carpeta todavía.");
+  if (state.last_signed) text += ` · ${t("status-last-signed", "Último firmado")}: ${state.last_signed}`;
   status.textContent = text;
 }
 
@@ -285,6 +300,87 @@ document.getElementById("refresh").addEventListener("click", refresh);
 
 refresh();
 setInterval(refresh, 5000);
+
+// --- Selector de idioma ES|EN: el DOM ya trae el espanol como fuente, EN es el diccionario. ---
+let LANG = "es";
+const I18N_ATTRS = ["alt", "title", "placeholder", "aria-label"];
+const i18nOriginals = new WeakMap();
+
+function t(key, es) { return LANG === "en" ? (EN[key] ?? es) : es; }
+
+function applyLang(lang) {
+  LANG = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    if (!i18nOriginals.has(el)) i18nOriginals.set(el, {});
+    const store = i18nOriginals.get(el);
+    if (store.html === undefined) store.html = el.innerHTML;
+    el.innerHTML = lang === "en" ? EN[el.dataset.i18n] : store.html;
+  });
+  I18N_ATTRS.forEach(attr => {
+    document.querySelectorAll(`[data-i18n-${attr}]`).forEach(el => {
+      if (!i18nOriginals.has(el)) i18nOriginals.set(el, {});
+      const store = i18nOriginals.get(el);
+      if (store[attr] === undefined) store[attr] = el.getAttribute(attr);
+      const key = el.getAttribute(`data-i18n-${attr}`);
+      el.setAttribute(attr, lang === "en" ? EN[key] : store[attr]);
+    });
+  });
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".langsel button").forEach(b => {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  });
+  try { localStorage.setItem("nubeapps-lang", lang); } catch {}
+  // Re-renderiza lo ya cargado (el select y el status) sin esperar al proximo poll.
+  if (lastState) render(lastState);
+}
+
+document.querySelectorAll(".langsel button").forEach(b => {
+  b.addEventListener("click", () => applyLang(b.dataset.lang));
+});
+
+const EN = {
+  "lang-group": "Language",
+  "subtitle": "· simulator",
+  "files-link": "Files (MicroSD) ↗",
+  "screen-alt": "SeedSigner screen",
+  "key-up": "Up",
+  "key-down": "Down",
+  "key-left": "Left",
+  "key-right": "Right",
+  "key-select": "Select",
+  "h2-camera": "Camera",
+  "camera-help": `SeedSigner doesn't read files: everything comes in through the camera. Pick
+     which file on the MicroSD is shown to it as a QR, then go to <em>Scan</em> on the
+     device. To upload or download files, use <b>Files (MicroSD)</b> at the top right.`,
+  "auto-option": "Automatic (most recent)",
+  "btn-refresh": "Refresh",
+  "screen-label": "Screen:",
+  "keys-help": `Keyboard: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> move,
+     <kbd>Enter</kbd> selects, <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> are KEY1/2/3.`,
+  "howto-summary": "Where do I get these files?",
+  "howto-seed": `<b>Seed (12 or 24 words).</b> A <code>.txt</code> file with the BIP39 words in
+     lowercase, separated by spaces, on a single line. You can generate one with
+     <b>Bitcoin Seed Tool</b> —another app in this store— or copy the one the device itself
+     dictates when you create a new wallet.`,
+  "howto-psbt": `<b>PSBT.</b> Your wallet exports it when building a payment from a watch-only
+     account (in Sparrow: <em>Send → Create Transaction → Save Transaction</em>; also
+     Nunchuk, Electrum or Blue Wallet). Either the binary <code>.psbt</code> or the same
+     content in base64 works.`,
+  "howto-upload": `<b>How to upload them.</b> Open <b>Files (MicroSD)</b> at the top right and
+     drag the file there, or use the <b>+</b> → <em>New file</em> button in the explorer to
+     type the words without leaving the browser. Come back here, tap <b>Refresh</b> and pick
+     it from the list: SeedSigner doesn't read the MicroSD, everything comes in through the
+     camera.`,
+  "howto-privacy": `It's a simulator and these files are stored unencrypted on your Umbrel:
+     use it to learn and test, never with a seed that holds real funds.`,
+  "status-showing": "The camera is showing",
+  "status-empty": "There are no files in the folder yet.",
+  "status-last-signed": "Last signed",
+};
+
+let savedLang = "es";
+try { savedLang = localStorage.getItem("nubeapps-lang") || "es"; } catch {}
+applyLang(savedLang);
 </script>
 </body>
 </html>

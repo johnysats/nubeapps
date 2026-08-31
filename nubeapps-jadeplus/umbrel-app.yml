@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-jadeplus
 category: Bitcoin
 name: Jade Plus Simulator
-version: "1.0.41-2"
+version: "1.0.41-3"
 tagline: Blockstream Jade firmware in your browser, no device / El firmware de Blockstream Jade en tu navegador, sin dispositivo
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -51,17 +51,10 @@ description: >-
   La flash emulada se guarda en los datos de la app, asi que el PIN, la seed cifrada y la
   configuracion sobreviven a un reinicio, igual que en el dispositivo real.
 releaseNotes: >-
-  Explains where the files you need actually come from. The camera panel now has a "Where do I
-  get these files?" section: how your wallet exports a PSBT (Sparrow, Nunchuk, Electrum, Blue
-  Wallet), that both the binary .psbt and the same content in base64 work, how a seed file looks
-  (12 or 24 BIP39 words, lowercase, one line), and how to upload it or write it straight in the
-  file explorer before showing it to the camera, which is the only way in on a Jade.
-
-
-  A brand new install also starts with a LEEME.txt and a public test seed in the shared folder,
-  so the first screen you open is not an empty explorer. If your folder already has files,
-  nothing is added and nothing is overwritten.
-
+  Adds an ES|EN toggle to the simulator page (top right, both languages always visible). The
+  page around the device -- camera panel, MicroSD help, buttons -- can now be read in English or
+  Spanish; the app description already was, this closes the gap for the page itself. What the
+  firmware draws on the emulated screen is unaffected: Jade's own UI is not translated.
 
   No firmware change: still Blockstream Jade 1.0.41, same controls, same emulated flash, so your
   PIN and the seed stored in the simulator survive the update.
@@ -70,22 +63,14 @@ releaseNotes: >-
   --- En espanol ---
 
 
-  Explica de donde salen los archivos que hacen falta. El panel de la camara ahora tiene una
-  seccion "De donde saco estos archivos": como exporta un PSBT tu billetera (Sparrow, Nunchuk,
-  Electrum, Blue Wallet), que sirve tanto el .psbt binario como el mismo contenido en base64,
-  como es un archivo de seed (12 o 24 palabras BIP39 en minusculas, en una sola linea) y como
-  subirlo o escribirlo en el explorador antes de mostrarselo a la camara, que en el Jade es la
-  unica via de entrada.
+  Suma un selector ES|EN a la pagina del simulador (arriba a la derecha, los dos idiomas
+  siempre a la vista). La pagina alrededor del dispositivo -panel de camara, ayuda de la
+  MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
+  estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
+  emulada no cambia: la UI propia del Jade no se traduce.
 
-
-  Una instalacion nueva ademas arranca con un LEEME.txt y una seed publica de prueba en la
-  carpeta compartida, asi la primera pantalla no es un explorador vacio. Si tu carpeta ya tiene
-  archivos, no se agrega ni se pisa nada.
-
-
-  No cambia el firmware: sigue siendo Blockstream Jade 1.0.41, los mismos controles y la misma
-  flash emulada, asi que el PIN y la seed guardada en el simulador sobreviven a la actualizacion.
-
+  Sin cambios de firmware: sigue siendo Blockstream Jade 1.0.41, mismos controles, mismo flash
+  emulado, asi que el PIN y la seed guardados en el simulador sobreviven a la actualizacion.
 developer: Blockstream (firmware) / NubeApps (paquete)
 website: https://blockstream.com/jade/
 dependencies: []
