@@ -61,6 +61,7 @@ releaseNotes: >-
   firmware draws on the emulated screen is unaffected: Krux's own UI has its own language
   setting, unrelated to this toggle.
 
+
   No firmware change: same simulator, same controls, same data.
 
 
@@ -73,6 +74,7 @@ releaseNotes: >-
   estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
   emulada no cambia: la UI propia de Krux tiene su propio ajuste de idioma, sin relacion con
   este selector.
+
 
   Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.
 developer: Krux contributors (firmware) / NubeApps (paquete)

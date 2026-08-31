@@ -56,6 +56,7 @@ releaseNotes: >-
   Spanish; the app description already was, this closes the gap for the page itself. What the
   firmware draws on the emulated screen is unaffected: Jade's own UI is not translated.
 
+
   No firmware change: still Blockstream Jade 1.0.41, same controls, same emulated flash, so your
   PIN and the seed stored in the simulator survive the update.
 
@@ -68,6 +69,7 @@ releaseNotes: >-
   MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
   estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
   emulada no cambia: la UI propia del Jade no se traduce.
+
 
   Sin cambios de firmware: sigue siendo Blockstream Jade 1.0.41, mismos controles, mismo flash
   emulado, asi que el PIN y la seed guardados en el simulador sobreviven a la actualizacion.

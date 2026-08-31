@@ -81,6 +81,7 @@ releaseNotes: >-
   Spanish; the app description already was, this closes the gap for the page itself. What the
   firmware draws on the emulated screen is unaffected: Kern's own UI is not translated.
 
+
   No firmware change: still Kern 0.0.18, same controls, same simulator.
 
 
@@ -92,6 +93,7 @@ releaseNotes: >-
   MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
   estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
   emulada no cambia: la UI propia de Kern no se traduce.
+
 
   Sin cambios de firmware: sigue siendo Kern 0.0.18, mismos controles, mismo simulador.
 developer: odudex (firmware) / NubeApps (paquete)

@@ -69,6 +69,7 @@ releaseNotes: >-
   Spanish; the app description already was, this closes the gap for the page itself. What the
   firmware draws on the emulated screen is unaffected: the Coldcard's own UI is not translated.
 
+
   No firmware change: same simulator, same controls, same data.
 
 
@@ -80,6 +81,7 @@ releaseNotes: >-
   MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
   estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
   emulada no cambia: la UI propia del Coldcard no se traduce.
+
 
   Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.
 developer: Coinkite (firmware) / NubeApps (paquete)
