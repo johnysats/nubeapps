@@ -64,42 +64,64 @@ jobs:
             echo "kern_version=$(yq '.firmwares.kern.version' versions.yml)"
           } >> "$GITHUB_OUTPUT"
 
-      # Cada imagen se reconstruye solo si cambio algo suyo: su contexto en images/ o el
-      # tag/version que empaqueta. Sin esto, tocar una sola app repinnea los digests de
-      # todas (las imagenes no son reproducibles byte a byte) y mete en el commit cuatro
-      # cambios que nadie probo. Fuera de un push -dispatch manual, rama nueva o sin
-      # historial- se reconstruye todo, igual que antes.
-      # Al agregar una app: sumarle aca su linea con el contexto y su clave de versions.yml.
+      # Cada imagen se reconstruye solo si cambio algo suyo: su contexto en images/, el
+      # tag/version que empaqueta, o sus propios jobs de este workflow. Sin esto, tocar una
+      # sola app repinnea los digests de todas (las imagenes no son reproducibles byte a
+      # byte) y mete en el commit cambios que nadie probo.
+      #
+      # Los jobs se comparan uno por uno y no el archivo entero: agregar una app es un
+      # cambio aditivo -jobs nuevos, los viejos intactos- y no tiene por que reconstruir lo
+      # que ya estaba. Lo global sigue reconstruyendo todo: `on:` y `env:` (REGISTRY es el
+      # destino de todas las imagenes), un push sin historial contra que comparar, o un
+      # workflow_dispatch.
+      #
+      # Al agregar una app: sumarle aca su linea con el contexto, su clave de versions.yml
+      # y los nombres de sus jobs.
       - id: changed
         env:
           BEFORE: ${{ github.event.before }}
+          WORKFLOW: .github/workflows/images.yml
         run: |
           set -euo pipefail
           all=false
           if [ "${{ github.event_name }}" != "push" ] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
             all=true
-          elif ! git diff --quiet "${BEFORE}" HEAD -- .github/workflows/images.yml; then
-            # Si cambio el workflow mismo, no se puede saber a que imagen afecta.
-            all=true
+          elif ! git show "${BEFORE}:${WORKFLOW}" > /tmp/images-before.yml 2>/dev/null; then
+            all=true  # el workflow es nuevo: no hay con que comparar los jobs
+          else
+            for key in on env; do
+              old=$(yq ".[\"$key\"]" /tmp/images-before.yml)
+              new=$(yq ".[\"$key\"]" "$WORKFLOW")
+              if [ "$old" != "$new" ]; then all=true; fi
+            done
           fi
 
-          changed() {  # $1 = contexto de build, $2 = clave en versions.yml
+          job_changed() {  # $@ = nombres de jobs de este workflow
+            for job in "$@"; do
+              old=$(yq ".jobs.\"$job\"" /tmp/images-before.yml)
+              new=$(yq ".jobs.\"$job\"" "$WORKFLOW")
+              [ "$old" = "$new" ] || return 0
+            done
+            return 1
+          }
+
+          changed() {  # $1 = contexto de build, $2 = clave en versions.yml, $3... = sus jobs
             if [ "$all" = true ] || ! git diff --quiet "${BEFORE}" HEAD -- "$1"; then
               echo true; return
             fi
             old=$(git show "${BEFORE}:versions.yml" 2>/dev/null | yq ".firmwares.$2 | [.tag, .version] | join(\" \")" - || echo "")
             new=$(yq ".firmwares.$2 | [.tag, .version] | join(\" \")" versions.yml)
-            if [ "$old" = "$new" ]; then echo false; else echo true; fi
+            if [ "$old" = "$new" ] && ! job_changed "${@:3}"; then echo false; else echo true; fi
           }
 
           {
-            echo "sim=$(changed images/ccq1-simulator ccq1)"
-            echo "web=$(changed images/ccq1-web ccq1)"
-            echo "seedsigner=$(changed images/seedsigner-sim seedsigner)"
-            echo "krux=$(changed images/krux-sim krux)"
-            echo "jade=$(changed images/jade-sim jade)"
-            echo "seedtool=$(changed images/seedtool seedtool)"
-            echo "kern=$(changed images/kern-sim kern)"
+            echo "sim=$(changed images/ccq1-simulator ccq1 simulator simulator-manifest)"
+            echo "web=$(changed images/ccq1-web ccq1 web)"
+            echo "seedsigner=$(changed images/seedsigner-sim seedsigner seedsigner)"
+            echo "krux=$(changed images/krux-sim krux krux)"
+            echo "jade=$(changed images/jade-sim jade jade)"
+            echo "seedtool=$(changed images/seedtool seedtool seedtool)"
+            echo "kern=$(changed images/kern-sim kern kern kern-manifest kern-smoke)"
           } | tee -a "$GITHUB_OUTPUT"  # -a: el paso anterior ya escribio ahi
 
   # El simulador compila el firmware: runners nativos por arquitectura, no QEMU.
