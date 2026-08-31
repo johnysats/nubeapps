@@ -1,5 +1,5 @@
-# El README es el listado que ve cualquiera que entra al repo, y agregar la fila es el paso
-# que se olvida al publicar una app (paso a paso en el CLAUDE.md, que no viaja con el repo).
+# Verifica que cada app publicada aparezca en el listado del README y en versions.yml:
+# es el paso que se olvida al agregar una app nueva.
 name: Apps listed
 
 on:
