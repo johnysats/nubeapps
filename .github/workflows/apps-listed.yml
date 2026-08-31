@@ -1,0 +1,23 @@
+# El README es el listado que ve cualquiera que entra al repo, y agregar la fila es el paso
+# que se olvida al publicar una app (paso a paso en el CLAUDE.md, que no viaja con el repo).
+name: Apps listed
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  readme:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cada nubeapps-* tiene su fila en el README y su entrada en versions.yml
+        run: |
+          fail=0
+          for d in nubeapps-*/; do
+            app=${d%/}
+            grep -q "($app/)" README.md || { echo "::error::$app no esta en la tabla Apps del README.md"; fail=1; }
+            grep -q "^ *app: $app$" versions.yml || { echo "::error::$app no tiene entrada en versions.yml"; fail=1; }
+          done
+          exit $fail
