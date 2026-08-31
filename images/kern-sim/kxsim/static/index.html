@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Kern Simulator</title>
+<style>
+  :root {
+    --device-width: 420px;
+    --bg: #14171c;
+    --panel: #1e2229;
+    --edge: #2c313a;
+    --text: #e6e8ec;
+    --muted: #8b93a1;
+    --accent: #f7931a;
+  }
+  * { box-sizing: border-box; }
+  /* Misma barra que las otras apps del store: /files lo sirve el mismo app_proxy, o sea
+     el mismo login de Umbrel, sin segunda contrasena. */
+  header {
+    position: sticky; top: 0; z-index: 2; width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 0 14px; height: 44px; flex: none;
+    background: var(--panel); border-bottom: 1px solid var(--edge);
+  }
+  header b { font-weight: 600; }
+  header b span { color: var(--muted); font-weight: 400; }
+  header a {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    border: 1px solid var(--edge); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  header a:hover { border-color: var(--accent); background: #1c1f26; }
+  body {
+    margin: 0; padding: 0 0 40px;
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .device {
+    background: var(--panel); border: 1px solid var(--edge); border-radius: 18px;
+    padding: 20px; margin: 0 16px; display: flex; flex-direction: column; gap: 10px;
+    align-items: center; box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  #device {
+    width: var(--device-width); display: block; border-radius: 8px;
+    touch-action: none; cursor: crosshair; user-select: none; -webkit-user-drag: none;
+  }
+  .hint {
+    margin: 0; max-width: var(--device-width); text-align: center; font-size: 13px;
+    color: var(--accent); border: 1px dashed #4a3a22; border-radius: 8px; padding: 5px 10px;
+    transition: opacity .4s;
+  }
+  /* Una vez que tocó la pantalla ya entendió: el cartel se apaga pero no desaparece. */
+  .hint.used { color: var(--muted); border-color: transparent; opacity: .6; }
+  button {
+    background: #2b3038; color: var(--text); border: 1px solid var(--edge);
+    border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer;
+    padding: 0 14px; height: 38px; touch-action: manipulation; user-select: none;
+  }
+  button:hover { background: #353b45; }
+  button[aria-pressed="true"] { background: var(--accent); color: #14171c; border-color: var(--accent); }
+  .panel {
+    width: min(760px, calc(100% - 32px)); background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .sizes button { height: 32px; padding: 0 12px; font-weight: 500; }
+  select {
+    flex: 1 1 240px; background: #14171c; color: var(--text);
+    border: 1px solid var(--edge); border-radius: 8px; padding: 8px 10px; font: inherit;
+  }
+  select:disabled { opacity: .5; }
+  h2 { margin: 0; font-size: 15px; }
+  p { margin: 0; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  .danger { border-color: #5a2b2b; color: #e88; }
+  .danger:hover { background: #2b1c1c; }
+
+  /* Ayuda de dónde salen los archivos: cerrada por defecto para no empujar el panel. */
+  details.howto { margin-top: 16px; border-top: 1px solid var(--edge); padding-top: 12px; }
+  details.howto summary {
+    cursor: pointer; color: var(--accent); font-size: 14px; list-style: none;
+  }
+  details.howto summary::-webkit-details-marker { display: none; }
+  details.howto summary::before { content: "\25b8\a0\a0"; }
+  details.howto[open] summary::before { content: "\25be\a0\a0"; }
+  details.howto p { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+  details.howto code {
+    background: #0f1216; border: 1px solid var(--edge); border-radius: 4px;
+    padding: 1px 5px; font-size: 13px;
+  }
+  @media (max-width: 720px) {
+    .device { padding: 14px; }
+    #device { width: min(88vw, var(--device-width)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <b>Kern <span>· simulador</span></b>
+  <a href="files/" target="_blank" rel="noopener">Archivos (MicroSD) ↗</a>
+</header>
+
+<div class="device">
+  <img id="device" alt="Kern: tocá la pantalla para operarlo">
+  <!-- El dispositivo no tiene botones: todo el firmware se maneja tocando la pantalla. -->
+  <p class="hint" id="hint">👆 La pantalla es táctil: hacé click directo sobre ella</p>
+</div>
+
+<div class="panel">
+  <h2>Cámara</h2>
+  <p>Elegí qué archivo de la MicroSD ve la cámara como QR y después entrá a <em>Scan</em> en
+     el dispositivo. Los PSBT y los descriptores largos salen como QR animado. Para subir o
+     bajar archivos, usá <b>Archivos (MicroSD)</b> arriba a la derecha: es la misma carpeta
+     que el dispositivo ve como <code>/sdcard</code>.</p>
+  <div class="row">
+    <select id="file"><option value="">Automático (el más reciente)</option></select>
+    <button id="refresh">Actualizar</button>
+  </div>
+  <div class="row">
+    <!-- La pantalla de entropía por cámara mide variación de píxeles y un QR no le sirve.
+         Acá el firmware corre en otro proceso, así que no hay forma de detectar esa pantalla
+         desde afuera (en krux y seedsigner se mira la pila de llamadas): lo elige el usuario. -->
+    <button id="noise" aria-pressed="false">Apuntar a ruido</button>
+    <span style="color:var(--muted);font-size:13px">para <em>New Mnemonic → Camera</em></span>
+  </div>
+  <div class="row sizes">
+    <span style="color:var(--muted);font-size:13px">Tamaño:</span>
+    <button data-size="340">Chico</button>
+    <button data-size="420">Mediano</button>
+    <button data-size="520">Grande</button>
+  </div>
+  <p id="status">…</p>
+
+  <h2 style="margin-top:10px">Dispositivo</h2>
+  <div class="row">
+    <button id="restart">Reiniciar</button>
+    <button id="reset" class="danger">Reset de fábrica</button>
+  </div>
+  <p>El reset borra el PIN, los ajustes y lo que el dispositivo tenga guardado en su memoria
+     interna. Los archivos de la MicroSD no se tocan.</p>
+
+<details class="howto">
+  <summary>¿De dónde saco estos archivos?</summary>
+  <p><b>Seed (12 o 24 palabras).</b> Un archivo <code>.txt</code> con las palabras BIP39 en
+     minúsculas, separadas por espacios y en una sola línea. Podés generar una con
+     <b>Bitcoin Seed Tool</b> —otra app de esta tienda— o copiar la que te dicte el propio
+     dispositivo cuando creás una billetera nueva.</p>
+  <p><b>PSBT.</b> Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+     (en Sparrow: <em>Send → Create Transaction → Save Transaction</em>; también Nunchuk,
+     Electrum o Blue Wallet). Sirve tanto el <code>.psbt</code> binario como el mismo
+     contenido en base64.</p>
+  <p><b>Cómo los subís.</b> Abrí <b>Archivos (MicroSD)</b> arriba a la derecha y arrastrá el
+     archivo ahí, o usá el botón <b>+</b> → <em>New file</em> del explorador para escribir las
+     palabras sin salir del navegador. Es la misma carpeta que el dispositivo ve como
+     <code>/sdcard</code>.</p>
+  <p><b>Kern es un proyecto experimental, sin auditar</b>, y esto es un simulador: los
+     archivos quedan guardados en tu Umbrel sin cifrar y el PIN no protege nada (la clave del
+     eFuse es fija). Usalo para aprender y probar, nunca con una seed que tenga fondos.</p>
+</details>
+</div>
+
+<script>
+function post(path, body) {
+  return fetch(path, {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body,
+  });
+}
+
+// La pantalla tactil: se manda la posicion relativa (0..1) porque el tamano en pantalla
+// depende del zoom, y el servidor la traduce a coordenadas de la ventana del simulador.
+const deviceImg = document.getElementById("device");
+
+function touch(event, action) {
+  const rect = deviceImg.getBoundingClientRect();
+  const x = (event.clientX - rect.left) / rect.width;
+  const y = (event.clientY - rect.top) / rect.height;
+  post("api/touch", `x=${x.toFixed(4)}&y=${y.toFixed(4)}&action=${action}`);
+}
+
+deviceImg.addEventListener("pointerdown", event => {
+  event.preventDefault();
+  deviceImg.setPointerCapture(event.pointerId);
+  document.getElementById("hint").classList.add("used");
+  touch(event, "down");
+});
+// Arrastrar = swipe: el firmware los usa para navegar los QR con zoom.
+deviceImg.addEventListener("pointermove", event => {
+  if (deviceImg.hasPointerCapture(event.pointerId)) touch(event, "move");
+});
+deviceImg.addEventListener("pointerup", event => touch(event, "up"));
+deviceImg.addEventListener("pointercancel", event => touch(event, "up"));
+
+// La pantalla se pide de a un frame por vez: el servidor retiene la respuesta hasta que
+// algo cambia (o 1,5 s). Un MJPEG infinito se atasca en los reverse proxies y deja los
+// clicks encolados detrás.
+async function pump() {
+  let seq = -1;
+  let previousUrl = null;
+  while (true) {
+    try {
+      const response = await fetch(`frame.jpg?seq=${seq}`, {cache: "no-store"});
+      if (!response.ok) throw new Error(response.status);
+      seq = Number(response.headers.get("X-Frame-Seq") ?? -1);
+      const url = URL.createObjectURL(await response.blob());
+      deviceImg.src = url;
+      if (previousUrl) URL.revokeObjectURL(previousUrl);
+      previousUrl = url;
+    } catch {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+}
+pump();
+
+const sizeButtons = document.querySelectorAll("[data-size]");
+function setSize(size) {
+  document.documentElement.style.setProperty("--device-width", size + "px");
+  sizeButtons.forEach(b => b.setAttribute("aria-pressed", b.dataset.size === size));
+  localStorage.setItem("kxsim-size", size);
+}
+sizeButtons.forEach(button => button.addEventListener("click", () => setSize(button.dataset.size)));
+setSize(localStorage.getItem("kxsim-size") || "420");
+
+const select = document.getElementById("file");
+const status = document.getElementById("status");
+const noise = document.getElementById("noise");
+
+function render(state) {
+  const current = select.value;
+  select.innerHTML = '<option value="">Automático (el más reciente)</option>';
+  for (const name of state.files) {
+    const option = document.createElement("option");
+    option.value = option.textContent = name;
+    select.appendChild(option);
+  }
+  select.value = state.selected || current || "";
+  select.disabled = state.noise;
+  noise.setAttribute("aria-pressed", String(state.noise));
+  noise.textContent = state.noise ? "Apuntando a ruido" : "Apuntar a ruido";
+  status.textContent = state.noise
+    ? "La cámara está mostrando ruido, para generar entropía."
+    : state.resolved
+      ? `La cámara está mostrando: ${state.resolved}`
+      : "No hay archivos en la carpeta todavía.";
+}
+
+function send() {
+  post("api/camera", `file=${encodeURIComponent(select.value)}` +
+       `&noise=${noise.getAttribute("aria-pressed") === "true" ? "1" : "0"}`)
+    .then(r => r.json()).then(render);
+}
+
+function refresh() { fetch("api/state").then(r => r.json()).then(render); }
+
+select.addEventListener("change", send);
+noise.addEventListener("click", () => {
+  noise.setAttribute("aria-pressed", noise.getAttribute("aria-pressed") === "true" ? "false" : "true");
+  send();
+});
+document.getElementById("refresh").addEventListener("click", refresh);
+
+document.getElementById("restart").addEventListener("click", () => {
+  status.textContent = "Reiniciando…";
+  post("api/restart", "");
+});
+document.getElementById("reset").addEventListener("click", () => {
+  if (!confirm("Se borran el PIN, los ajustes y lo guardado en la memoria interna del " +
+               "dispositivo. Los archivos de la MicroSD no se tocan. ¿Seguir?")) return;
+  status.textContent = "Borrando y reiniciando…";
+  post("api/factory-reset", "");
+});
+
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

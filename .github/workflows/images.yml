@@ -32,6 +32,8 @@ jobs:
       jade_version: ${{ steps.v.outputs.jade_version }}
       seedtool_tag: ${{ steps.v.outputs.seedtool_tag }}
       seedtool_version: ${{ steps.v.outputs.seedtool_version }}
+      kern_tag: ${{ steps.v.outputs.kern_tag }}
+      kern_version: ${{ steps.v.outputs.kern_version }}
       # Que reconstruir en este push: ver el paso "changed".
       build_sim: ${{ steps.changed.outputs.sim }}
       build_web: ${{ steps.changed.outputs.web }}
@@ -39,6 +41,7 @@ jobs:
       build_krux: ${{ steps.changed.outputs.krux }}
       build_jade: ${{ steps.changed.outputs.jade }}
       build_seedtool: ${{ steps.changed.outputs.seedtool }}
+      build_kern: ${{ steps.changed.outputs.kern }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,6 +60,8 @@ jobs:
             echo "jade_version=$(yq '.firmwares.jade.version' versions.yml)"
             echo "seedtool_tag=$(yq '.firmwares.seedtool.tag' versions.yml)"
             echo "seedtool_version=$(yq '.firmwares.seedtool.version' versions.yml)"
+            echo "kern_tag=$(yq '.firmwares.kern.tag' versions.yml)"
+            echo "kern_version=$(yq '.firmwares.kern.version' versions.yml)"
           } >> "$GITHUB_OUTPUT"
 
       # Cada imagen se reconstruye solo si cambio algo suyo: su contexto en images/ o el
@@ -94,6 +99,7 @@ jobs:
             echo "krux=$(changed images/krux-sim krux)"
             echo "jade=$(changed images/jade-sim jade)"
             echo "seedtool=$(changed images/seedtool seedtool)"
+            echo "kern=$(changed images/kern-sim kern)"
           } | tee -a "$GITHUB_OUTPUT"  # -a: el paso anterior ya escribio ahi
 
   # El simulador compila el firmware: runners nativos por arquitectura, no QEMU.
@@ -342,10 +348,130 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/seedtool:${{ needs.versions.outputs.seedtool_version }}
 
+  # Kern: el simulador de escritorio es C y compila en un minuto, pero libwally y SDL son
+  # nativos, asi que runners por arquitectura en vez de QEMU.
+  kern:
+    needs: versions
+    if: needs.versions.outputs.build_kern == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            platform: linux/amd64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: images/kern-sim
+          platforms: ${{ matrix.platform }}
+          build-args: KERN_TAG=${{ needs.versions.outputs.kern_tag }}
+          cache-from: type=gha,scope=kern-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=kern-${{ matrix.platform }}
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/kern-sim,push-by-digest=true,name-canonical=true,push=true
+
+      - run: |
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${DIGEST#sha256:}"
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kern-digests-${{ strategy.job-index }}
+          path: /tmp/digests/*
+          retention-days: 1
+
+  kern-manifest:
+    needs: [versions, kern]
+    if: needs.versions.outputs.build_kern == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: kern-digests-*
+          merge-multiple: true
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create multi-arch manifest
+        working-directory: /tmp/digests
+        env:
+          IMAGE: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/kern-sim
+          KERN_VERSION: ${{ needs.versions.outputs.kern_version }}
+        run: |
+          docker buildx imagetools create -t "${IMAGE}:${KERN_VERSION}" \
+            $(printf "${IMAGE}@sha256:%s " *)
+          docker buildx imagetools inspect "${IMAGE}:${KERN_VERSION}"
+
+  # Kern es el unico firmware del store que se puede probar sin ojos humanos: arranca en
+  # segundos y se maneja por HTTP. Este recorrido reemplaza la prueba manual que pide cada
+  # bump upstream -- carga una seed por la camara virtual, escanea un PSBT y lo firma.
+  # Si falla, el PR de bump no se mergea: algo cambio en la UI o en la camara.
+  kern-smoke:
+    needs: [versions, kern-manifest]
+    if: needs.versions.outputs.build_kern == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # setup-python trae su propio interprete: el del runner es "externally managed" y
+      # rechaza pip install.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pillow embit
+
+      - env:
+          IMAGE: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/kern-sim:${{ needs.versions.outputs.kern_version }}
+        run: |
+          mkdir -p /tmp/kern-shots
+          python3 images/kern-sim/smoke.py "$IMAGE" --shots /tmp/kern-shots
+
+      # Sin las capturas, un fallo solo dice "la pantalla no reacciono": con ellas se ve en
+      # que pantalla se planto, que es lo que hay que mirar cuando upstream mueve la UI.
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kern-smoke-capturas
+          path: /tmp/kern-shots
+          retention-days: 7
+
   # Umbrel exige el digest del indice multi-arch pinneado en el compose. Lo escribe el CI
   # para que no haya que copiarlo a mano ni se desincronicen las dos apps (comparten ccq1-web).
   pin:
-    needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool]
+    needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool, kern-smoke]
     # Corre aunque se hayan salteado builds (los jobs que no cambiaron quedan "skipped"),
     # pero no si alguno fallo. El sed es idempotente: para una imagen que no se reconstruyo,
     # su tag en GHCR sigue apuntando al digest que ya esta en el compose.

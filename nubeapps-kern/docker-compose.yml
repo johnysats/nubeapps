@@ -1,0 +1,51 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: nubeapps-kern_web_1
+      APP_PORT: 80
+
+  # Router: / -> carcasa web del simulador, /files -> explorador de la MicroSD.
+  # Misma imagen que nubeapps-ccq1: su nginx ya rutea a sim:6080 y files:80.
+  web:
+    image: ghcr.io/johnysats/ccq1-web:6.6.0QX-2@sha256:78efcccd49295b1fe94b3eeecc49b884713bf69fcd47652547987e51cf9c5de3
+    restart: on-failure
+    depends_on:
+      - sim
+      - files
+
+  sim:
+    image: ghcr.io/johnysats/kern-sim:0.0.18@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    user: "1000:1000"
+    init: true
+    restart: on-failure
+    environment:
+      # /data/sdcard es la MicroSD (lo que expone /files); /data/nvs y /data/spiffs son la
+      # memoria interna del ESP32-P4, donde Kern guarda ajustes, PIN y backups cifrados.
+      KXSIM_DATA_DIR: /data
+      KXSIM_SD_DIR: /data/sdcard
+      KXSIM_PORT: "6080"
+    volumes:
+      - ${APP_DATA_DIR}/data/work:/data
+    # El shim publica los frames de la camara virtual en /run/kxsim, varias veces por
+    # segundo: en tmpfs para no escribir en el disco del usuario a ese ritmo.
+    tmpfs:
+      - /run/kxsim:uid=1000,gid=1000
+
+  files:
+    image: filebrowser/filebrowser:v2.44.0@sha256:f63369420687482dfdf252f80ef675f44ca1d1cd3a631261fb424136214fe629
+    user: "1000:1000"
+    restart: on-failure
+    environment:
+      # sin auth propia: la app ya esta detras del login de Umbrel via app_proxy
+      FB_NOAUTH: "true"
+      FB_BASEURL: /files
+      FB_ROOT: /srv
+      FB_DATABASE: /database/filebrowser.db
+      FB_PORT: "80"
+      FB_ADDRESS: 0.0.0.0
+    volumes:
+      - ${APP_DATA_DIR}/data/work/sdcard:/srv
+      - ${APP_DATA_DIR}/data/filebrowser:/database

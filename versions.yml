@@ -59,6 +59,18 @@ firmwares:
     dockerfile: images/jade-sim/Dockerfile
     build_arg: JADE_VERSION
     images: [jade-sim]
+  kern:
+    # Kern publica seguido (0.0.x cada pocos dias). El PR del chequeo diario no pide prueba
+    # manual: el job "kern-smoke" de images.yml recorre el simulador y firma un PSBT.
+    repo: odudex/Kern
+    tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    tag: "0.0.18"
+    version_from: tag
+    version: "0.0.18"
+    app: nubeapps-kern
+    dockerfile: images/kern-sim/Dockerfile
+    build_arg: KERN_TAG
+    images: [kern-sim]
   seedtool:
     repo: BitcoinQnA/seedtool
     tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <!-- cuerpo: el ESP32-P4 de Waveshare es una pantalla tactil cuadrada -->
+  <rect x="34" y="34" width="188" height="188" rx="22" fill="#23262e" stroke="#3a3f4b" stroke-width="3"/>
+  <rect x="50" y="50" width="156" height="156" rx="10" fill="#0b0d10" stroke="#4b5566" stroke-width="2"/>
+  <!-- la marca que el propio firmware muestra en la barra superior: anillo, aro y punto -->
+  <g fill="none" stroke="#f7931a">
+    <circle cx="128" cy="128" r="52" stroke-width="5"/>
+    <circle cx="128" cy="128" r="34" stroke-width="7"/>
+  </g>
+  <circle cx="128" cy="128" r="18" fill="#f7931a"/>
+</svg>

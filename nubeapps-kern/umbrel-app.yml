@@ -1,0 +1,104 @@
+manifestVersion: 1
+id: nubeapps-kern
+category: Bitcoin
+name: Kern
+version: "0.0.18"
+tagline: The experimental Kern signer in your browser, no ESP32-P4 device / El firmware experimental de Kern en tu navegador, sin dispositivo ESP32-P4
+description: >-
+  WARNING: Kern is a research and development project, not a product. Its own author publishes
+  it unaudited and built for testnet, and this is a simulator on top of that: it is not a secure
+  wallet, it does not run air-gapped, and the entropy of any seed it generates is not safe to
+  hold funds. Never import a real seed and never sign with real funds.
+
+
+  Kern is an air-gapped Bitcoin signer written in C for the ESP32-P4, by odudex, the main
+  contributor to Krux: same idea, a simplified interface, and libwally underneath, the same
+  crypto library Blockstream Jade uses. It signs PSBTs for single-sig, multisig and miniscript
+  policies, on native segwit and taproot.
+
+
+  This app runs the desktop simulator that ships with the firmware (upstream, unpatched) and
+  shows it in your browser: the device is all touchscreen, so click straight on the screen and
+  drag to swipe.
+
+
+  Kern takes input two ways, and the simulator has both:
+
+
+  - MicroSD: the file explorer at /files is what the device sees as /sdcard. Signed PSBTs, and
+    the mnemonic and descriptor backups the device writes, come back to that same folder
+
+  - Camera: there is no webcam in a container, so a virtual one shows the device a QR made from
+    the file you pick on the page (animated in parts when it is a PSBT). Point it at a file and
+    go to Scan, or to Load Mnemonic > From QR Code
+
+
+  Two things the real hardware has and the simulator does not: what you leave in the MicroSD
+  folder is stored unencrypted on your Umbrel, and the PIN protects nothing, because the key
+  that would live in the chip's eFuse is a fixed constant here (so the anti-phishing words are
+  not the ones a real device would show you either).
+
+
+  --- En espanol ---
+
+
+  ATENCION: Kern es un proyecto de investigacion y desarrollo, no un producto. Su propio autor
+  lo publica sin auditar y pensado para testnet, y esto ademas es un simulador: no es una
+  billetera segura, no corre en hardware air-gapped y la entropia de las seeds que genere no
+  sirve para custodiar fondos. Nunca importes una seed real ni firmes con fondos reales.
+
+
+  Kern es un firmware air-gapped para firmar Bitcoin, escrito en C para el ESP32-P4 por odudex,
+  el principal colaborador de Krux: la misma idea, una interfaz simplificada y libwally por
+  debajo, la misma libreria de criptografia que usa Blockstream Jade. Firma PSBTs de single-sig,
+  multisig y politicas miniscript, en native segwit y taproot.
+
+
+  Esta app corre el simulador de escritorio que trae el propio firmware (upstream, sin parches)
+  y lo muestra en el navegador: el dispositivo es todo pantalla tactil, asi que haces click
+  directo sobre ella y arrastras para hacer swipe.
+
+
+  Kern recibe datos por dos vias, y el simulador tiene las dos:
+
+
+  - MicroSD: el explorador de archivos en /files es lo que el dispositivo ve como /sdcard. Los
+    PSBT firmados, y los backups de mnemonics y descriptores que escribe el dispositivo, vuelven
+    a esa misma carpeta
+
+  - Camara: en un contenedor no hay webcam, asi que una virtual le muestra al dispositivo un QR
+    armado con el archivo que elegis en la pagina (animado por partes si es un PSBT). Apuntala a
+    un archivo y entra a Scan, o a Load Mnemonic > From QR Code
+
+
+  Dos cosas que el hardware real tiene y el simulador no: lo que dejes en la carpeta de la
+  MicroSD queda guardado sin cifrar en tu Umbrel, y el PIN no protege nada, porque la clave que
+  viviria en el eFuse del chip aca es una constante fija (asi que las palabras anti-phishing
+  tampoco son las que te mostraria un dispositivo de verdad).
+releaseNotes: >-
+  First release. Runs Kern 0.0.18 in Umbrel, with the MicroSD shared through /files and a
+  virtual camera that turns any file in that folder into a QR the device can scan.
+
+
+  --- En espanol ---
+
+
+  Primera version. Corre Kern 0.0.18 en Umbrel, con la MicroSD compartida por /files y una
+  camara virtual que convierte cualquier archivo de esa carpeta en un QR que el dispositivo
+  puede escanear.
+developer: odudex (firmware) / NubeApps (paquete)
+website: https://github.com/odudex/Kern
+dependencies: []
+repo: https://github.com/odudex/Kern
+support: https://github.com/johnysats/nubeapps/issues
+
+port: 8616
+icon: https://raw.githubusercontent.com/johnysats/nubeapps/main/assets/kern.svg
+gallery: []
+path: ""
+
+defaultUsername: ""
+defaultPassword: ""
+
+submitter: NubeApps
+submission: ""

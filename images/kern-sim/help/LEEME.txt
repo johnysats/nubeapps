@@ -1,0 +1,37 @@
+Esta carpeta es la MicroSD del Kern
+==================================
+
+Es lo que el dispositivo ve como /sdcard y, a la vez, lo que le mostramos
+por la cámara. Subí el archivo acá (o creálo con el botón + del explorador) y
+después, en la página del simulador, elegilo en la lista "Cámara" para
+escanearlo, o buscalo desde el propio dispositivo, que también lee la MicroSD.
+
+PSBT (la transacción a firmar)
+------------------------------
+  Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+  (en Sparrow: Send > Create Transaction > Save Transaction; también Nunchuk,
+  Electrum o Blue Wallet). Sirve tanto el .psbt binario como el mismo
+  contenido en base64, en un archivo de texto.
+
+Seed (12 o 24 palabras)
+-----------------------
+  Un archivo .txt con las palabras BIP39 en minúsculas, separadas por espacios
+  y en una sola línea, sin nada más. "ejemplo-seed-publica.txt" tiene una para
+  probar: es la seed de test más conocida que existe, NO le mandes fondos.
+  Para generar la tuya, usá Bitcoin Seed Tool, otra app de esta tienda.
+
+Aviso
+-----
+  Kern es un proyecto experimental y sin auditar: su propio autor lo publica
+  para testnet y para explorar ideas, no como un producto. Esto además es un
+  simulador, y tiene dos cosas que el dispositivo real no tiene:
+
+    - lo que dejes acá queda guardado en tu Umbrel sin cifrar;
+    - el PIN no protege nada. En el hardware la clave que cifra todo vive en
+      un eFuse del chip; acá es una constante, así que las palabras
+      anti-phishing tampoco son las que verías en un dispositivo de verdad.
+
+  Sirve para aprender y para probar el flujo de firma, no para custodiar una
+  seed con fondos.
+
+Podés borrar este archivo cuando no te sirva más.
