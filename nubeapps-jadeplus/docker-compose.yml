@@ -10,7 +10,7 @@ services:
   # Router: / -> carcasa web del simulador, /files -> explorador de archivos.
   # Misma imagen que nubeapps-ccq1: su nginx ya rutea a sim:6080 y files:80.
   web:
-    image: ghcr.io/johnysats/ccq1-web:6.6.0QX-3@sha256:c376a4fe5d09fcb9175e216209176ba020ddc4ab7ad4b46aee471d27a01adb3f
+    image: ghcr.io/johnysats/ccq1-web:6.6.0QX-4@sha256:7b26b08a1b31549deb64f0dd2c0e66031088507d218312b3c499be34b81c9960
     restart: on-failure
     depends_on:
       - sim
