@@ -17,7 +17,7 @@ services:
       - files
 
   sim:
-    image: ghcr.io/johnysats/keystone3-sim:3.0.4
+    image: ghcr.io/johnysats/keystone3-sim:3.0.4@sha256:ae3cf43c696b639eb42630ea5b6f6b4c18b7234289b4033def78d517571184f1
     user: "1000:1000"
     init: true
     restart: on-failure
