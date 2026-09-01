@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <!-- Passport 2 (Gen 1.2): cuerpo vertical, pantalla color arriba, teclado 4x3 abajo -->
+  <rect x="62" y="22" width="132" height="212" rx="16" fill="#23262e" stroke="#3a3f4b" stroke-width="3"/>
+  <rect x="76" y="36" width="104" height="86" rx="6" fill="#0b0d10" stroke="#4b5566" stroke-width="2"/>
+  <!-- lo que muestra la pantalla: barra de titulo y, al pie, los botones laterales x / y -->
+  <rect x="76" y="36" width="104" height="18" rx="6" fill="#f7931a"/>
+  <g fill="#4b5566">
+    <rect x="88" y="64" width="80" height="7" rx="3.5"/>
+    <rect x="88" y="79" width="60" height="7" rx="3.5"/>
+  </g>
+  <g fill="none" stroke="#f7931a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M96 105 L88 111 L96 117"/>
+    <path d="M160 105 L168 111 L160 117"/>
+  </g>
+  <!-- teclado numerico: 4 filas x 3 columnas -->
+  <g fill="#4b5566">
+    <circle cx="92" cy="146" r="6"/><circle cx="128" cy="146" r="6"/><circle cx="164" cy="146" r="6"/>
+    <circle cx="92" cy="174" r="6"/><circle cx="128" cy="174" r="6"/><circle cx="164" cy="174" r="6"/>
+    <circle cx="92" cy="202" r="6"/><circle cx="128" cy="202" r="6"/><circle cx="164" cy="202" r="6"/>
+    <circle cx="92" cy="222" r="6"/><circle cx="128" cy="222" r="6"/><circle cx="164" cy="222" r="6"/>
+  </g>
+</svg>

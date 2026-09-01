@@ -1,0 +1,57 @@
+diff --git a/simulator/sim_modules/sflash.py b/simulator/sim_modules/sflash.py
+index 8a15e9cb..a0873901 100644
+--- a/simulator/sim_modules/sflash.py
++++ b/simulator/sim_modules/sflash.py
+@@ -37,7 +37,7 @@ class SPIFlash:
+         for i in range(len(buf)):
+             self.array[address + i] &= buf[i]
+ 
+-        self.save()
++        self.save(address, len(buf))
+ 
+     def is_busy(self):
+         # always instant
+@@ -49,25 +49,39 @@ class SPIFlash:
+     def chip_erase(self):
+         for i in range(_SIZE):
+             self.array[i] = 0xff
++        self.save()
+ 
+     def sector_erase(self, address):
+         for i in range(self.SECTOR_SIZE):
+             self.array[address + i] = 0xff
++        self.save(address, self.SECTOR_SIZE)
+ 
+     def block_erase(self, address):
+         # erase 64k at once
+         assert address % 65536 == 0, "not block start"
+         for i in range(self.BLOCK_SIZE):
+             self.array[address + i] = 0xff
+-
+-    def save(self):
+-        with open(SPI_FLASH_SIM_PATH, 'w') as f:
+-            f.write(self.array)
++        self.save(address, self.BLOCK_SIZE)
++
++    def save(self, address=None, length=None):
++        # Solo el pedazo que cambio: upstream reescribe los 8 MB en cada page program
++        # (256 bytes), y eso deja al firmware clavado en I/O apenas guarda settings.
++        if address is None:
++            with open(SPI_FLASH_SIM_PATH, 'wb') as f:
++                f.write(self.array)
++            return
++        with open(SPI_FLASH_SIM_PATH, 'r+b') as f:
++            f.seek(address)
++            f.write(self.array[address:address + length])
+ 
+     def load(self):
+         if file_exists(SPI_FLASH_SIM_PATH):
+             with open(SPI_FLASH_SIM_PATH, 'rb') as f:
+                 self.array = bytearray(f.read())
++                # Un archivo corto (guardado a medias, corte de luz) no puede tirar abajo el
++                # arranque: se completa con 0xff, que es como esta una flash sin escribir.
++                if len(self.array) < _SIZE:
++                    self.array += b'\xff' * (_SIZE - len(self.array))
+                 # print('SPIFlash.load(): len(self.array)={}'.format(len(self.array)))
+         else:
+             self.array = bytearray(_SIZE)

@@ -71,6 +71,17 @@ firmwares:
     dockerfile: images/kern-sim/Dockerfile
     build_arg: KERN_TAG
     images: [kern-sim]
+  passport:
+    repo: Foundation-Devices/passport2
+    # Excluye los tags beta/mini (v2.3.11-beta-1, v2.3.2-mini-beta-10.1, etc): solo release.
+    tag_filter: '^v[0-9]+\.[0-9]+\.[0-9]+$'
+    tag: v2.3.11
+    version_from: strip-v
+    version: "2.3.11"
+    app: nubeapps-passport
+    dockerfile: images/passport-sim/Dockerfile
+    build_arg: PASSPORT_TAG
+    images: [passport-sim]
   seedtool:
     repo: BitcoinQnA/seedtool
     tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'

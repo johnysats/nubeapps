@@ -34,6 +34,8 @@ jobs:
       seedtool_version: ${{ steps.v.outputs.seedtool_version }}
       kern_tag: ${{ steps.v.outputs.kern_tag }}
       kern_version: ${{ steps.v.outputs.kern_version }}
+      passport_tag: ${{ steps.v.outputs.passport_tag }}
+      passport_version: ${{ steps.v.outputs.passport_version }}
       # Que reconstruir en este push: ver el paso "changed".
       build_sim: ${{ steps.changed.outputs.sim }}
       build_web: ${{ steps.changed.outputs.web }}
@@ -42,6 +44,7 @@ jobs:
       build_jade: ${{ steps.changed.outputs.jade }}
       build_seedtool: ${{ steps.changed.outputs.seedtool }}
       build_kern: ${{ steps.changed.outputs.kern }}
+      build_passport: ${{ steps.changed.outputs.passport }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,6 +65,8 @@ jobs:
             echo "seedtool_version=$(yq '.firmwares.seedtool.version' versions.yml)"
             echo "kern_tag=$(yq '.firmwares.kern.tag' versions.yml)"
             echo "kern_version=$(yq '.firmwares.kern.version' versions.yml)"
+            echo "passport_tag=$(yq '.firmwares.passport.tag' versions.yml)"
+            echo "passport_version=$(yq '.firmwares.passport.version' versions.yml)"
           } >> "$GITHUB_OUTPUT"
 
       # Cada imagen se reconstruye solo si cambio algo suyo: su contexto en images/, el
@@ -122,6 +127,7 @@ jobs:
             echo "jade=$(changed images/jade-sim jade jade)"
             echo "seedtool=$(changed images/seedtool seedtool seedtool)"
             echo "kern=$(changed images/kern-sim kern kern kern-manifest kern-smoke)"
+            echo "passport=$(changed images/passport-sim passport passport passport-manifest)"
           } | tee -a "$GITHUB_OUTPUT"  # -a: el paso anterior ya escribio ahi
 
   # El simulador compila el firmware: runners nativos por arquitectura, no QEMU.
@@ -490,10 +496,89 @@ jobs:
           path: /tmp/kern-shots
           retention-days: 7
 
+  # Passport 2: el simulador de upstream compila con Rust (extmod/foundation-rust) contra
+  # el host, sin cross-compile, asi que runners nativos por arquitectura en vez de QEMU.
+  passport:
+    needs: versions
+    if: needs.versions.outputs.build_passport == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            platform: linux/amd64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: images/passport-sim
+          platforms: ${{ matrix.platform }}
+          build-args: PASSPORT_TAG=${{ needs.versions.outputs.passport_tag }}
+          cache-from: type=gha,scope=passport-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=passport-${{ matrix.platform }}
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/passport-sim,push-by-digest=true,name-canonical=true,push=true
+
+      - run: |
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${DIGEST#sha256:}"
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: passport-digests-${{ strategy.job-index }}
+          path: /tmp/digests/*
+          retention-days: 1
+
+  passport-manifest:
+    needs: [versions, passport]
+    if: needs.versions.outputs.build_passport == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: passport-digests-*
+          merge-multiple: true
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create multi-arch manifest
+        working-directory: /tmp/digests
+        env:
+          IMAGE: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/passport-sim
+          PASSPORT_VERSION: ${{ needs.versions.outputs.passport_version }}
+        run: |
+          docker buildx imagetools create -t "${IMAGE}:${PASSPORT_VERSION}" \
+            $(printf "${IMAGE}@sha256:%s " *)
+          docker buildx imagetools inspect "${IMAGE}:${PASSPORT_VERSION}"
+
   # Umbrel exige el digest del indice multi-arch pinneado en el compose. Lo escribe el CI
   # para que no haya que copiarlo a mano ni se desincronicen las dos apps (comparten ccq1-web).
   pin:
-    needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool, kern-smoke]
+    needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool, kern-smoke, passport-manifest]
     # Corre aunque se hayan salteado builds (los jobs que no cambiaron quedan "skipped"),
     # pero no si alguno fallo. El sed es idempotente: para una imagen que no se reconstruyo,
     # su tag en GHCR sigue apuntando al digest que ya esta en el compose.

@@ -1,0 +1,84 @@
+manifestVersion: 1
+id: nubeapps-passport
+category: Bitcoin
+name: Passport 2 Simulator
+version: "2.3.11"
+tagline: Passport 2 firmware in your browser, no hardware wallet / El firmware de Passport 2 en tu navegador, sin billetera física
+description: >-
+  WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
+  run air-gapped, and the entropy of any seed it generates is not safe to hold funds. The PIN
+  and the anti-phishing words protect nothing here: on real hardware the key lives in a secure
+  element, here the SPI flash is a plain file. Never import a real seed and never sign with real
+  funds.
+
+
+  It runs the Passport 2 (Gen 1.2, color screen) firmware from Foundation Devices (upstream,
+  patched only to fix a simulator-only freeze on PIN entry) and shows it in your browser with
+  the device's navpad and keys. It also responds to the keyboard: arrows to move, x to go back,
+  y to select, plus the numeric keypad.
+
+
+  Passport takes input two ways, and the simulator has both:
+
+
+  - MicroSD: the file explorer at /files is what the device reads as its card. Sign a PSBT from
+    there and it comes back as <name>-signed-001.psbt and <name>-final-001.txn in the root of
+    the card, with the original PSBT deleted
+
+  - Camera: there is no webcam in a container, so a virtual one shows the device a QR made from
+    the file you pick on the page (a SeedQR for a mnemonic, an animated UR for a PSBT). Import
+    Seed > Save Seed > SeedQR reads a seed this way, and a signed PSBT scanned in shows the
+    result on screen, saved to the card with the left (x) key
+
+
+  --- En espanol ---
+
+
+  ATENCION: esto es un simulador para aprender y probar. No es una billetera segura, no corre
+  en hardware air-gapped y la entropia de las seeds que genere no sirve para custodiar fondos.
+  El PIN y las palabras anti-phishing no protegen nada aca: en el hardware real la clave vive en
+  un secure element, aca la flash SPI es un archivo comun. Nunca importes una seed real ni
+  firmes con fondos reales.
+
+
+  Corre el firmware de Passport 2 (Gen 1.2, pantalla color) de Foundation Devices (upstream,
+  parcheado solo para arreglar un congelamiento del simulador al poner el PIN) y lo muestra en
+  el navegador con el navpad y las teclas del dispositivo. Tambien responde al teclado: flechas
+  para moverte, x para volver, y para seleccionar, mas el teclado numerico.
+
+
+  Passport recibe datos por dos vias, y el simulador tiene las dos:
+
+
+  - MicroSD: el explorador de archivos en /files es lo que el dispositivo lee como su tarjeta.
+    Firmas un PSBT desde ahi y vuelve como <nombre>-signed-001.psbt y <nombre>-final-001.txn en
+    la raiz de la tarjeta, con el PSBT original borrado
+
+  - Camara: en un contenedor no hay webcam, asi que una virtual le muestra al dispositivo un QR
+    armado con el archivo que elegis en la pagina (un SeedQR para un mnemonic, un UR animado
+    para un PSBT). Import Seed > Save Seed > SeedQR lee una seed asi, y un PSBT firmado
+    escaneado muestra el resultado en pantalla, guardado en la tarjeta con la tecla izquierda (x)
+releaseNotes: >-
+  First release: Passport 2 (Gen 1.2) joins the store as the sixth simulator.
+
+
+  --- En espanol ---
+
+
+  Primera version: Passport 2 (Gen 1.2) se suma a la tienda como el sexto simulador.
+developer: Foundation Devices (firmware) / NubeApps (paquete)
+website: https://foundationdevices.com
+dependencies: []
+repo: https://github.com/Foundation-Devices/passport2
+support: https://github.com/johnysats/nubeapps/issues
+
+port: 8617
+icon: https://raw.githubusercontent.com/johnysats/nubeapps/main/assets/passport.svg
+gallery: []
+path: ""
+
+defaultUsername: ""
+defaultPassword: ""
+
+submitter: NubeApps
+submission: ""

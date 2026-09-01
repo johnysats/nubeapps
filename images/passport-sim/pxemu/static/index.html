@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Passport Simulator</title>
+<style>
+  :root {
+    --screen: 360px;      /* ancho pedido; el alto sale de la relacion 240x320 */
+    /* Ancho real del dispositivo: la pantalla y las tres columnas de botones comparten
+       este valor, y en un telefono angosto manda la ventana. */
+    --w: min(var(--screen), calc(100vw - 64px));
+    --bg: #101216;
+    --panel: #1b1f26;
+    --edge: #2b313b;
+    --text: #e7e9ee;
+    --muted: #8a92a1;
+    --accent: #d8a94a;    /* el dorado de la carcasa del Passport */
+    --green: #4ec37a;
+  }
+  * { box-sizing: border-box; }
+  /* Misma barra que las otras apps del store: /files lo sirve el mismo app_proxy, o sea
+     el mismo login de Umbrel, sin segunda contrasena. */
+  header {
+    position: sticky; top: 0; z-index: 2; width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 0 14px; height: 44px; flex: none;
+    background: var(--panel); border-bottom: 1px solid var(--edge);
+  }
+  header b { font-weight: 600; }
+  header b span { color: var(--muted); font-weight: 400; }
+  header a {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    border: 1px solid var(--edge); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  header a:hover { border-color: var(--accent); background: #21262f; }
+  body {
+    margin: 0; padding: 0 0 40px;
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .device {
+    background: var(--panel); border: 1px solid var(--edge); border-radius: 18px;
+    padding: 20px; margin: 0 16px; display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  .screen {
+    width: var(--w); height: calc(var(--w) * 4 / 3); background: #000;
+    border: 2px solid #0b0d10; border-radius: 6px; overflow: hidden;
+  }
+  .screen img { width: 100%; height: 100%; display: block; }
+  /* 240x320 nativos: a 1x se ve nitido, ampliado conviene el pixel duro */
+  body[data-zoom="1"] .screen img { image-rendering: pixelated; }
+
+  /* Un solo teclado de 12 columnas: los tres bloques comparten la grilla y el mismo hueco,
+     asi no queda aire entre ellos ni celdas vacias alrededor del navpad. */
+  .pad { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; width: var(--w); }
+  /* x / y: los botones del borde, hacen lo que diga el icono del pie de la pantalla. */
+  .pad .side {
+    grid-column: span 6; height: 44px; display: flex; align-items: center;
+    justify-content: center; gap: 8px; font-size: 14px;
+  }
+  .pad .nav { grid-column: span 3; }
+  .pad .num { grid-column: span 4; }
+  .glyph { font-size: 19px; color: var(--accent); }
+  button:active .glyph, button.hit .glyph { color: inherit; }
+  button {
+    background: #2a3038; color: var(--text); border: 1px solid var(--edge);
+    border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer;
+    padding: 0; height: 52px; min-width: 0; touch-action: manipulation;
+    user-select: none;
+  }
+  button:hover { background: #343b45; }
+  button:active, button.hit { background: var(--accent); color: #14171c; border-color: var(--accent); }
+
+  /* Luces del dispositivo: la de la camara y el LED verde de Genuine. */
+  .leds { display: flex; gap: 16px; align-items: center; font-size: 13px; color: var(--muted); }
+  .led { display: inline-flex; align-items: center; gap: 6px; }
+  .led i {
+    width: 9px; height: 9px; border-radius: 50%; background: #3a414c;
+    border: 1px solid #10131a; display: inline-block;
+  }
+  .led.on i { background: var(--green); box-shadow: 0 0 8px rgba(78,195,122,.8); }
+  .led.cam.on i { background: var(--accent); box-shadow: 0 0 8px rgba(216,169,74,.8); }
+
+  .panel {
+    width: min(760px, calc(100% - 32px)); background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  select {
+    flex: 1 1 240px; background: #14171c; color: var(--text);
+    border: 1px solid var(--edge); border-radius: 8px; padding: 8px 10px; font: inherit;
+  }
+  .sizes button { width: auto; height: 32px; padding: 0 12px; font-weight: 500; }
+  .sizes button[aria-pressed="true"] { background: var(--accent); color: #14171c; border-color: var(--accent); }
+  h2 { margin: 0; font-size: 15px; }
+  p { margin: 0; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  kbd {
+    background: #14171c; border: 1px solid var(--edge); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 5px; font-size: 12px;
+  }
+  @media (max-width: 760px) {
+    .device { padding: 14px; margin: 0 8px; }
+  }
+  /* Selector de idioma: las dos opciones siempre a la vista, la activa resaltada. */
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .langsel { display: flex; gap: 4px; }
+  .langsel button { background: transparent; color: var(--muted); border: 1px solid var(--edge);
+                     border-radius: 6px; padding: 3px 7px; font: inherit; font-weight: 600;
+                     font-size: 11px; cursor: pointer; height: auto; min-width: 0; }
+  .langsel button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: transparent; }
+
+  /* Ayuda de donde salen los archivos: cerrada por defecto para no empujar el panel. */
+  details.howto { margin-top: 16px; border-top: 1px solid var(--edge); padding-top: 12px; }
+  details.howto summary {
+    cursor: pointer; color: var(--accent); font-size: 14px; list-style: none;
+  }
+  details.howto summary::-webkit-details-marker { display: none; }
+  details.howto summary::before { content: "\25b8\a0\a0"; }
+  details.howto[open] summary::before { content: "\25be\a0\a0"; }
+  details.howto p { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+  details.howto code {
+    background: #0f1216; border: 1px solid var(--edge); border-radius: 4px;
+    padding: 1px 5px; font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <b>Passport <span data-i18n="subtitle">· simulador</span></b>
+  <div class="header-right">
+    <div class="langsel" role="group" data-i18n-aria-label="lang-group" aria-label="Idioma">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a href="files/" target="_blank" rel="noopener" data-i18n="files-link">Archivos (MicroSD) ↗</a>
+  </div>
+</header>
+
+<div class="device">
+  <div class="screen"><img id="screen" data-i18n-alt="screen-alt" alt="Pantalla del Passport"></div>
+
+  <div class="pad">
+    <!-- x e y son los botones del borde: hacen lo que diga el icono ‹ › del pie de la pantalla. -->
+    <button class="side" data-key="x" data-i18n-title="key-x" title="Botón izquierdo: lo que indique el ícono ‹ de la pantalla">
+      <span class="glyph">‹</span><span data-i18n="key-x-label">Atrás</span>
+    </button>
+    <button class="side" data-key="y" data-i18n-title="key-y" title="Botón derecho: lo que indique el ícono › de la pantalla">
+      <span data-i18n="key-y-label">Aceptar</span><span class="glyph">›</span>
+    </button>
+
+    <button class="nav" data-key="l" data-i18n-title="key-left" title="Izquierda">◀</button>
+    <button class="nav" data-key="u" data-i18n-title="key-up" title="Arriba">▲</button>
+    <button class="nav" data-key="d" data-i18n-title="key-down" title="Abajo">▼</button>
+    <button class="nav" data-key="r" data-i18n-title="key-right" title="Derecha">▶</button>
+
+    <button class="num" data-key="1">1</button><button class="num" data-key="2">2</button><button class="num" data-key="3">3</button>
+    <button class="num" data-key="4">4</button><button class="num" data-key="5">5</button><button class="num" data-key="6">6</button>
+    <button class="num" data-key="7">7</button><button class="num" data-key="8">8</button><button class="num" data-key="9">9</button>
+    <button class="num" data-key="*">*</button><button class="num" data-key="0">0</button><button class="num" data-key="#">#</button>
+  </div>
+
+  <div class="leds">
+    <span class="led cam" id="led-camera"><i></i><span data-i18n="led-camera">Cámara</span></span>
+    <span class="led" id="led-genuine"><i></i><span data-i18n="led-genuine">Genuine</span></span>
+  </div>
+</div>
+
+<div class="panel">
+  <h2 data-i18n="h2-camera">Cámara</h2>
+  <p data-i18n="camera-help">Elegí qué archivo de la MicroSD se le muestra al Passport como QR y después abrí el
+     escáner en el dispositivo. La cámara se enciende sola cuando el firmware la pide: mirá la
+     luz <b>Cámara</b> debajo de la pantalla. Para subir o bajar archivos, usá
+     <b>Archivos (MicroSD)</b> arriba a la derecha.</p>
+  <div class="row">
+    <select id="file"><option value="" data-i18n="none-option">Ningún archivo</option></select>
+    <button id="refresh" style="width:auto;padding:0 14px" data-i18n="btn-refresh">Actualizar</button>
+  </div>
+  <div class="row sizes">
+    <span style="color:var(--muted);font-size:13px" data-i18n="screen-label">Pantalla:</span>
+    <button data-zoom="1">240 px</button>
+    <button data-zoom="1.5">360 px</button>
+    <button data-zoom="2">480 px</button>
+  </div>
+  <p id="status">…</p>
+  <p data-i18n="keys-help">Teclado: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> mueven,
+     <kbd>Enter</kbd> es el botón <b>›</b>, <kbd>Esc</kbd> el <b>‹</b>, y los números del
+     teclado son los del PIN.</p>
+
+<details class="howto">
+  <summary data-i18n="howto-summary">¿De dónde saco estos archivos?</summary>
+  <p data-i18n="howto-seed"><b>Seed (12 o 24 palabras).</b> Un archivo <code>.txt</code> con las palabras BIP39 en
+     minúsculas, separadas por espacios y en una sola línea. Podés generar una con
+     <b>Bitcoin Seed Tool</b> —otra app de esta tienda— o copiar la que te dicte el propio
+     dispositivo cuando creás una billetera nueva. En el Passport entra por la opción de importar
+     seed, eligiendo <em>SeedQR</em> como formato, con la cámara apuntando a ese archivo.</p>
+  <p data-i18n="howto-psbt"><b>PSBT.</b> Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+     (en Sparrow: <em>Send → Create Transaction → Save Transaction</em>; también Nunchuk,
+     Electrum o Blue Wallet). Sirve tanto el <code>.psbt</code> binario como el mismo
+     contenido en base64.</p>
+  <p data-i18n="howto-sign"><b>Dos formas de firmarlo.</b> Por <b>MicroSD</b>: dejá el archivo en la carpeta y usá
+     <em>Sign with microSD</em> en el dispositivo; el firmado vuelve a la misma
+     carpeta como <code>&lt;nombre&gt;-signed-001.psbt</code> (el original se borra). Por
+     <b>QR</b>: elegilo acá arriba y usá <em>Sign with QR Code</em>; el Passport muestra el firmado
+     en pantalla y el botón <b>‹</b> lo guarda en <code>transactions/</code>.</p>
+  <p data-i18n="howto-upload"><b>Cómo los subís.</b> Abrí <b>Archivos (MicroSD)</b> arriba a la derecha y arrastrá el
+     archivo ahí, o usá el botón <b>+</b> → <em>New file</em> del explorador para escribir
+     las palabras sin salir del navegador. Volvé acá, tocá <b>Actualizar</b> y elegilo en la
+     lista.</p>
+  <p data-i18n="howto-privacy">Es un simulador y estos archivos quedan guardados en tu Umbrel sin cifrar: usalo para
+     aprender y probar, nunca con una seed que tenga fondos.</p>
+</details>
+</div>
+
+<script>
+const KEYMAP = {
+  ArrowUp: "u", ArrowDown: "d", ArrowLeft: "l", ArrowRight: "r",
+  Enter: "y", Escape: "x", Backspace: "x",
+  "0": "0", "1": "1", "2": "2", "3": "3", "4": "4",
+  "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "*": "*", "#": "#",
+};
+
+// La cola nativa del keypad filtra por tiempo: un pulso corto se pierde y el firmware
+// parece congelado. El shim garantiza 300 ms cuando la accion es `tap`, asi que un click
+// suelto se manda como tap y solo si mantenes apretado pasamos a down/up (y ahi la
+// repeticion la hace el firmware con sus tiempos, como en el dispositivo real).
+const HOLD_MS = 300;
+const held = new Map();
+
+function send(key, action) {
+  fetch("api/button", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: "key=" + encodeURIComponent(key) + "&action=" + action,
+  });
+}
+
+function highlight(key, on) {
+  document.querySelector(`[data-key="${CSS.escape(key)}"]`)?.classList.toggle("hit", on);
+}
+
+function down(key) {
+  if (held.has(key)) return;
+  held.set(key, performance.now());
+  highlight(key, true);
+  send(key, "down");
+}
+
+function up(key) {
+  const since = held.get(key);
+  if (since === undefined) return;
+  held.delete(key);
+  // Si soltaste antes de los 300 ms, el up se atrasa hasta completarlos.
+  const wait = Math.max(0, HOLD_MS - (performance.now() - since));
+  setTimeout(() => { highlight(key, false); send(key, "up"); }, wait);
+}
+
+document.querySelectorAll("[data-key]").forEach(button => {
+  const key = button.dataset.key;
+  button.addEventListener("pointerdown", event => { event.preventDefault(); down(key); });
+  button.addEventListener("pointerup", () => up(key));
+  button.addEventListener("pointerleave", () => up(key));
+  button.addEventListener("pointercancel", () => up(key));
+});
+
+addEventListener("keydown", event => {
+  const key = KEYMAP[event.key];
+  // event.repeat es la repeticion del sistema operativo: la ignoramos porque la tecla
+  // ya esta abajo y el firmware repite solo.
+  if (key && !event.repeat && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    event.preventDefault();
+    down(key);
+  }
+});
+
+addEventListener("keyup", event => {
+  const key = KEYMAP[event.key];
+  if (key) { event.preventDefault(); up(key); }
+});
+
+// Si la pestana pierde el foco con una tecla apretada, quedaria abajo para siempre.
+addEventListener("blur", () => [...held.keys()].forEach(up));
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) [...held.keys()].forEach(up);
+});
+
+// La pantalla se pide de a un frame por vez: el servidor retiene la respuesta hasta que
+// algo cambia (o 1,5 s) y la conexion se cierra. Un MJPEG infinito se atasca en los
+// reverse proxies y deja los clicks encolados detras.
+const screenImg = document.getElementById("screen");
+let scale = 2;
+
+async function pump() {
+  let seq = -1;
+  let previousUrl = null;
+  while (true) {
+    try {
+      const response = await fetch(`frame.png?scale=${scale}&seq=${seq}`, {cache: "no-store"});
+      if (!response.ok) throw new Error(response.status);
+      seq = Number(response.headers.get("X-Frame-Seq") ?? -1);
+      const url = URL.createObjectURL(await response.blob());
+      screenImg.src = url;
+      if (previousUrl) URL.revokeObjectURL(previousUrl);
+      previousUrl = url;
+    } catch {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+}
+pump();
+
+const zoomButtons = document.querySelectorAll("[data-zoom]");
+function setZoom(zoom) {
+  document.documentElement.style.setProperty("--screen", 240 * Number(zoom) + "px");
+  document.body.dataset.zoom = zoom;
+  // El PNG se amplia en el servidor por un factor entero: a 1,5x pedimos 2x y lo achica
+  // el navegador, que es lo unico que no come filas de pixeles enteras.
+  scale = Math.ceil(Number(zoom));
+  zoomButtons.forEach(b => b.setAttribute("aria-pressed", b.dataset.zoom === zoom));
+  try { localStorage.setItem("pxemu-zoom", zoom); } catch {}
+}
+zoomButtons.forEach(button => {
+  button.addEventListener("click", () => setZoom(button.dataset.zoom));
+});
+let savedZoom = null;
+try { savedZoom = localStorage.getItem("pxemu-zoom"); } catch {}
+setZoom(savedZoom || "1.5");
+
+const select = document.getElementById("file");
+const status = document.getElementById("status");
+const ledCamera = document.getElementById("led-camera");
+const ledGenuine = document.getElementById("led-genuine");
+let lastState = null;
+
+function render(state) {
+  lastState = state;
+  const current = select.value;
+  select.innerHTML = `<option value="">${t("none-option", "Ningún archivo")}</option>`;
+  for (const name of state.files) {
+    const option = document.createElement("option");
+    option.value = option.textContent = name;
+    select.appendChild(option);
+  }
+  select.value = state.selected || current || "";
+
+  ledCamera.classList.toggle("on", !!state.camera_on);
+  ledGenuine.classList.toggle("on", !!state.genuine);
+
+  let text;
+  if (state.resolved) {
+    text = `${t("status-showing", "La cámara está mostrando")}: ${state.resolved}`;
+    if (!state.camera_on) text += ` · ${t("status-camera-off", "abrí el escáner en el dispositivo")}`;
+  } else if (state.files.length) {
+    text = t("status-pick", "Elegí un archivo para mostrarle a la cámara.");
+  } else {
+    text = t("status-empty", "No hay archivos en la carpeta todavía.");
+  }
+  status.textContent = text;
+}
+
+function refresh() { fetch("api/state").then(r => r.json()).then(render).catch(() => {}); }
+
+select.addEventListener("change", () => {
+  fetch("api/camera", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: "file=" + encodeURIComponent(select.value),
+  }).then(r => r.json()).then(render).catch(() => {});
+});
+document.getElementById("refresh").addEventListener("click", refresh);
+
+refresh();
+setInterval(refresh, 3000);
+
+// --- Selector de idioma ES|EN: el DOM ya trae el espanol como fuente, EN es el diccionario. ---
+let LANG = "es";
+const I18N_ATTRS = ["alt", "title", "placeholder", "aria-label"];
+const i18nOriginals = new WeakMap();
+
+function t(key, es) { return LANG === "en" ? (EN[key] ?? es) : es; }
+
+function applyLang(lang) {
+  LANG = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    if (!i18nOriginals.has(el)) i18nOriginals.set(el, {});
+    const store = i18nOriginals.get(el);
+    if (store.html === undefined) store.html = el.innerHTML;
+    el.innerHTML = lang === "en" ? EN[el.dataset.i18n] : store.html;
+  });
+  I18N_ATTRS.forEach(attr => {
+    document.querySelectorAll(`[data-i18n-${attr}]`).forEach(el => {
+      if (!i18nOriginals.has(el)) i18nOriginals.set(el, {});
+      const store = i18nOriginals.get(el);
+      if (store[attr] === undefined) store[attr] = el.getAttribute(attr);
+      const key = el.getAttribute(`data-i18n-${attr}`);
+      el.setAttribute(attr, lang === "en" ? EN[key] : store[attr]);
+    });
+  });
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".langsel button").forEach(b => {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  });
+  try { localStorage.setItem("nubeapps-lang", lang); } catch {}
+  // Re-renderiza lo ya cargado (el select y el status) sin esperar al proximo poll.
+  if (lastState) render(lastState);
+}
+
+document.querySelectorAll(".langsel button").forEach(b => {
+  b.addEventListener("click", () => applyLang(b.dataset.lang));
+});
+
+const EN = {
+  "lang-group": "Language",
+  "subtitle": "· simulator",
+  "files-link": "Files (MicroSD) ↗",
+  "screen-alt": "Passport screen",
+  "key-x": "Left button: whatever the ‹ icon on the screen says",
+  "key-y": "Right button: whatever the › icon on the screen says",
+  "key-x-label": "Back",
+  "key-y-label": "OK",
+  "key-up": "Up",
+  "key-down": "Down",
+  "key-left": "Left",
+  "key-right": "Right",
+  "led-camera": "Camera",
+  "led-genuine": "Genuine",
+  "h2-camera": "Camera",
+  "camera-help": `Pick which file on the MicroSD is shown to the Passport as a QR, then open
+     the scanner on the device. The camera turns on by itself when the firmware asks for it:
+     watch the <b>Camera</b> light below the screen. To upload or download files, use
+     <b>Files (MicroSD)</b> at the top right.`,
+  "none-option": "No file",
+  "btn-refresh": "Refresh",
+  "screen-label": "Screen:",
+  "keys-help": `Keyboard: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> move,
+     <kbd>Enter</kbd> is the <b>›</b> button, <kbd>Esc</kbd> is <b>‹</b>, and the number keys
+     are the PIN keypad.`,
+  "howto-summary": "Where do I get these files?",
+  "howto-seed": `<b>Seed (12 or 24 words).</b> A <code>.txt</code> file with the BIP39 words in
+     lowercase, separated by spaces, on a single line. You can generate one with
+     <b>Bitcoin Seed Tool</b> —another app in this store— or copy the one the device itself
+     dictates when you create a new wallet. On the Passport it goes in through the import-seed
+     option, choosing <em>SeedQR</em> as the format, with the camera pointed at that file.`,
+  "howto-psbt": `<b>PSBT.</b> Your wallet exports it when building a payment from a watch-only
+     account (in Sparrow: <em>Send → Create Transaction → Save Transaction</em>; also
+     Nunchuk, Electrum or Blue Wallet). Either the binary <code>.psbt</code> or the same
+     content in base64 works.`,
+  "howto-sign": `<b>Two ways to sign it.</b> Over <b>MicroSD</b>: drop the file in the folder and
+     use <em>Sign with microSD</em> on the device; the signed one comes back to the
+     same folder as <code>&lt;name&gt;-signed-001.psbt</code> (the original is deleted). Over
+     <b>QR</b>: pick it above and use <em>Sign with QR Code</em>; the Passport shows the signed one on
+     screen and the <b>‹</b> button saves it under <code>transactions/</code>.`,
+  "howto-upload": `<b>How to upload them.</b> Open <b>Files (MicroSD)</b> at the top right and
+     drag the file there, or use the <b>+</b> → <em>New file</em> button in the explorer to
+     type the words without leaving the browser. Come back here, tap <b>Refresh</b> and pick
+     it from the list.`,
+  "howto-privacy": `It's a simulator and these files are stored unencrypted on your Umbrel:
+     use it to learn and test, never with a seed that holds real funds.`,
+  "status-showing": "The camera is showing",
+  "status-camera-off": "open the scanner on the device",
+  "status-pick": "Pick a file to show to the camera.",
+  "status-empty": "There are no files in the folder yet.",
+};
+
+let savedLang = "es";
+try { savedLang = localStorage.getItem("nubeapps-lang") || "es"; } catch {}
+applyLang(savedLang);
+</script>
+</body>
+</html>

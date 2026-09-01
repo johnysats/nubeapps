@@ -1,0 +1,42 @@
+Esta carpeta es la MicroSD del Passport 2
+==========================================
+
+Subí el archivo acá (o creálo con el botón + del explorador) y usalo desde el dispositivo:
+Import Seed para las seeds, o Sign PSBT para transacciones. También podés mostrarle un QR al
+dispositivo con la cámara virtual, eligiendo el archivo en la página del simulador.
+
+PSBT (la transacción a firmar)
+------------------------------
+  Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+  (en Sparrow: Send > Create Transaction > Save Transaction; también Nunchuk,
+  Electrum o Blue Wallet). Sirve tanto el .psbt binario como el mismo
+  contenido en base64, en un archivo de texto.
+
+  Por MicroSD: el firmado sale como <nombre>-signed-001.psbt (más el
+  <nombre>-final-001.txn) en la raíz de esta carpeta, y el PSBT original se borra.
+
+  Por QR: entra como UR animado y el firmado se muestra en pantalla; con el botón
+  izquierdo (x) del dispositivo se guarda acá en transactions/QR-signed-001.psbt.
+
+Seed (12 o 24 palabras)
+-----------------------
+  Un archivo .txt con las palabras BIP39 en minúsculas, separadas por espacios
+  y en una sola línea, sin nada más. "ejemplo-seed-publica.txt" tiene una para
+  probar: es la seed de test más conocida que existe, NO le mandes fondos.
+  Para generar la tuya, usá Bitcoin Seed Tool, otra app de esta tienda.
+
+  Import Seed > Save Seed la deja lista para firmar; el dispositivo también puede
+  leerla como SeedQR (cuarta opción) mostrándosela por la cámara virtual.
+
+Aviso
+-----
+  Esto es un simulador y tiene dos cosas que el dispositivo real no tiene:
+
+    - lo que dejes acá queda guardado en tu Umbrel sin cifrar;
+    - el PIN y las palabras anti-phishing no protegen nada. En el hardware la
+      clave vive en un secure element; acá la flash SPI es un archivo común.
+
+  Sirve para aprender y para probar el flujo de firma, no para custodiar una
+  seed con fondos.
+
+Podés borrar este archivo cuando no te sirva más.
