@@ -17,7 +17,7 @@ services:
       - files
 
   sim:
-    image: ghcr.io/johnysats/passport-sim:2.3.11  # TODO pin: el job "pin" de CI escribe el digest
+    image: ghcr.io/johnysats/passport-sim:2.3.11@sha256:4655cea1041e58b77d294ac12991b0c4d05a72ac45e26b1ee353606257c85d8d
     user: "1000:1000"
     init: true
     restart: on-failure
