@@ -16,7 +16,8 @@ PSBT (la transacción a firmar)
   <nombre>-final-001.txn) en la raíz de esta carpeta, y el PSBT original se borra.
 
   Por QR: entra como UR animado y el firmado se muestra en pantalla; con el botón
-  izquierdo (x) del dispositivo se guarda acá en transactions/QR-signed-001.psbt.
+  izquierdo (x) del dispositivo se guarda acá en transactions/QR-signed-001.psbt,
+  en hexadecimal (no binario ni base64: puede que tu billetera pida convertirlo).
 
 Seed (12 o 24 palabras)
 -----------------------
