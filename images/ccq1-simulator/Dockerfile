@@ -1,6 +1,6 @@
 # Simulador Coldcard Q1 con el firmware ya compilado en la imagen.
 # Umbrel no permite `build:` en los paquetes: la imagen tiene que venir hecha y multi-arch.
-ARG FIRMWARE_TAG=2026-07-31T1605-v6.6.0QX
+ARG FIRMWARE_TAG=2026-08-31T1604-v6.6.1QX
 
 FROM debian:bookworm-slim AS builder
 ARG FIRMWARE_TAG

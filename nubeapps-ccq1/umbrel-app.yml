@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-ccq1
 category: Bitcoin
 name: Coldcard Q1 Simulator
-version: "6.6.0QX-4"
+version: "6.6.1QX"
 tagline: The official Coldcard Q1 simulator in your browser / El simulador oficial de la Coldcard Q1, en tu navegador
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet and it does
@@ -14,7 +14,7 @@ description: >-
   and your mouse.
 
 
-  The packaged firmware is 6.6.0QX, from Coldcard's Edge line, which supports MiniScript. You
+  The packaged firmware is 6.6.1QX, from Coldcard's Edge line, which supports MiniScript. You
   can import a descriptor and try out inheritance and timelock policies with wallets like Liana
   and Nunchuk, signing their PSBTs over the simulated MicroSD.
 
@@ -50,7 +50,7 @@ description: >-
   el teclado y el mouse.
 
 
-  El firmware empaquetado es el 6.6.0QX, de la linea Edge de Coldcard, que soporta MiniScript.
+  El firmware empaquetado es el 6.6.1QX, de la linea Edge de Coldcard, que soporta MiniScript.
   Podes importar un descriptor y probar politicas de herencia y timelocks con billeteras como
   Liana y Nunchuk, firmando sus PSBTs por la MicroSD simulada.
 
@@ -74,35 +74,50 @@ description: >-
   Arranca sin seed, con PIN 12-12 (flag -l del simulador). La seed se importa a mano desde el
   menu del dispositivo.
 releaseNotes: >-
-  The QR flow now works, through the file explorer. The Q1 reads PSBTs and seeds with its
-  camera, which a simulator has no way to provide: uploading a file to the new QR-Camara folder
-  on the MicroSD hands it to the firmware's scanner as if it had been scanned. A PSBT (binary or
-  base64), a seed (12 or 24 words, or a SeedQR) or any text works, at any size -- the content
-  arrives already decoded, so nothing has to fit in a QR.
+  Firmware 6.6.1QX, Coldcard's security release. It reworks how seeds are generated after the
+  July 2026 entropy advisory: a new master seed now mixes fresh entropy from the TRNG and both
+  Secure Elements, the RNG is a NIST Hash_DRBG instead of the old PRNG, and every new seed
+  **requires** entropy from you -- dice, coin flips or key mashing (at least 65 presses). It
+  also brings a long list of security fixes: SIGHASH_SINGLE blocked by default, the staged PSBT
+  re-verified before signing, Delta Mode hardened, and duplicate cosigner keys rejected on
+  multisig enrollment. Worth reading Coldcard's changelog.
 
 
-  Open the scanner on the device first (Scan Any QR Code, or the QR key) and upload the file
-  after that; a file that was already there when the scanner opened is not picked up.
+  On the packaging side, the QR flow now works through the file explorer. The Q1 reads PSBTs and
+  seeds with its camera, which a simulator has no way to provide: uploading a file to the new
+  QR-Camara folder on the MicroSD hands it to the firmware's scanner as if it had been scanned.
+  A PSBT (binary or base64), a seed (12 or 24 words, or a SeedQR) or any text works, at any size
+  -- the content arrives already decoded, so nothing has to fit in a QR. Open the scanner on the
+  device first (Scan Any QR Code, or the QR key) and upload the file after that; a file that was
+  already there when the scanner opened is not picked up.
 
 
-  Signing over the simulated MicroSD is unchanged. No firmware change.
+  Signing over the simulated MicroSD is unchanged.
 
 
   --- En espanol ---
 
 
-  El flujo por QR ya funciona, desde el explorador de archivos. La Q1 lee PSBTs y seeds con su
-  camara, algo que un simulador no puede darle: subir un archivo a la nueva carpeta QR-Camara de
-  la MicroSD se lo entrega al escaner del firmware como si lo hubiera escaneado. Sirve un PSBT
-  (binario o base64), una seed (12 o 24 palabras, o un SeedQR) o cualquier texto, de cualquier
-  tamano: el contenido llega ya decodificado, asi que no tiene que entrar en un QR.
+  Firmware 6.6.1QX, el release de seguridad de Coldcard. Rehace la generacion de seeds despues
+  del aviso de entropia de julio de 2026: una seed nueva ahora mezcla entropia fresca del TRNG y
+  de los dos Secure Elements, el RNG pasa a ser un Hash_DRBG de NIST en vez del PRNG viejo, y
+  toda seed nueva **exige** entropia tuya -- dados, monedas o teclas al azar (minimo 65). Trae
+  ademas una lista larga de correcciones de seguridad: SIGHASH_SINGLE bloqueado por defecto, el
+  PSBT en memoria verificado de nuevo antes de firmar, Delta Mode endurecido y las claves de
+  cosigner repetidas rechazadas al enrolar un multisig. Vale la pena leer el changelog de
+  Coldcard.
 
 
-  Primero abri el escaner en el dispositivo (Scan Any QR Code, o la tecla QR) y recien despues
-  subi el archivo; uno que ya estaba cuando se abrio el escaner no se lee.
+  Del lado del paquete, el flujo por QR ya funciona desde el explorador de archivos. La Q1 lee
+  PSBTs y seeds con su camara, algo que un simulador no puede darle: subir un archivo a la nueva
+  carpeta QR-Camara de la MicroSD se lo entrega al escaner del firmware como si lo hubiera
+  escaneado. Sirve un PSBT (binario o base64), una seed (12 o 24 palabras, o un SeedQR) o
+  cualquier texto, de cualquier tamano: el contenido llega ya decodificado, asi que no tiene que
+  entrar en un QR. Primero abri el escaner en el dispositivo (Scan Any QR Code, o la tecla QR) y
+  recien despues subi el archivo; uno que ya estaba cuando se abrio el escaner no se lee.
 
 
-  Firmar por la MicroSD simulada no cambia. Sin cambios de firmware.
+  Firmar por la MicroSD simulada no cambia.
 developer: Coinkite (firmware) / NubeApps (paquete)
 website: https://coldcard.com
 dependencies: []
