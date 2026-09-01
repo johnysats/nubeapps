@@ -21,9 +21,9 @@ firmwares:
   ccq1:
     repo: Coldcard/firmware
     tag_filter: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{4}-v[0-9.]+QX$'
-    tag: 2026-07-31T1605-v6.6.0QX
+    tag: 2026-08-31T1604-v6.6.1QX
     version_from: after-last-v
-    version: "6.6.0QX-3"
+    version: "6.6.1QX"
     app: nubeapps-ccq1
     dockerfile: images/ccq1-simulator/Dockerfile
     build_arg: FIRMWARE_TAG

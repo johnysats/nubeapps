@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-ccq1
 category: Bitcoin
 name: Coldcard Q1 Simulator
-version: "6.6.0QX-3"
+version: "6.6.1QX"
 tagline: The official Coldcard Q1 simulator in your browser / El simulador oficial de la Coldcard Q1, en tu navegador
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet and it does
