@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <!-- cuerpo: el 3 Pro es una pantalla tactil vertical de 4" -->
+  <rect x="62" y="24" width="132" height="208" rx="20" fill="#23262e" stroke="#3a3f4b" stroke-width="3"/>
+  <rect x="74" y="40" width="108" height="176" rx="8" fill="#0b0d10" stroke="#4b5566" stroke-width="2"/>
+  <!-- la marca que el propio firmware muestra al arrancar: dos trazos inclinados -->
+  <path d="M118 96h22l-14 64h-22z" fill="#f2f4f8"/>
+  <path d="M144 112h22l-14 64h-22z" fill="#3468ff"/>
+</svg>

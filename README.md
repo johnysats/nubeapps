@@ -30,6 +30,7 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 | <img height="30" src="assets/seedtool.svg" /> | [Bitcoin Seed Tool en Español](nubeapps-seedtool/) | Bitcoin Seed Tool (BitcoinQnA): entropía, BIP39/85/47/352, PSBT, multifirma. HTML único del release firmado, con capa de traducción al español | 8615 |
 | <img height="30" src="assets/kern.svg" /> | [Kern Simulator](nubeapps-kern/) | Simulador Kern (ESP32-P4, de odudex): pantalla táctil, MicroSD en `/files` y cámara virtual. Firmware experimental, solo para probar | 8616 |
 | <img height="30" src="assets/passport.svg" /> | [Passport 2 Simulator](nubeapps-passport/) | Simulador Passport 2 (Gen 1.2, Foundation Devices) en el navegador: navpad y teclado, MicroSD en `/files` y cámara virtual | 8617 |
+| <img height="30" src="assets/keystone3.svg" /> | [Keystone 3 Pro Simulator](nubeapps-keystone3/) | Simulador Keystone 3 Pro (solo-Bitcoin) en el navegador: pantalla táctil, MicroSD en `/files` y cámara virtual. El firmware habla español | 8618 |
 
 ## ¿Te sirvió?
 

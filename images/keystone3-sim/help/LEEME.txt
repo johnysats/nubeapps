@@ -1,0 +1,58 @@
+Esta carpeta es la MicroSD del Keystone 3 Pro
+============================================
+
+Es lo que el dispositivo ve como su tarjeta MicroSD y, a la vez, de donde sale
+lo que le mostramos por la cámara. Subí el archivo acá (o creálo con el botón +
+del explorador) y después, en la página del simulador, elegilo en la lista
+"Cámara".
+
+Importante: el firmware lee el QR al entrar a la pantalla de escaneo, una sola
+vez. Primero elegí el archivo en la página, después entrá a Escanear. Si ya
+estabas escaneando, salí y volvé a entrar.
+
+PSBT (la transacción a firmar)
+------------------------------
+  Lo exporta tu billetera al armar un pago desde una cuenta de solo lectura
+  (en Sparrow: Send > Create Transaction > Save Transaction; también Nunchuk,
+  Electrum o Blue Wallet). Sirve tanto el .psbt binario como el mismo
+  contenido en base64, en un archivo de texto.
+
+Seed (12 o 24 palabras)
+-----------------------
+  Ojo: la seed no se escanea. Para importar una billetera, el dispositivo pide
+  las palabras en su propio teclado, con autocompletado (alcanza con teclear
+  las primeras letras y tocar la sugerencia). "ejemplo-seed-publica.txt" tiene
+  una para copiar: es la seed de test más conocida que existe, NO le mandes
+  fondos. Para generar la tuya, usá Bitcoin Seed Tool, otra app de esta tienda.
+
+
+MicroSD: para qué sirve y para qué no
+-------------------------------------
+  Con una billetera de una sola firma, el dispositivo firma SOLO por QR: la
+  opción "Firmar desde la tarjeta Micro SD" del menú "..." aparece únicamente
+  cuando la billetera activa es multifirma. La tarjeta sirve además para
+  importar y exportar una configuración multifirma y para exportar el archivo
+  de conexión con tu billetera de software.
+
+Otros QR
+--------
+  Cualquier archivo de texto se le entrega tal cual, una línea por QR. Sirve
+  para los códigos "ur:..." que muestran las billeteras de software al
+  conectarse con el dispositivo.
+
+Aviso
+-----
+  Esto es un simulador del firmware, no un Keystone. Corre el mismo código de
+  firma que el dispositivo real, pero sin su hardware:
+
+    - lo que dejes acá queda guardado en tu Umbrel sin cifrar;
+    - el PIN y las palabras anti-phishing no protegen nada: el secure element
+      es un archivo;
+    - el generador de aleatoriedad del chip está simulado, así que una
+      billetera creada dentro del simulador es predecible. Importá una seed de
+      prueba; nunca te lleves al mundo real una seed nacida acá.
+
+  Sirve para aprender y para probar el flujo de firma, no para custodiar una
+  seed con fondos.
+
+Podés borrar este archivo cuando no te sirva más.

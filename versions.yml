@@ -92,3 +92,15 @@ firmwares:
     dockerfile: images/seedtool/Dockerfile
     build_arg: SEEDTOOL_TAG
     images: [seedtool]
+  keystone3:
+    # El simulador no esta en el CI de upstream (solo corren checks de Rust), asi que un tag
+    # nuevo puede no compilar en Linux: el PR del chequeo diario pide probar el simulador.
+    repo: KeystoneHQ/keystone3-firmware
+    tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    tag: "3.0.4"
+    version_from: tag
+    version: "3.0.4"
+    app: nubeapps-keystone3
+    dockerfile: images/keystone3-sim/Dockerfile
+    build_arg: KEYSTONE_TAG
+    images: [keystone3-sim]

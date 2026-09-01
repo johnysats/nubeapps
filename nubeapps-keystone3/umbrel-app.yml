@@ -1,0 +1,103 @@
+manifestVersion: 1
+id: nubeapps-keystone3
+category: Bitcoin
+name: Keystone 3 Pro
+version: "3.0.4"
+tagline: The Keystone 3 Pro firmware in your browser, no device needed / El firmware del Keystone 3 Pro en tu navegador, sin dispositivo
+description: >-
+  WARNING: this is a simulator, not a hardware wallet. It runs the real signing code, but not
+  the hardware around it: the secure element is a plain file on your Umbrel, the PIN and the
+  anti-phishing words protect nothing, and the chip's random number generator is simulated, so
+  a wallet created inside the simulator is predictable. Import a test seed, never one holding
+  funds, and never carry a seed born here into the real world.
+
+
+  Keystone 3 Pro is an air-gapped hardware wallet with a 4" touchscreen that never connects to
+  anything: transactions go in and out as QR codes. Its firmware is open source, and this app
+  packages the Bitcoin-only build together with the desktop simulator that ships with it, so
+  you can learn the device -- the setup, the PIN, importing a wallet, reviewing a transaction,
+  the swipe to sign -- before buying one, or keep a copy of the flow at hand.
+
+
+  The whole device is touchscreen: click straight on it, and drag to slide.
+
+
+  Two ways to get data in, and the simulator has both:
+
+
+  - Camera: there is no webcam in a container, so pick a file on the page and the device reads
+    it as a QR when you enter Scan. A PSBT comes across as a `ur:crypto-psbt`; any other text
+    file is handed over as is, one line per QR
+
+  - MicroSD: the file explorer at /files is the card the device reads and writes. Careful, the
+    firmware only signs from the card for multisig: with a single-sig wallet the "Sign from
+    Micro SD card" entry is not in the menu, and everything goes through QR. The card is also
+    used to import and export a multisig setup and to export the wallet connection file
+
+
+  The firmware speaks Spanish natively (also Russian, Chinese and Korean): pick it during
+  setup, or later in Device Settings.
+
+
+  --- En espanol ---
+
+
+  ATENCION: esto es un simulador, no una billetera de hardware. Corre el codigo de firma real,
+  pero no el hardware que lo rodea: el secure element es un archivo en tu Umbrel, el PIN y las
+  palabras anti-phishing no protegen nada, y el generador de aleatoriedad del chip esta
+  simulado, asi que una billetera creada dentro del simulador es predecible. Importa una seed
+  de prueba, nunca una con fondos, y nunca te lleves al mundo real una seed nacida aca.
+
+
+  El Keystone 3 Pro es una billetera de hardware air-gapped con pantalla tactil de 4" que no se
+  conecta a nada: las transacciones entran y salen como codigos QR. Su firmware es de codigo
+  abierto, y esta app empaqueta la version solo-Bitcoin junto con el simulador de escritorio
+  que el propio firmware trae, para que puedas conocer el dispositivo -la configuracion, el
+  PIN, importar una billetera, revisar una transaccion, el deslizar para firmar- antes de
+  comprarlo, o tener el flujo a mano.
+
+
+  Todo el dispositivo es pantalla tactil: haces click directo sobre ella y arrastras para
+  deslizar.
+
+
+  Recibe datos por dos vias, y el simulador tiene las dos:
+
+
+  - Camara: en un contenedor no hay webcam, asi que elegis un archivo en la pagina y el
+    dispositivo lo lee como QR al entrar a Escanear. Un PSBT viaja como `ur:crypto-psbt`;
+    cualquier otro archivo de texto se entrega tal cual, una linea por QR
+
+  - MicroSD: el explorador de archivos en /files es la tarjeta que el dispositivo lee y
+    escribe. Ojo, el firmware solo firma desde la tarjeta en multifirma: con una billetera
+    single-sig la opcion "Firmar desde la tarjeta Micro SD" no aparece en el menu, y todo va
+    por QR. La tarjeta sirve ademas para importar y exportar una configuracion multifirma y
+    para exportar el archivo de conexion de la billetera
+
+
+  El firmware habla espanol de fabrica (tambien ruso, chino y coreano): se elige durante la
+  configuracion inicial, o despues en los ajustes del dispositivo.
+releaseNotes: >-
+  First release: Keystone 3 Pro 3.0.4, Bitcoin-only build.
+
+
+  --- En espanol ---
+
+
+  Primera version: Keystone 3 Pro 3.0.4, compilacion solo-Bitcoin.
+developer: Keystone (firmware) / NubeApps (paquete)
+website: https://keyst.one
+dependencies: []
+repo: https://github.com/KeystoneHQ/keystone3-firmware
+support: https://github.com/johnysats/nubeapps/issues
+
+port: 8618
+icon: https://raw.githubusercontent.com/johnysats/nubeapps/main/assets/keystone3.svg
+gallery: []
+path: ""
+
+defaultUsername: ""
+defaultPassword: ""
+
+submitter: NubeApps
+submission: ""
