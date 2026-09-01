@@ -6,8 +6,12 @@ del explorador), firmalo en el dispositivo con "Ready To Sign" del menú
 principal y el resultado vuelve a esta misma carpeta como
 <nombre>-signed.psbt, listo para descargar.
 
-La seed no se lee de un archivo: se escribe en el teclado del dispositivo con
-Import Existing > 24 Words (o 12).
+La seed se escribe en el teclado del dispositivo con Import Existing > 24 Words
+(o 12), o entra por la cámara (ver abajo).
+
+La carpeta QR-Camara es el otro camino: lo que subas ahí se lo damos al
+escáner de QR del simulador, con el escáner ya abierto en el dispositivo.
+Tiene su propio LEEME adentro.
 
 PSBT (la transacción a firmar)
 ------------------------------

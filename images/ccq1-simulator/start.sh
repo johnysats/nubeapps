@@ -15,10 +15,19 @@ cd /sim/firmware/unix || exit 1
 # LEEME + seed de ejemplo la primera vez: una MicroSD vacia no dice como se usa. Solo si no
 # hay ningun archivo, asi que si el usuario ya guardo lo suyo (o borro el LEEME) no vuelve.
 SD_DIR=work/MicroSD
+QR_DIR="$SD_DIR/QR-Camara"
 mkdir -p "$SD_DIR"
-if [ -z "$(ls -A "$SD_DIR" 2>/dev/null)" ]; then
-    cp /usr/local/share/ccq1-help/* "$SD_DIR"/ || echo "!!! no pude dejar la ayuda en $SD_DIR"
+# QR-Camara la crea este script en cada arranque, asi que no cuenta para decidir si la
+# MicroSD sigue vacia.
+if [ -z "$(ls -A "$SD_DIR" 2>/dev/null | grep -v '^QR-Camara$')" ]; then
+    cp /usr/local/share/ccq1-help/*.txt "$SD_DIR"/ || echo "!!! no pude dejar la ayuda en $SD_DIR"
 fi
+
+# Camara virtual: qrfeed.py le entrega al escaner del firmware lo que se suba a QR-Camara.
+mkdir -p "$QR_DIR"
+[ -e "$QR_DIR/LEEME.txt" ] || cp /usr/local/share/ccq1-help/camara/LEEME.txt "$QR_DIR"/ \
+    || echo "!!! no pude dejar la ayuda en $QR_DIR"
+python3 /usr/local/bin/qrfeed.py &
 
 Xvfb :99 -screen 0 "$SCREEN" -nolisten tcp &
 for _ in $(seq 30); do xdpyinfo -display :99 >/dev/null 2>&1 && break; sleep 0.5; done

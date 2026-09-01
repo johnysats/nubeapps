@@ -56,7 +56,13 @@
      archivo ahí: es lo que el firmware ve como <code>/sd</code>. En el dispositivo se firma
      con <em>Ready To Sign</em> del menú principal y el resultado vuelve a la misma carpeta
      como <code>&lt;nombre&gt;-signed.psbt</code>, listo para descargar.</p>
-  <p data-i18n="howto-seed"><b>Seed.</b> El Coldcard no lee la seed de un archivo: la escribís en el teclado con
+  <p data-i18n="howto-qr"><b>Escanear un QR.</b> El Q1 real lee los QR con su cámara; acá eso se hace por archivo.
+     Abrí primero el escáner en el dispositivo (<em>Scan Any QR Code</em> del menú principal, o
+     la tecla QR) y <b>recién ahí</b> subí el archivo a la carpeta <code>QR-Camara</code> de la
+     MicroSD: el simulador lo recibe como si lo hubiera escaneado. Sirve un PSBT (binario o
+     base64), una seed (12 o 24 palabras, o un SeedQR) o cualquier texto. Si el archivo ya
+     estaba ahí antes de abrir el escáner, el firmware no lo ve: volvé a subirlo.</p>
+  <p data-i18n="howto-seed"><b>Seed.</b> Además del QR, la seed se puede escribir en el teclado del dispositivo con
      <em>Import Existing → 24 Words</em> (o 12). Si necesitás una para practicar, generala
      con <b>Bitcoin Seed Tool</b>, otra app de esta tienda.</p>
   <p data-i18n="howto-privacy">Es un simulador y lo que dejes en la MicroSD queda guardado en tu Umbrel sin cifrar:
@@ -110,9 +116,16 @@ const EN = {
      the file there: that's what the firmware sees as <code>/sd</code>. On the device, sign
      it with <em>Ready To Sign</em> from the main menu and the result comes back to the same
      folder as <code>&lt;nombre&gt;-signed.psbt</code>, ready to download.`,
-  "howto-seed": `<b>Seed.</b> The Coldcard doesn't read the seed from a file: you type it on
-     the keyboard with <em>Import Existing → 24 Words</em> (or 12). If you need one to
-     practice, generate it with <b>Bitcoin Seed Tool</b>, another app in this store.`,
+  "howto-qr": `<b>Scanning a QR.</b> The real Q1 reads QRs with its camera; here that happens
+     through a file. Open the scanner on the device first (<em>Scan Any QR Code</em> in the
+     main menu, or the QR key) and <b>only then</b> upload the file to the
+     <code>QR-Camara</code> folder on the MicroSD: the simulator takes it as if it had been
+     scanned. A PSBT (binary or base64), a seed (12 or 24 words, or a SeedQR) or any text
+     works. If the file was already there before you opened the scanner, the firmware won't
+     see it: upload it again.`,
+  "howto-seed": `<b>Seed.</b> Besides the QR, the seed can be typed on the device keyboard with
+     <em>Import Existing → 24 Words</em> (or 12). If you need one to practice, generate it
+     with <b>Bitcoin Seed Tool</b>, another app in this store.`,
   "howto-privacy": `It's a simulator, and whatever you leave on the MicroSD is stored
      unencrypted on your Umbrel: use it to learn and test, never with a seed that holds
      real funds.`,

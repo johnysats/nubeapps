@@ -1,0 +1,28 @@
+Esta carpeta es la camara del Coldcard Q1
+=========================================
+
+El Q1 real lee los QR con su camara. Acá se hace por archivo: lo que subas a
+esta carpeta se lo entregamos al escáner del simulador como si lo hubiera
+leído de la pantalla del celular o de una hoja.
+
+El orden importa
+----------------
+  1. En el dispositivo, abrí el escáner: "Scan Any QR Code" del menú principal
+     (o la tecla QR, arriba a la izquierda del teclado).
+  2. Recién ahí subí el archivo a esta carpeta.
+
+  Si el archivo ya estaba antes de abrir el escáner, el firmware no lo ve:
+  volvé a subirlo con el escáner abierto.
+
+Qué podés subir
+---------------
+  - PSBT: el .psbt binario o el mismo contenido en base64.
+  - Seed: un .txt con las 12 o 24 palabras BIP39, o un SeedQR (los dígitos).
+  - Cualquier otro texto: cada línea del archivo cuenta como un QR distinto.
+    Las líneas que empiezan con # se ignoran.
+
+Ojo que no hace falta que el QR "entre" en ningún tamaño: el simulador recibe
+el contenido ya decodificado, así que un PSBT grande va de una sola vez.
+
+Firmar por la MicroSD sigue estando: dejá el PSBT en la carpeta de arriba y
+usá "Ready To Sign". Esta carpeta es solo para el camino por QR.

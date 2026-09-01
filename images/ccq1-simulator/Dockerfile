@@ -64,6 +64,8 @@ ENV PATH=/opt/venv/bin:$PATH
 COPY index.html /usr/share/novnc/index.html
 COPY help /usr/local/share/ccq1-help
 COPY start.sh /usr/local/bin/start.sh
+# camara virtual: pasa los archivos de QR-Camara al escaner simulado del firmware
+COPY qrfeed.py /usr/local/bin/qrfeed.py
 RUN chmod +x /usr/local/bin/start.sh
 
 COPY --from=builder /sim/firmware /sim/firmware

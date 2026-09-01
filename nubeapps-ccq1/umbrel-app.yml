@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-ccq1
 category: Bitcoin
 name: Coldcard Q1 Simulator
-version: "6.6.0QX-3"
+version: "6.6.0QX-4"
 tagline: The official Coldcard Q1 simulator in your browser / El simulador oficial de la Coldcard Q1, en tu navegador
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet and it does
@@ -27,6 +27,11 @@ description: >-
   - Sign it in the simulator just like you would on the real device
 
   - Download the signed PSBT from that same explorer
+
+
+  The QR flow works from the same explorer: open the scanner on the device and upload the file
+  to the QR-Camara folder, and the firmware takes it as a scan (PSBT, seed words, SeedQR or any
+  text).
 
 
   It boots with no seed and PIN 12-12 (the simulator's -l flag). The seed is imported by hand
@@ -61,29 +66,43 @@ description: >-
   - Descargas el PSBT firmado desde el mismo explorador
 
 
+  El flujo por QR sale del mismo explorador: abris el escaner en el dispositivo y subis el
+  archivo a la carpeta QR-Camara, y el firmware lo toma como un escaneo (PSBT, palabras de la
+  seed, SeedQR o cualquier texto).
+
+
   Arranca sin seed, con PIN 12-12 (flag -l del simulador). La seed se importa a mano desde el
   menu del dispositivo.
 releaseNotes: >-
-  Adds an ES|EN toggle to the simulator page (top right, both languages always visible). The
-  page around the device -- camera panel, MicroSD help, buttons -- can now be read in English or
-  Spanish; the app description already was, this closes the gap for the page itself. What the
-  firmware draws on the emulated screen is unaffected: the Coldcard's own UI is not translated.
+  The QR flow now works, through the file explorer. The Q1 reads PSBTs and seeds with its
+  camera, which a simulator has no way to provide: uploading a file to the new QR-Camara folder
+  on the MicroSD hands it to the firmware's scanner as if it had been scanned. A PSBT (binary or
+  base64), a seed (12 or 24 words, or a SeedQR) or any text works, at any size -- the content
+  arrives already decoded, so nothing has to fit in a QR.
 
 
-  No firmware change: same simulator, same controls, same data.
+  Open the scanner on the device first (Scan Any QR Code, or the QR key) and upload the file
+  after that; a file that was already there when the scanner opened is not picked up.
+
+
+  Signing over the simulated MicroSD is unchanged. No firmware change.
 
 
   --- En espanol ---
 
 
-  Suma un selector ES|EN a la pagina del simulador (arriba a la derecha, los dos idiomas
-  siempre a la vista). La pagina alrededor del dispositivo -panel de camara, ayuda de la
-  MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
-  estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
-  emulada no cambia: la UI propia del Coldcard no se traduce.
+  El flujo por QR ya funciona, desde el explorador de archivos. La Q1 lee PSBTs y seeds con su
+  camara, algo que un simulador no puede darle: subir un archivo a la nueva carpeta QR-Camara de
+  la MicroSD se lo entrega al escaner del firmware como si lo hubiera escaneado. Sirve un PSBT
+  (binario o base64), una seed (12 o 24 palabras, o un SeedQR) o cualquier texto, de cualquier
+  tamano: el contenido llega ya decodificado, asi que no tiene que entrar en un QR.
 
 
-  Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.
+  Primero abri el escaner en el dispositivo (Scan Any QR Code, o la tecla QR) y recien despues
+  subi el archivo; uno que ya estaba cuando se abrio el escaner no se lee.
+
+
+  Firmar por la MicroSD simulada no cambia. Sin cambios de firmware.
 developer: Coinkite (firmware) / NubeApps (paquete)
 website: https://coldcard.com
 dependencies: []
