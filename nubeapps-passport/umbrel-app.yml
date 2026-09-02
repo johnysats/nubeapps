@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-passport
 category: Bitcoin
 name: Passport 2 Simulator
-version: "2.3.11"
+version: "2.3.11-2"
 tagline: Passport 2 firmware in your browser, no hardware wallet / El firmware de Passport 2 en tu navegador, sin billetera física
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -59,13 +59,15 @@ description: >-
     para un PSBT). Import Seed > Save Seed > SeedQR lee una seed asi, y un PSBT firmado
     escaneado muestra el resultado en pantalla, guardado en la tarjeta con la tecla izquierda (x)
 releaseNotes: >-
-  First release: Passport 2 (Gen 1.2) joins the store as the sixth simulator.
+  The keypad on the page now shows the letters each number types (2 abc, 3 def, ...),
+  the way they are printed on the real Passport, so multi-tap text entry is readable.
 
 
   --- En espanol ---
 
 
-  Primera version: Passport 2 (Gen 1.2) se suma a la tienda como el sexto simulador.
+  El teclado de la pagina ahora muestra las letras que escribe cada numero (2 abc, 3 def, ...),
+  como vienen impresas en el Passport real, para que se pueda escribir con multi-tap.
 developer: Foundation Devices (firmware) / NubeApps (paquete)
 website: https://foundationdevices.com
 dependencies: []

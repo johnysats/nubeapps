@@ -63,7 +63,22 @@
     justify-content: center; gap: 8px; font-size: 14px;
   }
   .pad .nav { grid-column: span 3; }
-  .pad .num { grid-column: span 4; }
+  /* Las letras que el Passport real trae impresas debajo de cada numero: el firmware escribe
+     texto con multi-tap (2 = a, 22 = b, 222 = c), asi que van en el boton y no en un cartel aparte. */
+  .pad .num {
+    grid-column: span 4; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; line-height: 1.1;
+  }
+  .pad .num small {
+    font-size: 10px; font-weight: 500; letter-spacing: .5px;
+    color: var(--muted); margin-top: 2px;
+  }
+  .pad .num small.sym { font-size: 13px; margin-top: 0; }
+  .pad .num:active small, .pad .num.hit small { color: inherit; }
+  .padhint {
+    width: var(--w); margin: -4px 0 0; font-size: 12px; line-height: 1.35;
+    color: var(--muted); text-align: center;
+  }
   .glyph { font-size: 19px; color: var(--accent); }
   button:active .glyph, button.hit .glyph { color: inherit; }
   button {
@@ -159,11 +174,14 @@
     <button class="nav" data-key="d" data-i18n-title="key-down" title="Abajo">▼</button>
     <button class="nav" data-key="r" data-i18n-title="key-right" title="Derecha">▶</button>
 
-    <button class="num" data-key="1">1</button><button class="num" data-key="2">2</button><button class="num" data-key="3">3</button>
-    <button class="num" data-key="4">4</button><button class="num" data-key="5">5</button><button class="num" data-key="6">6</button>
-    <button class="num" data-key="7">7</button><button class="num" data-key="8">8</button><button class="num" data-key="9">9</button>
-    <button class="num" data-key="*">*</button><button class="num" data-key="0">0</button><button class="num" data-key="#">#</button>
+    <button class="num" data-key="1" data-i18n-title="key-1" title="En modo texto abre la grilla de símbolos; 1 en modo numérico">1<small>!@#$</small></button><button class="num" data-key="2">2<small>abc</small></button><button class="num" data-key="3">3<small>def</small></button>
+    <button class="num" data-key="4">4<small>ghi</small></button><button class="num" data-key="5">5<small>jkl</small></button><button class="num" data-key="6">6<small>mno</small></button>
+    <button class="num" data-key="7">7<small>pqrs</small></button><button class="num" data-key="8">8<small>tuv</small></button><button class="num" data-key="9">9<small>wxyz</small></button>
+    <button class="num" data-key="*" data-i18n-title="key-star" title="Borrar el carácter anterior">*<small class="sym">⌫</small></button><button class="num" data-key="0" data-i18n-title="key-0" title="Espacio en modo texto; 0 en modo numérico">0<small data-i18n="key-0-sub">espacio</small></button><button class="num" data-key="#" data-i18n-title="key-hash" title="Cambia de modo: ABC → abc → 123">#<small>aA1</small></button>
   </div>
+
+  <p class="padhint" data-i18n="pad-hint">Para escribir texto, multi-tap: <b>2</b> = a, <b>22</b> = b, <b>222</b> = c.
+     <b>#</b> cambia entre ABC / abc / 123.</p>
 
   <div class="leds">
     <span class="led cam" id="led-camera"><i></i><span data-i18n="led-camera">Cámara</span></span>
@@ -427,6 +445,13 @@ const EN = {
   "key-down": "Down",
   "key-left": "Left",
   "key-right": "Right",
+  "key-1": "In text mode it opens the symbol grid; 1 in numeric mode",
+  "key-star": "Delete the previous character",
+  "key-0": "Space in text mode; 0 in numeric mode",
+  "key-hash": "Switch mode: ABC → abc → 123",
+  "key-0-sub": "space",
+  "pad-hint": `To type text, multi-tap: <b>2</b> = a, <b>22</b> = b, <b>222</b> = c.
+     <b>#</b> switches between ABC / abc / 123.`,
   "led-camera": "Camera",
   "led-genuine": "Genuine",
   "h2-camera": "Camera",
