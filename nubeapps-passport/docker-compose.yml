@@ -17,7 +17,7 @@ services:
       - files
 
   sim:
-    image: ghcr.io/johnysats/passport-sim:2.3.11@sha256:bf53d83660d853760ca09c983d6d427b3ce0abea7310114faad6f4ed8c497cf4
+    image: ghcr.io/johnysats/passport-sim:2.3.11-2@sha256:704c8118daeadc30bb18706015f0735532b45ace51a490b168630fad5bc2b33d
     user: "1000:1000"
     init: true
     restart: on-failure
