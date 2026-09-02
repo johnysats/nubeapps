@@ -63,11 +63,14 @@ class SourceSelector:
             for name in os.listdir(self.directory)
             if not name.startswith(".") and os.path.isfile(os.path.join(self.directory, name))
         ]
-        return sorted(
-            names,
-            key=lambda name: os.path.getmtime(os.path.join(self.directory, name)),
-            reverse=True,
-        )
+
+        def mtime(name):  # el archivo puede desaparecer desde /files entre el listado y el orden
+            try:
+                return os.path.getmtime(os.path.join(self.directory, name))
+            except OSError:
+                return 0.0
+
+        return sorted(names, key=mtime, reverse=True)
 
     def select(self, name):
         # Solo el nombre: el `file=` viene del navegador y un "../" o una ruta absoluta
@@ -109,11 +112,14 @@ def _parts(path):
         return [], f"{name}: binario no reconocido"
 
     if text.startswith("cHNidP"):
+        # Sin los blancos: los exportadores cortan el base64 en lineas de 64 y `validate`
+        # no tolera un salto de linea en el medio (ni el QR llevarlo adentro).
+        payload = "".join(text.split())
         try:
-            base64.b64decode(text, validate=True)
+            base64.b64decode(payload, validate=True)
         except binascii.Error:
             return [], f"{name}: base64 invalido"
-        return _split(text), None
+        return _split(payload), None
 
     # Descriptor, xpub, direccion, mensaje, mnemonic...: un QR estatico si entra.
     return [text] if len(text) <= PART_SIZE else _split(text), None

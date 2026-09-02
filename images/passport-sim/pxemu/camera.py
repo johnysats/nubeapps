@@ -131,13 +131,21 @@ class Source:
         return Scene([text], "text")
 
     def next_frame(self) -> bytes:
-        with self._lock:
-            if self._scene is None:
-                self._scene = self._build_scene()
-            scene = self._scene
-        if scene is None:
+        # Nada de lo que pase aca puede propagarse: el firmware pide el frame y se queda
+        # bloqueado esperandolo, asi que una excepcion (un texto que no entra en un QR, un
+        # base64 roto, el archivo borrado a mitad) dejaria el dispositivo colgado para
+        # siempre. Un frame en blanco es lo mismo que enfocar una pared.
+        try:
+            with self._lock:
+                if self._scene is None:
+                    self._scene = self._build_scene()
+                scene = self._scene
+            if scene is None:
+                return _blank()
+            return _to_rgb565(_render(scene.next_part()))
+        except Exception:
+            logger.exception("pxemu: no pude armar el frame de %s", self.selected)
             return _blank()
-        return _to_rgb565(_render(scene.next_part()))
 
 
 def _render(payload):

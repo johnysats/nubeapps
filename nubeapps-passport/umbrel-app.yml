@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-passport
 category: Bitcoin
 name: Passport 2 Simulator
-version: "2.3.11-2"
+version: "2.3.11-3"
 tagline: Passport 2 firmware in your browser, no hardware wallet / El firmware de Passport 2 en tu navegador, sin billetera física
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -59,15 +59,30 @@ description: >-
     para un PSBT). Import Seed > Save Seed > SeedQR lee una seed asi, y un PSBT firmado
     escaneado muestra el resultado en pantalla, guardado en la tarjeta con la tecla izquierda (x)
 releaseNotes: >-
-  The keypad on the page now shows the letters each number types (2 abc, 3 def, ...),
-  the way they are printed on the real Passport, so multi-tap text entry is readable.
+  Fixes two ways the device could look frozen. If the virtual camera failed to build a frame --
+  a file deleted mid-read, a text too long for one QR, a broken base64 -- its thread died and the
+  firmware stayed waiting for that frame forever; now it gets a blank frame, the same as pointing
+  the camera at a wall, and the error goes to the log. And two quick taps on the same key no
+  longer overlap: the second one used to be dropped as a repeat, so a letter went missing while
+  typing with multi-tap. Different keys still do not wait for each other.
+
+
+  No firmware change: still Passport 2 v2.3.11, color (Gen 1.2) build.
 
 
   --- En espanol ---
 
 
-  El teclado de la pagina ahora muestra las letras que escribe cada numero (2 abc, 3 def, ...),
-  como vienen impresas en el Passport real, para que se pueda escribir con multi-tap.
+  Arregla dos formas en que el dispositivo parecia colgarse. Si la camara virtual fallaba al
+  armar un frame -un archivo borrado a mitad, un texto que no entra en un QR, un base64 roto- su
+  hilo se moria y el firmware quedaba esperando ese frame para siempre; ahora recibe un frame en
+  blanco, lo mismo que apuntar la camara a una pared, y el error queda en el log. Y dos toques
+  rapidos sobre la misma tecla ya no se superponen: el segundo se descartaba por repetido, asi
+  que al escribir con multi-tap se perdia alguna letra. Teclas distintas siguen sin esperarse
+  entre si.
+
+
+  Sin cambios de firmware: sigue siendo Passport 2 v2.3.11, compilacion color (Gen 1.2).
 developer: Foundation Devices (firmware) / NubeApps (paquete)
 website: https://foundationdevices.com
 dependencies: []

@@ -11,11 +11,28 @@ BINARY = "/usr/local/bin/keystone3-simulator"
 # adentro esta el symlink assets -> /data/assets.
 HOME = os.environ.get("KSEMU_HOME", "/app/sim")
 ASSETS_DIR = os.environ.get("KSEMU_ASSETS_DIR", "/data/assets")
+LAYOUTS_DIR = "/app/layouts"
 DISPLAY = os.environ.get("KSEMU_DISPLAY", ":99")
 # Lo que el reset de fabrica NO borra: la MicroSD son los archivos del usuario (los ve por
 # /files) y el archivo de la camara lo reescribe el shim. Todo el resto de assets/ es la
 # flash simulada del dispositivo: PIN, seed cifrada, ajustes y cuentas.
 KEEP = ("sd", "qrcode_data.txt")
+
+
+def install_layouts():
+    """Las plantillas de las pantallas de transaccion, que el firmware lee de assets/.
+
+    Van en cada arranque y pisando lo que haya: son parte de la imagen (las genera el build
+    a partir del firmware, ver extraer-layouts.py), no archivos del usuario, asi que una
+    actualizacion tiene que traer las nuevas. Y van tambien despues de cada reset de
+    fabrica, que borra assets/ entero: sin ellas la pantalla de firmar sale vacia.
+    """
+    try:
+        os.makedirs(ASSETS_DIR, exist_ok=True)
+        for name in os.listdir(LAYOUTS_DIR):
+            shutil.copyfile(os.path.join(LAYOUTS_DIR, name), os.path.join(ASSETS_DIR, name))
+    except OSError as error:
+        print("ksemu: no pude instalar las plantillas de transaccion:", error)
 
 
 class Device:
@@ -66,6 +83,7 @@ class Device:
                     os.remove(path)
                 except OSError as error:
                     print("ksemu: no pude borrar", name, error)
+        install_layouts()
         self.start()
 
     def watch(self):

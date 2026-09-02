@@ -90,6 +90,7 @@ class Device:
         self._numpad = None
         self._cam_img = None
         self._pressed = set()
+        self._taps = {}  # una tecla -> el lock que serializa sus taps
         self._lock = threading.Lock()
 
     def start(self):
@@ -128,13 +129,21 @@ class Device:
         if key not in KEYS:
             return False
         if action == "tap":
-            self._send(key, True)
-            # 300 ms abajo, no un pulso corto: con 120 ms el firmware se comia uno de cada
-            # dos taps. `keypad.py` filtra por tiempo lo que entra a su cola.
-            threading.Timer(0.3, self._send, args=(key, False)).start()
+            threading.Thread(target=self._tap, args=(key,), daemon=True).start()
         else:
             self._send(key, action == "down")
         return True
+
+    def _tap(self, key):
+        # Un tap por vez *por tecla*: si el segundo llegara con la tecla todavia apretada,
+        # `_send` lo descartaria por repetido y se perderia entero. Teclas distintas no se
+        # esperan entre si.
+        with self._taps.setdefault(key, threading.Lock()):
+            self._send(key, True)
+            # 300 ms abajo, no un pulso corto: con 120 ms el firmware se comia uno de cada
+            # dos taps. `keypad.py` filtra por tiempo lo que entra a su cola.
+            time.sleep(0.3)
+            self._send(key, False)
 
     def _send(self, key, is_down):
         with self._lock:
@@ -155,9 +164,10 @@ class Device:
         pending = bytearray()
         while True:
             chunk = stream.read(FRAME_BYTES)
-            if not chunk:
+            if not chunk:  # EOF: el firmware cerro el pipe, o se esta yendo
                 if self.process.poll() is not None:
                     return
+                time.sleep(0.05)
                 continue
             pending += chunk
             while len(pending) >= FRAME_BYTES:
@@ -169,9 +179,10 @@ class Device:
         stream = open(fd, "rb", closefd=True, buffering=0)
         while True:
             chunk = stream.read(4096)
-            if not chunk:
+            if not chunk:  # EOF: el firmware cerro el pipe, o se esta yendo
                 if self.process.poll() is not None:
                     return
+                time.sleep(0.05)
                 continue
             for command in chunk.decode("utf-8", "replace").split("\n"):
                 if command == "enable":
@@ -190,9 +201,10 @@ class Device:
         stream = open(fd, "rb", closefd=True, buffering=0)
         while True:
             chunk = stream.read(64)
-            if not chunk:
+            if not chunk:  # EOF: el firmware cerro el pipe, o se esta yendo
                 if self.process.poll() is not None:
                     return
+                time.sleep(0.05)
                 continue
             for byte in chunk:
                 mask, values = (byte >> 4) & 0xF, byte & 0xF

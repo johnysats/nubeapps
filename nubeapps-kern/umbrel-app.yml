@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-kern
 category: Bitcoin
 name: Kern
-version: "0.0.18-2"
+version: "0.0.18-3"
 tagline: The experimental Kern signer in your browser, no ESP32-P4 device / El firmware experimental de Kern en tu navegador, sin dispositivo ESP32-P4
 description: >-
   WARNING: Kern is a research and development project, not a product. Its own author publishes
@@ -76,10 +76,9 @@ description: >-
   viviria en el eFuse del chip aca es una constante fija (asi que las palabras anti-phishing
   tampoco son las que te mostraria un dispositivo de verdad).
 releaseNotes: >-
-  Adds an ES|EN toggle to the simulator page (top right, both languages always visible). The
-  page around the device -- camera panel, MicroSD help, buttons -- can now be read in English or
-  Spanish; the app description already was, this closes the gap for the page itself. What the
-  firmware draws on the emulated screen is unaffected: Kern's own UI is not translated.
+  Two fixes in the virtual camera: a PSBT in base64 split across lines (the way most wallets
+  export it) is now read instead of rejected as invalid, and listing the MicroSD files no longer
+  fails if one of them is deleted from /files while the list is being built.
 
 
   No firmware change: still Kern 0.0.18, same controls, same simulator.
@@ -88,11 +87,9 @@ releaseNotes: >-
   --- En espanol ---
 
 
-  Suma un selector ES|EN a la pagina del simulador (arriba a la derecha, los dos idiomas
-  siempre a la vista). La pagina alrededor del dispositivo -panel de camara, ayuda de la
-  MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
-  estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
-  emulada no cambia: la UI propia de Kern no se traduce.
+  Dos arreglos en la camara virtual: un PSBT en base64 cortado en varias lineas (como lo exporta
+  la mayoria de las billeteras) ahora se lee en vez de rechazarse por invalido, y el listado de
+  archivos de la MicroSD ya no falla si uno se borra desde /files mientras se arma la lista.
 
 
   Sin cambios de firmware: sigue siendo Kern 0.0.18, mismos controles, mismo simulador.

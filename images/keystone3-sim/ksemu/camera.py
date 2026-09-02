@@ -51,11 +51,14 @@ class SourceSelector:
             for name in os.listdir(self.directory)
             if not name.startswith(".") and os.path.isfile(os.path.join(self.directory, name))
         ]
-        return sorted(
-            names,
-            key=lambda name: os.path.getmtime(os.path.join(self.directory, name)),
-            reverse=True,
-        )
+
+        def mtime(name):  # el archivo puede desaparecer desde /files entre el listado y el orden
+            try:
+                return os.path.getmtime(os.path.join(self.directory, name))
+            except OSError:
+                return 0.0
+
+        return sorted(names, key=mtime, reverse=True)
 
     def select(self, name):
         # Solo el nombre: el `file=` viene del navegador y un "../" o una ruta absoluta
@@ -103,8 +106,10 @@ def _lines(path):
         raise ValueError(f"{name}: binario no reconocido (no es un PSBT)")
 
     if text.startswith("cHNidP"):
+        # Sin los blancos: los exportadores cortan el base64 en lineas de 64 y `validate`
+        # no tolera un salto de linea en el medio.
         try:
-            return _ur_psbt(base64.b64decode(text, validate=True))
+            return _ur_psbt(base64.b64decode("".join(text.split()), validate=True))
         except binascii.Error:
             raise ValueError(f"{name}: parece un PSBT en base64, pero no es base64 valido")
 

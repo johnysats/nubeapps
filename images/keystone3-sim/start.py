@@ -15,8 +15,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ksemu import camera, device, screen, webui
 
 HELP_DIR = "/app/help"
-LAYOUTS_DIR = "/app/layouts"
-ASSETS_DIR = os.environ.get("KSEMU_ASSETS_DIR", "/data/assets")
 SD_DIR = os.environ.get("KSEMU_SD_DIR", "/data/assets/sd")
 DISPLAY = os.environ.get("KSEMU_DISPLAY", ":99")
 PORT = int(os.environ.get("KSEMU_PORT", "6080"))
@@ -39,23 +37,6 @@ def seed_help():
             shutil.copyfile(os.path.join(HELP_DIR, name), os.path.join(SD_DIR, name))
     except OSError as error:
         print("ksemu: no pude dejar la ayuda en la MicroSD:", error)
-
-
-
-
-def install_layouts():
-    """Las plantillas de las pantallas de transaccion, que el firmware lee de assets/.
-
-    Van en cada arranque y pisando lo que haya: son parte de la imagen (las genera el build
-    a partir del firmware, ver extraer-layouts.py), no archivos del usuario, asi que una
-    actualizacion tiene que traer las nuevas.
-    """
-    try:
-        os.makedirs(ASSETS_DIR, exist_ok=True)
-        for name in os.listdir(LAYOUTS_DIR):
-            shutil.copyfile(os.path.join(LAYOUTS_DIR, name), os.path.join(ASSETS_DIR, name))
-    except OSError as error:
-        print("ksemu: no pude instalar las plantillas de transaccion:", error)
 
 
 def start_xvfb():
@@ -85,7 +66,7 @@ def start_xvfb():
 
 def main():
     seed_help()
-    install_layouts()
+    device.install_layouts()
     start_xvfb()
     camera.start()
     device.start()

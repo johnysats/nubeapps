@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-keystone3
 category: Bitcoin
 name: Keystone 3 Pro
-version: "3.0.4"
+version: "3.0.4-2"
 tagline: The Keystone 3 Pro firmware in your browser, no device needed / El firmware del Keystone 3 Pro en tu navegador, sin dispositivo
 description: >-
   WARNING: this is a simulator, not a hardware wallet. It runs the real signing code, but not
@@ -78,13 +78,33 @@ description: >-
   El firmware habla espanol de fabrica (tambien ruso, chino y coreano): se elige durante la
   configuracion inicial, o despues en los ajustes del dispositivo.
 releaseNotes: >-
-  First release: Keystone 3 Pro 3.0.4, Bitcoin-only build.
+  Fixes the factory reset. It wiped assets/ whole, templates included, and never put them back:
+  after resetting, the signing screen came up empty -- no amount, no destination, no fee -- until
+  the app was restarted. The templates are now reinstalled by the reset itself.
+
+
+  Two smaller fixes in the virtual camera: a PSBT in base64 split across lines (the way most
+  wallets export it) is read instead of rejected as invalid, and listing the files no longer
+  fails if one of them is deleted from /files while the list is being built.
+
+
+  No firmware change: still Keystone 3 Pro 3.0.4, Bitcoin-only build.
 
 
   --- En espanol ---
 
 
-  Primera version: Keystone 3 Pro 3.0.4, compilacion solo-Bitcoin.
+  Arregla el reset de fabrica. Borraba assets/ entero, plantillas incluidas, y no las volvia a
+  poner: despues de resetear, la pantalla de firmar salia vacia -sin monto, sin destino, sin
+  comision- hasta reiniciar la app. Ahora las reinstala el propio reset.
+
+
+  Dos arreglos mas chicos en la camara virtual: un PSBT en base64 cortado en varias lineas (como
+  lo exporta la mayoria de las billeteras) se lee en vez de rechazarse por invalido, y el listado
+  de archivos ya no falla si uno se borra desde /files mientras se arma la lista.
+
+
+  Sin cambios de firmware: sigue siendo Keystone 3 Pro 3.0.4, compilacion solo-Bitcoin.
 developer: Keystone (firmware) / NubeApps (paquete)
 website: https://keyst.one
 dependencies: []
