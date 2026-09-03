@@ -27,6 +27,12 @@ jobs:
           : > /tmp/body.md
 
           for key in $(yq '.firmwares | keys | .[]' versions.yml); do
+            # Una entrada puede empaquetar algo que upstream no versiona con tags (p.ej. un
+            # commit pinneado): ahi no hay nada que comparar y el bump es manual.
+            if [ "$(yq ".firmwares.${key}.auto_bump // true" versions.yml)" = "false" ]; then
+              echo "${key}: bump manual, se saltea"
+              continue
+            fi
             repo=$(yq ".firmwares.${key}.repo" versions.yml)
             filter=$(yq ".firmwares.${key}.tag_filter" versions.yml)
             old_tag=$(yq ".firmwares.${key}.tag" versions.yml)

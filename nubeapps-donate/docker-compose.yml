@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: nubeapps-donate_web_1
+      APP_PORT: 80
+
+  # Un unico servicio: nginx sirviendo una pagina estatica con el widget de Blink. Sin
+  # estado, sin bind mounts.
+  web:
+    image: ghcr.io/johnysats/donate:1.5.2
+    restart: on-failure
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <!-- corazon: la donacion -->
+  <path d="M128 196 C68 156 44 122 44 90 C44 62 66 44 92 44 C110 44 122 54 128 64
+           C134 54 146 44 164 44 C190 44 212 62 212 90 C212 122 188 156 128 196 Z"
+        fill="#23262e" stroke="#3a3f4b" stroke-width="4"/>
+  <!-- rayo lightning: como se dona -->
+  <path d="M140 76 L96 148 L124 148 L112 190 L166 122 L136 122 Z" fill="#f7931a"/>
+</svg>

@@ -38,6 +38,8 @@ jobs:
       passport_version: ${{ steps.v.outputs.passport_version }}
       keystone3_tag: ${{ steps.v.outputs.keystone3_tag }}
       keystone3_version: ${{ steps.v.outputs.keystone3_version }}
+      donate_tag: ${{ steps.v.outputs.donate_tag }}
+      donate_version: ${{ steps.v.outputs.donate_version }}
       # Que reconstruir en este push: ver el paso "changed".
       build_sim: ${{ steps.changed.outputs.sim }}
       build_web: ${{ steps.changed.outputs.web }}
@@ -48,6 +50,7 @@ jobs:
       build_kern: ${{ steps.changed.outputs.kern }}
       build_passport: ${{ steps.changed.outputs.passport }}
       build_keystone3: ${{ steps.changed.outputs.keystone3 }}
+      build_donate: ${{ steps.changed.outputs.donate }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,6 +75,8 @@ jobs:
             echo "passport_version=$(yq '.firmwares.passport.version' versions.yml)"
             echo "keystone3_tag=$(yq '.firmwares.keystone3.tag' versions.yml)"
             echo "keystone3_version=$(yq '.firmwares.keystone3.version' versions.yml)"
+            echo "donate_tag=$(yq '.firmwares.donate.tag' versions.yml)"
+            echo "donate_version=$(yq '.firmwares.donate.version' versions.yml)"
           } >> "$GITHUB_OUTPUT"
 
       # Cada imagen se reconstruye solo si cambio algo suyo: su contexto en images/, el
@@ -134,6 +139,7 @@ jobs:
             echo "kern=$(changed images/kern-sim kern kern kern-manifest kern-smoke)"
             echo "passport=$(changed images/passport-sim passport passport passport-manifest)"
             echo "keystone3=$(changed images/keystone3-sim keystone3 keystone3 keystone3-manifest keystone3-smoke)"
+            echo "donate=$(changed images/donate donate donate)"
           } | tee -a "$GITHUB_OUTPUT"  # -a: el paso anterior ya escribio ahi
 
   # El simulador compila el firmware: runners nativos por arquitectura, no QEMU.
@@ -381,6 +387,34 @@ jobs:
           build-args: SEEDTOOL_TAG=${{ needs.versions.outputs.seedtool_tag }}
           push: true
           tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/seedtool:${{ needs.versions.outputs.seedtool_version }}
+
+  # Pagina de donacion: nginx + el widget de Blink descargado por commit pinneado. Nada
+  # compila, igual que seedtool.
+  donate:
+    needs: versions
+    if: needs.versions.outputs.build_donate == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: images/donate
+          platforms: linux/amd64,linux/arm64
+          build-args: DONATE_JS_COMMIT=${{ needs.versions.outputs.donate_tag }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ needs.versions.outputs.owner }}/donate:${{ needs.versions.outputs.donate_version }}
 
   # Kern: el simulador de escritorio es C y compila en un minuto, pero libwally y SDL son
   # nativos, asi que runners por arquitectura en vez de QEMU.
@@ -704,7 +738,7 @@ jobs:
   # Umbrel exige el digest del indice multi-arch pinneado en el compose. Lo escribe el CI
   # para que no haya que copiarlo a mano ni se desincronicen las dos apps (comparten ccq1-web).
   pin:
-    needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool, kern-smoke, passport-manifest, keystone3-smoke]
+    needs: [versions, simulator-manifest, web, seedsigner, krux, jade, seedtool, kern-smoke, passport-manifest, keystone3-smoke, donate]
     # Corre aunque se hayan salteado builds (los jobs que no cambiaron quedan "skipped"),
     # pero no si alguno fallo. El sed es idempotente: para una imagen que no se reconstruyo,
     # su tag en GHCR sigue apuntando al digest que ya esta en el compose.

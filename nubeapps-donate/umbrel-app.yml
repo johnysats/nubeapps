@@ -1,0 +1,51 @@
+manifestVersion: 1
+id: nubeapps-donate
+category: Bitcoin
+name: Donar a NubeApps
+version: "1.5.2"
+tagline: Support the developer of this app store / Apoya al desarrollador de esta tienda
+description: >-
+  Mantengo NubeApps yo solo y el store es gratis. Esta app es una pagina con el boton de
+  donacion de Blink, por si alguna de las otras apps te resulto util y queres invitarme unos
+  sats por Lightning. No guarda nada, no tiene cuentas ni analytics, y muestra ademas la
+  direccion johnysats@blink.sv con su QR, para pagar desde tu billetera sin usar el boton.
+
+
+  La unica conexion que sale de tu navegador es a api.blink.sv, y solo cuando pedis una
+  factura. El widget de Blink viene servido desde esta misma app, con tres cambios respecto
+  del original: sin la fuente que cargaba de Google, sin los iconos que traia de GitHub, y
+  sin el parametro que enviaba la direccion de tu Umbrel al hacer click en el logo.
+
+
+  --- In English ---
+
+
+  I maintain NubeApps on my own and the store is free. This app is a page with Blink's
+  donate button, in case one of the other apps was useful to you and you want to send a few
+  sats over Lightning. It stores nothing, has no accounts and no analytics, and it also
+  shows the address johnysats@blink.sv with its QR, so you can pay from your own wallet
+  without using the button.
+
+
+  The only connection leaving your browser goes to api.blink.sv, and only when you request
+  an invoice. Blink's widget is served from this app itself, with three changes from the
+  original: no font loaded from Google, no icons fetched from GitHub, and no parameter
+  sending your Umbrel's address when you click the logo.
+releaseNotes: ""
+
+developer: johnysats / NubeApps
+website: https://github.com/johnysats/nubeapps
+dependencies: []
+repo: https://github.com/johnysats/nubeapps
+support: https://github.com/johnysats/nubeapps/issues
+
+port: 8619
+icon: https://raw.githubusercontent.com/johnysats/nubeapps/main/assets/donate.svg
+gallery: []
+path: ""
+
+defaultUsername: ""
+defaultPassword: ""
+
+submitter: NubeApps
+submission: ""

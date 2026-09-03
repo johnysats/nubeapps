@@ -36,7 +36,7 @@ En umbrelOS: **App Store → Community App Store → Add** y pegar la URL de est
 
 Si alguna de estas apps te resultó útil, podés invitarme un café en sats:
 
-[![Lightning](https://img.shields.io/badge/⚡%20Lightning-pay.blink.sv%2Fjohnysats-f7931a?style=for-the-badge)](https://pay.blink.sv/johnysats)
+[![Lightning](https://img.shields.io/badge/⚡%20Lightning-johnysats%40blink.sv-f7931a?style=for-the-badge)](nubeapps-donate/)
 
 ## Estructura
 

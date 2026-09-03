@@ -104,3 +104,20 @@ firmwares:
     dockerfile: images/keystone3-sim/Dockerfile
     build_arg: KEYSTONE_TAG
     images: [keystone3-sim]
+  donate:
+    # No es un firmware: es la app de donacion (widget de Blink). El repo upstream no publica
+    # tags ni releases, asi que "tag" es el commit que toco el .js por ultima vez, no un git
+    # tag, y no hay nada que el chequeo diario pueda comparar: auto_bump lo hace saltear la
+    # entrada. El bump es manual, preguntandole a la API de GitHub por ese archivo:
+    #   curl -s "https://api.github.com/repos/blinkbitcoin/donation-button.blink.sv/commits?path=js/blink-pay-button.js&per_page=1"
+    # Ojo al actualizar: los tres parches de privacidad del Dockerfile verifican su objetivo
+    # antes de aplicarlo, asi que si el widget movio esas lineas, el build falla y avisa.
+    repo: blinkbitcoin/donation-button.blink.sv
+    auto_bump: false
+    tag: b4a03fcedde903705a2fc2127849c7991adf81fe
+    version_from: tag
+    version: "1.5.2"
+    app: nubeapps-donate
+    dockerfile: images/donate/Dockerfile
+    build_arg: DONATE_JS_COMMIT
+    images: [donate]
