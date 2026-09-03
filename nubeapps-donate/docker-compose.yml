@@ -10,7 +10,7 @@ services:
   # Un unico servicio: nginx sirviendo una pagina estatica con el widget de Blink. Sin
   # estado, sin bind mounts.
   web:
-    image: ghcr.io/johnysats/donate:1.5.2
+    image: ghcr.io/johnysats/donate:1.5.2@sha256:0b947efd4cec63d44d6f361ac24cd1726e35ffae74f169bfde49ba8133cbd1a4
     restart: on-failure
     read_only: true
     tmpfs:
