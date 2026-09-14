@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-seedtool
 category: Bitcoin
 name: Bitcoin Seed Tool en Español
-version: "2.3.0"
+version: "2.4.0"
 tagline: Learn how seeds, entropy and derivation work / Aprende como funcionan las seeds, la entropia y la derivacion
 description: >-
   WARNING: this is a learning and verification tool that runs in your browser. It is not a
