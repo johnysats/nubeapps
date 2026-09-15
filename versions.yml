@@ -85,9 +85,9 @@ firmwares:
   seedtool:
     repo: BitcoinQnA/seedtool
     tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
-    tag: "2.3.0"
+    tag: "2.4.0"
     version_from: tag
-    version: "2.3.0"
+    version: "2.4.0"
     app: nubeapps-seedtool
     dockerfile: images/seedtool/Dockerfile
     build_arg: SEEDTOOL_TAG
@@ -97,9 +97,9 @@ firmwares:
     # nuevo puede no compilar en Linux: el PR del chequeo diario pide probar el simulador.
     repo: KeystoneHQ/keystone3-firmware
     tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
-    tag: "3.0.4"
+    tag: "3.0.6"
     version_from: tag
-    version: "3.0.4-2"
+    version: "3.0.6"
     app: nubeapps-keystone3
     dockerfile: images/keystone3-sim/Dockerfile
     build_arg: KEYSTONE_TAG

@@ -2,7 +2,7 @@
 # Umbrel no permite `build:` en los compose: la imagen tiene que venir hecha y multi-arch.
 # El Rust de `rust/` compila contra el host, asi que se construye nativo en cada
 # arquitectura y el indice se arma despues (igual que kern y passport).
-ARG KEYSTONE_TAG=3.0.4
+ARG KEYSTONE_TAG=3.0.6
 
 FROM debian:bookworm-slim AS builder
 ARG KEYSTONE_TAG
