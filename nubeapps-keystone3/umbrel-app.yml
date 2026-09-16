@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-keystone3
 category: Bitcoin
 name: Keystone 3 Pro
-version: "3.0.4-3"
+version: "3.0.8"
 tagline: The Keystone 3 Pro firmware in your browser, no device needed / El firmware del Keystone 3 Pro en tu navegador, sin dispositivo
 description: >-
   WARNING: this is a simulator, not a hardware wallet. It runs the real signing code, but not
