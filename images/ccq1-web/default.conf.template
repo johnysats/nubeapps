@@ -3,6 +3,15 @@ map $http_upgrade $connection_upgrade {
     ''      close;
 }
 
+# Sin Cache-Control el navegador cachea por heuristica (10% de la antiguedad del
+# Last-Modified) y ni pregunta. Asi quedo guardada la pagina de otra app en el puerto
+# equivocado mientras los alias cortos mezclaban simuladores. Lo que mande el upstream
+# se respeta; si no manda nada, no-cache: revalida en cada carga.
+map $upstream_http_cache_control $cache_control {
+    ''      no-cache;
+    default $upstream_http_cache_control;
+}
+
 server {
     listen 80;
     server_name _;
@@ -16,6 +25,9 @@ server {
     # umbrel_main_network, donde "sim" y "files" son alias de TODAS las apps instaladas a
     # la vez. Con el nombre corto este resolver iba round-robin entre los simuladores de
     # apps distintas y mezclaba las pantallas.
+
+    proxy_hide_header Cache-Control;
+    add_header Cache-Control $cache_control always;
 
     # PSBTs y archivos grandes hacia la MicroSD simulada
     client_max_body_size 512m;

@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-seedsigner
 category: Bitcoin
 name: SeedSigner Simulator
-version: "0.8.7-4"
+version: "0.8.7-5"
 tagline: SeedSigner firmware in your browser, no Raspberry Pi / El firmware de SeedSigner en tu navegador, sin Raspberry Pi
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -57,18 +57,14 @@ description: >-
   - Firmas: el PSBT firmado sale como QR animado en pantalla y ademas queda como
     <nombre>-signed.psbt para descargarlo desde /files
 releaseNotes: >-
-  Fixes the simulator mixing itself up with another NubeApps device: with two of them
-  installed, opening either one could show the other's screen, and /files could open the
-  other's MicroSD folder.
+  Follow-up to the previous update: if an app still opened another NubeApps simulator's
+  screen after updating, it was your browser showing a copy it had saved while the bug was
+  active. The simulator page is now sent with an explicit "check with the server first"
+  header, so the browser can no longer keep a stale page like that.
 
 
-  Every umbrelOS app runs on one shared Docker network, where a short service name like
-  "sim" or "files" belongs to every installed app at the same time, so this app's internal
-  router was picking a container at random every few seconds. It now addresses its own
-  containers by their full name.
-
-
-  If you have more than one NubeApps simulator installed, update all of them.
+  If you still see the wrong device, open that app and force a reload once: Ctrl+Shift+R
+  (Cmd+Shift+R on Mac).
 
 
   No firmware change: same simulator, same controls, same data.
@@ -77,18 +73,15 @@ releaseNotes: >-
   --- En espanol ---
 
 
-  Arregla que el simulador se mezclara con otro dispositivo de NubeApps: con dos instalados,
-  abrir cualquiera de los dos podia mostrar la pantalla del otro, y /files podia abrir la
-  carpeta MicroSD del otro.
+  Complemento de la actualizacion anterior: si despues de actualizar una app seguia abriendo
+  la pantalla de otro simulador de NubeApps, era tu navegador mostrando una copia que habia
+  guardado mientras estaba el bug. La pagina del simulador ahora sale con un encabezado que le
+  pide al navegador consultar siempre al servidor, asi ya no puede quedarse con una pagina
+  vieja de esa forma.
 
 
-  Todas las apps de umbrelOS corren sobre una sola red de Docker, donde un nombre corto de
-  servicio como "sim" o "files" les pertenece a todas las apps instaladas a la vez, asi que
-  el router interno de esta app elegia un contenedor al azar cada pocos segundos. Ahora se
-  dirige a sus propios contenedores por el nombre completo.
-
-
-  Si tenes mas de un simulador de NubeApps instalado, actualizalos todos.
+  Si todavia ves el dispositivo equivocado, abri esa app y forza la recarga una vez:
+  Ctrl+Shift+R (Cmd+Shift+R en Mac).
 
 
   Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.

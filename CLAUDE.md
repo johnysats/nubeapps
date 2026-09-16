@@ -53,7 +53,10 @@ las 12 palabras: un comentario ahí rompería el parseo de la cámara.
   la vez, round-robin. Entre contenedores hay que hablarse por el nombre completo
   `<app-id>_<servicio>_1` — que es lo que umbreld fuerza con `container_name` — y nunca por
   el nombre corto. Por eso `ccq1-web` recibe `SIM_HOST` y `FILES_HOST` por environment en vez
-  de tenerlos horneados.
+  de tenerlos horneados. Y le agrega `Cache-Control: no-cache` a toda respuesta que no traiga
+  uno propio: el noVNC del ccq1 sale solo con `Last-Modified`, el navegador lo cacheaba por
+  heurística (10% de la antigüedad) y, mientras los alias estaban mezclados, quedó guardada la
+  página de CCQ1 en el puerto de Krux — seguía apareciendo ya arreglado, hasta forzar recarga.
 - Persistencia solo por bind mounts `${APP_DATA_DIR}/data/...`; dirs vacíos se commitean con
   `.gitkeep`. Nada de named volumes ni `/var/run/docker.sock`.
 - Umbrel crea `app-data/<app-id>` con owner `1000:1000` → servicios con `user: "1000:1000"`.
