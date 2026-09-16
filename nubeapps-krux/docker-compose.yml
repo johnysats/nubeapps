@@ -10,7 +10,7 @@ services:
   # Router: / -> carcasa web del simulador, /files -> explorador de la MicroSD.
   # Misma imagen que nubeapps-ccq1: su nginx ya rutea a sim:6080 y files:80.
   web:
-    image: ghcr.io/johnysats/ccq1-web:6.6.1QX@sha256:cbb7081172842021695478aa5ac1f18a96b534f9702ef389c5c3abefbfea618b
+    image: ghcr.io/johnysats/ccq1-web:6.6.1QX@sha256:4f2ccc80ca9b0758d861fc168faf90a6c942a6eb101c7102dfa2aa922376ba4b
     restart: on-failure
     environment:
       # Nombres completos de contenedor, no los cortos del compose: todas las apps de
