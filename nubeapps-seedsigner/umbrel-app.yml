@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-seedsigner
 category: Bitcoin
 name: SeedSigner Simulator
-version: "0.8.7-3"
+version: "0.8.7-4"
 tagline: SeedSigner firmware in your browser, no Raspberry Pi / El firmware de SeedSigner en tu navegador, sin Raspberry Pi
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
@@ -57,11 +57,18 @@ description: >-
   - Firmas: el PSBT firmado sale como QR animado en pantalla y ademas queda como
     <nombre>-signed.psbt para descargarlo desde /files
 releaseNotes: >-
-  Adds an ES|EN toggle to the simulator page (top right, both languages always visible). The
-  page around the device -- camera panel, MicroSD help, buttons -- can now be read in English or
-  Spanish; the app description already was, this closes the gap for the page itself. What the
-  firmware draws on the emulated screen is unaffected: SeedSigner's own UI has its own language
-  setting, unrelated to this toggle.
+  Fixes the simulator mixing itself up with another NubeApps device: with two of them
+  installed, opening either one could show the other's screen, and /files could open the
+  other's MicroSD folder.
+
+
+  Every umbrelOS app runs on one shared Docker network, where a short service name like
+  "sim" or "files" belongs to every installed app at the same time, so this app's internal
+  router was picking a container at random every few seconds. It now addresses its own
+  containers by their full name.
+
+
+  If you have more than one NubeApps simulator installed, update all of them.
 
 
   No firmware change: same simulator, same controls, same data.
@@ -70,12 +77,18 @@ releaseNotes: >-
   --- En espanol ---
 
 
-  Suma un selector ES|EN a la pagina del simulador (arriba a la derecha, los dos idiomas
-  siempre a la vista). La pagina alrededor del dispositivo -panel de camara, ayuda de la
-  MicroSD, botones- ahora se puede leer en espanol o ingles; la descripcion de la app ya lo
-  estaba, esto cierra la diferencia en la pagina misma. Lo que el firmware dibuja en la pantalla
-  emulada no cambia: la UI propia de SeedSigner tiene su propio ajuste de idioma, sin relacion
-  con este selector.
+  Arregla que el simulador se mezclara con otro dispositivo de NubeApps: con dos instalados,
+  abrir cualquiera de los dos podia mostrar la pantalla del otro, y /files podia abrir la
+  carpeta MicroSD del otro.
+
+
+  Todas las apps de umbrelOS corren sobre una sola red de Docker, donde un nombre corto de
+  servicio como "sim" o "files" les pertenece a todas las apps instaladas a la vez, asi que
+  el router interno de esta app elegia un contenedor al azar cada pocos segundos. Ahora se
+  dirige a sus propios contenedores por el nombre completo.
+
+
+  Si tenes mas de un simulador de NubeApps instalado, actualizalos todos.
 
 
   Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.

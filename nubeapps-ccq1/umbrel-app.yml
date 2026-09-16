@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-ccq1
 category: Bitcoin
 name: Coldcard Q1 Simulator
-version: "6.6.1QX"
+version: "6.6.1QX-2"
 tagline: The official Coldcard Q1 simulator in your browser / El simulador oficial de la Coldcard Q1, en tu navegador
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet and it does
@@ -74,50 +74,41 @@ description: >-
   Arranca sin seed, con PIN 12-12 (flag -l del simulador). La seed se importa a mano desde el
   menu del dispositivo.
 releaseNotes: >-
-  Firmware 6.6.1QX, Coldcard's security release. It reworks how seeds are generated after the
-  July 2026 entropy advisory: a new master seed now mixes fresh entropy from the TRNG and both
-  Secure Elements, the RNG is a NIST Hash_DRBG instead of the old PRNG, and every new seed
-  **requires** entropy from you -- dice, coin flips or key mashing (at least 65 presses). It
-  also brings a long list of security fixes: SIGHASH_SINGLE blocked by default, the staged PSBT
-  re-verified before signing, Delta Mode hardened, and duplicate cosigner keys rejected on
-  multisig enrollment. Worth reading Coldcard's changelog.
+  Fixes the simulator mixing itself up with another NubeApps device: with two of them
+  installed, opening either one could show the other's screen, and /files could open the
+  other's MicroSD folder.
 
 
-  On the packaging side, the QR flow now works through the file explorer. The Q1 reads PSBTs and
-  seeds with its camera, which a simulator has no way to provide: uploading a file to the new
-  QR-Camara folder on the MicroSD hands it to the firmware's scanner as if it had been scanned.
-  A PSBT (binary or base64), a seed (12 or 24 words, or a SeedQR) or any text works, at any size
-  -- the content arrives already decoded, so nothing has to fit in a QR. Open the scanner on the
-  device first (Scan Any QR Code, or the QR key) and upload the file after that; a file that was
-  already there when the scanner opened is not picked up.
+  Every umbrelOS app runs on one shared Docker network, where a short service name like
+  "sim" or "files" belongs to every installed app at the same time, so this app's internal
+  router was picking a container at random every few seconds. It now addresses its own
+  containers by their full name.
 
 
-  Signing over the simulated MicroSD is unchanged.
+  If you have more than one NubeApps simulator installed, update all of them.
+
+
+  No firmware change: same simulator, same controls, same data.
 
 
   --- En espanol ---
 
 
-  Firmware 6.6.1QX, el release de seguridad de Coldcard. Rehace la generacion de seeds despues
-  del aviso de entropia de julio de 2026: una seed nueva ahora mezcla entropia fresca del TRNG y
-  de los dos Secure Elements, el RNG pasa a ser un Hash_DRBG de NIST en vez del PRNG viejo, y
-  toda seed nueva **exige** entropia tuya -- dados, monedas o teclas al azar (minimo 65). Trae
-  ademas una lista larga de correcciones de seguridad: SIGHASH_SINGLE bloqueado por defecto, el
-  PSBT en memoria verificado de nuevo antes de firmar, Delta Mode endurecido y las claves de
-  cosigner repetidas rechazadas al enrolar un multisig. Vale la pena leer el changelog de
-  Coldcard.
+  Arregla que el simulador se mezclara con otro dispositivo de NubeApps: con dos instalados,
+  abrir cualquiera de los dos podia mostrar la pantalla del otro, y /files podia abrir la
+  carpeta MicroSD del otro.
 
 
-  Del lado del paquete, el flujo por QR ya funciona desde el explorador de archivos. La Q1 lee
-  PSBTs y seeds con su camara, algo que un simulador no puede darle: subir un archivo a la nueva
-  carpeta QR-Camara de la MicroSD se lo entrega al escaner del firmware como si lo hubiera
-  escaneado. Sirve un PSBT (binario o base64), una seed (12 o 24 palabras, o un SeedQR) o
-  cualquier texto, de cualquier tamano: el contenido llega ya decodificado, asi que no tiene que
-  entrar en un QR. Primero abri el escaner en el dispositivo (Scan Any QR Code, o la tecla QR) y
-  recien despues subi el archivo; uno que ya estaba cuando se abrio el escaner no se lee.
+  Todas las apps de umbrelOS corren sobre una sola red de Docker, donde un nombre corto de
+  servicio como "sim" o "files" les pertenece a todas las apps instaladas a la vez, asi que
+  el router interno de esta app elegia un contenedor al azar cada pocos segundos. Ahora se
+  dirige a sus propios contenedores por el nombre completo.
 
 
-  Firmar por la MicroSD simulada no cambia.
+  Si tenes mas de un simulador de NubeApps instalado, actualizalos todos.
+
+
+  Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.
 developer: Coinkite (firmware) / NubeApps (paquete)
 website: https://coldcard.com
 dependencies: []

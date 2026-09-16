@@ -12,6 +12,12 @@ services:
   web:
     image: ghcr.io/johnysats/ccq1-web:6.6.1QX@sha256:517c60cd3500766e6fda620d66ab612e6afa63cd2d6d37bbeac9b85c7fbc8eb6
     restart: on-failure
+    environment:
+      # Nombres completos de contenedor, no los cortos del compose: todas las apps de
+      # umbrelOS comparten la red umbrel_main_network, donde "sim" y "files" resuelven a
+      # los contenedores de TODAS las instaladas a la vez.
+      SIM_HOST: nubeapps-seedsigner_sim_1
+      FILES_HOST: nubeapps-seedsigner_files_1
     depends_on:
       - sim
       - files
