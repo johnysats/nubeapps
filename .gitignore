@@ -6,6 +6,5 @@ nubeapps-*/data/**
 *.swp
 .DS_Store
 
-# config y documentacion local del entorno de trabajo
+# config local del entorno de trabajo
 .claude/
-CLAUDE.md
