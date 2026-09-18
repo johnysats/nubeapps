@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-kern
 category: Bitcoin
 name: Kern
-version: "0.0.18-5"
+version: "0.0.19"
 tagline: The experimental Kern signer in your browser, no ESP32-P4 device / El firmware experimental de Kern en tu navegador, sin dispositivo ESP32-P4
 description: >-
   WARNING: Kern is a research and development project, not a product. Its own author publishes
