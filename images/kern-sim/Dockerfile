@@ -1,7 +1,7 @@
 # Simulador de escritorio de Kern (upstream, sin parches) + el shim kxsim que lo sirve por web.
 # Umbrel no permite `build:` en los compose: la imagen tiene que venir hecha y multi-arch.
 # El simulador es C y compila en ~1 min, asi que se construye nativo en cada arquitectura.
-ARG KERN_TAG=0.0.18
+ARG KERN_TAG=0.0.19
 
 FROM debian:bookworm-slim AS builder
 ARG KERN_TAG
