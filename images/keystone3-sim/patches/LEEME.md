@@ -5,14 +5,14 @@ archivo, no la pantalla del escritorio**.
 
 Upstream compila el simulador con dos caminos para la camara (`ui_simulator/simulator_model.c`):
 
-- con `GET_QR_DATA_FROM_SCREEN` (el que viene activo) el firmware **captura la pantalla real
+- con `GET_QR_DATA_FROM_SCREEN` (activo hasta 3.0.x; desde 3.1.0 upstream ya no lo define) el firmware **captura la pantalla real
   del escritorio** y busca un QR ahi. Es lo que hace el simulador en macOS: pones el QR en una
   ventana al lado y el dispositivo lo "ve". Necesita permisos de captura y un escritorio.
 - sin ese define, lee las lineas de `ui_simulator/assets/qrcode_data.txt` y trata **cada linea
   como un QR ya decodificado**. Es el camino que la propia doc de upstream recomienda en Linux
   y Windows, y el que usa `ksemu/camera.py`.
 
-Aca no hay escritorio -el contenedor corre headless- asi que se comenta el define (parche 1).
+Aca no hay escritorio -el contenedor corre headless- asi que se comenta el define (parche 1), o se verifica que ya no este.
 
 Los otros dos sacan del build el crate que implementa esa captura (`rust/sim_qr_reader`), y no
 son opcionales aunque el codigo C ya no lo llame:

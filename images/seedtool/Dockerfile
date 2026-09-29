@@ -26,7 +26,10 @@ RUN set -eux; \
     awk '$1 == "sha256sum" { print $3 "  " $2 }' body.txt > SHA256SUMS; \
     test -s SHA256SUMS; \
     sha256sum -c SHA256SUMS; \
-    rm -f signature.txt body.txt SHA256SUMS
+    rm -f signature.txt body.txt SHA256SUMS; \
+    # Los sub_filter de default.conf que abren el CSP a 'self' (ver ahi el porque).
+    grep -qF "script-src 'unsafe-inline'" index.html; \
+    grep -qF "connect-src https://cloudflare-dns.com" index.html
 
 FROM nginx:1.29-alpine
 ARG SEEDTOOL_TAG

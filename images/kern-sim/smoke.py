@@ -228,7 +228,7 @@ def smoke():
     post("/api/camera", file=PSBT_NAME)
     tap(0.26, 0.30, wait=8)  # Scan
     shot("revision-psbt")
-    tap(0.77, 0.87)  # Sign
+    tap(0.77, 0.78)  # Sign
     shot("exportar")
     tap(0.73, 0.55)  # Save to SD card
     shot("guardado")

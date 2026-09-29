@@ -35,7 +35,7 @@ PSBT_NAME = "smoke-psbt.txt"
 # Cuanto dura el splash del logo antes de la pantalla de bienvenida.
 BOOT_SECONDS = 12
 # La pantalla del dispositivo. Las coordenadas de abajo van en pixeles de esta grilla, que
-# es como estan anotadas en CLAUDE.md; la API toma relativas.
+# es como estan anotadas en AGENTS.md; la API toma relativas.
 WIDTH, HEIGHT = 480, 800
 
 # El teclado de la pantalla "Importa tu semilla". Solo hacen falta las letras que llevan a
@@ -324,7 +324,8 @@ def smoke():
 
     # 3. Alta: saltear la verificacion y la actualizacion de firmware, importar billetera.
     tap(407, 96)  # Omitir (verifica tu dispositivo)
-    tap(407, 96)  # Omitir (firmware)
+    # Desde 3.1.0 la del firmware ya no tiene Omitir arriba: se sale por el link del pie.
+    tap(240, 773)  # Mi firmware esta actualizado
     shot("nueva-billetera")
     tap(240, 750)  # Importar billetera
     tap(240, 743)  # Entiendo
@@ -344,6 +345,11 @@ def smoke():
     # 5. Nombre de la billetera: alcanza una letra.
     tap(380, 645)  # k
     tap(429, 767)  # flecha
+    # Desde 3.1.0: notas de seguridad, "Entiendo" queda deshabilitado hasta tildar las tres.
+    shot("notas-seguridad")
+    for y in (343, 438, 535):
+        tap(55, y)
+    tap(240, 743)  # Entiendo
     shot("metodo")
     tap(240, 460)  # Frase unica secreta
     tap(240, 554)  # 12 Palabras
@@ -355,6 +361,11 @@ def smoke():
     for _ in range(11):
         type_word("aban")
     type_word("abou")
+    # Desde 3.1.0 pide confirmar el backup antes de crear la billetera.
+    wait_stable()
+    shot("confirma-backup")
+    tap(55, 650)  # Copia de seguridad guardada
+    tap(240, 743)  # Continuar
     wait_stable(timeout=30)
     shot("home")
     print("ok: la seed se importo (el dispositivo entro al home)")

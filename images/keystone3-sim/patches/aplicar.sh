@@ -14,10 +14,14 @@ fallar() {
 }
 
 # 1. La camara lee los QR del archivo assets/qrcode_data.txt en vez de capturar la pantalla.
-grep -q '^#define GET_QR_DATA_FROM_SCREEN' "$SRC/ui_simulator/simulator_model.c" \
-    || fallar "GET_QR_DATA_FROM_SCREEN"
-sed -i 's|^#define GET_QR_DATA_FROM_SCREEN|// ksemu: la camara es el archivo, no la pantalla\n// &|' \
-    "$SRC/ui_simulator/simulator_model.c"
+# Hasta 3.0.x el define venia activo; desde 3.1.0 upstream ya no lo define y el archivo es
+# el camino por defecto. En ese caso alcanza con verificar que el lector del archivo siga ahi.
+MODEL="$SRC/ui_simulator/simulator_model.c"
+if grep -q '^#define GET_QR_DATA_FROM_SCREEN' "$MODEL"; then
+    sed -i 's|^#define GET_QR_DATA_FROM_SCREEN|// ksemu: la camara es el archivo, no la pantalla\n// &|' "$MODEL"
+else
+    grep -q 'C:/assets/qrcode_data.txt' "$MODEL" || fallar "GET_QR_DATA_FROM_SCREEN"
+fi
 
 # 2. y 3. Sacar el crate que capturaba la pantalla (ver LEEME.md: sus simbolos de dbus
 # estaticos hacen segfaultear a SDL_Init).

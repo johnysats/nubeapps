@@ -92,8 +92,9 @@ releaseNotes: >-
   Firmware update to 2.4.0:
 
 
-  - QR scanning: read SeedQR, Compact SeedQR and seed-words QR codes with your camera or by
-    picking an image. Animated PSBT QR codes are also supported.
+  - QR scanning: read SeedQR, Compact SeedQR and seed-words QR codes from an image, animated
+    PSBT QR codes included. The live camera option needs HTTPS, so it does not work at the
+    plain http:// address umbrelOS uses; pick an image instead.
 
   - Seed XOR split: split a seed into multiple shares that must be combined to recover it.
 
@@ -111,8 +112,9 @@ releaseNotes: >-
   Actualizacion de firmware a 2.4.0:
 
 
-  - Escaneo de QR: lee codigos SeedQR, Compact SeedQR y QR de palabras con la camara o
-    eligiendo una imagen. Tambien soporta codigos QR animados de PSBT.
+  - Escaneo de QR: lee codigos SeedQR, Compact SeedQR y QR de palabras desde una imagen,
+    incluidos los QR animados de PSBT. La camara en vivo necesita HTTPS, asi que no funciona
+    en la direccion http:// que usa umbrelOS: elegi una imagen en su lugar.
 
   - Seed XOR split: divide una seed en multiples partes que deben combinarse para recuperarla.
 
