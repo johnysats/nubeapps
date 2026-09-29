@@ -6,7 +6,7 @@
 # la comunidad audita. Bajamos el asset del release y verificamos su firma PGP contra la
 # clave que viene vendorizada en este repo (no la del repo upstream: si les comprometen el
 # repo, la clave tambien la cambian).
-ARG SEEDTOOL_TAG=2.3.0
+ARG SEEDTOOL_TAG=2.4.0
 
 # El artefacto no depende de la arquitectura: siempre en la del builder, nunca bajo QEMU.
 FROM --platform=$BUILDPLATFORM alpine:3.22 AS fetch
