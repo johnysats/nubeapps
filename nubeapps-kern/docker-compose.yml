@@ -23,7 +23,7 @@ services:
       - files
 
   sim:
-    image: ghcr.io/johnysats/kern-sim:0.0.18-3@sha256:98fc1e41973b1f1ad7f2e5418716281f888e844bc92f177818bb3cf9a96ecec1
+    image: ghcr.io/johnysats/kern-sim:0.0.20@sha256:7bf2c59dbe7664f274d97798eb9d90054fc8a92e8b6a6b4f799814d56be09c0e
     user: "1000:1000"
     init: true
     restart: on-failure
