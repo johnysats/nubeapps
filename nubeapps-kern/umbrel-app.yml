@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-kern
 category: Bitcoin
 name: Kern
-version: "0.0.18-5"
+version: "0.0.20"
 tagline: The experimental Kern signer in your browser, no ESP32-P4 device / El firmware experimental de Kern en tu navegador, sin dispositivo ESP32-P4
 description: >-
   WARNING: Kern is a research and development project, not a product. Its own author publishes
@@ -76,34 +76,37 @@ description: >-
   viviria en el eFuse del chip aca es una constante fija (asi que las palabras anti-phishing
   tampoco son las que te mostraria un dispositivo de verdad).
 releaseNotes: >-
-  Follow-up to the previous update: if an app still opened another NubeApps simulator's
-  screen after updating, it was your browser showing a copy it had saved while the bug was
-  active. The simulator page is now sent with an explicit "check with the server first"
-  header, so the browser can no longer keep a stale page like that.
+  Two upstream firmware updates (0.0.19 and 0.0.20):
 
 
-  If you still see the wrong device, open that app and force a reload once: Ctrl+Shift+R
-  (Cmd+Shift+R on Mac).
+  - Descriptor backups encrypted with BIP-138: after loading a descriptor you can save it on
+    flash or SD card under a name, encrypted to the descriptor's own public keys. Only
+    approved backups that pass keyed validation are restored.
 
+  - Animated QR exports stream their frames instead of caching up to 100, so large exports
+    are no longer capped. Non-UR sequences also get playback controls (pause, step, jump)
+    and a frame counter.
 
-  No firmware change: same simulator, same controls, same data.
+  - A keyboard shortcut loads a QR straight into the BIP-39 passphrase and KEF key fields,
+    so a long secret can come from a QR instead of being typed.
 
 
   --- En espanol ---
 
 
-  Complemento de la actualizacion anterior: si despues de actualizar una app seguia abriendo
-  la pantalla de otro simulador de NubeApps, era tu navegador mostrando una copia que habia
-  guardado mientras estaba el bug. La pagina del simulador ahora sale con un encabezado que le
-  pide al navegador consultar siempre al servidor, asi ya no puede quedarse con una pagina
-  vieja de esa forma.
+  Dos actualizaciones de firmware upstream (0.0.19 y 0.0.20):
 
 
-  Si todavia ves el dispositivo equivocado, abri esa app y forza la recarga una vez:
-  Ctrl+Shift+R (Cmd+Shift+R en Mac).
+  - Backups de descriptores cifrados con BIP-138: despues de cargar un descriptor podes
+    guardarlo en flash o MicroSD con un nombre, cifrado con las propias claves publicas del
+    descriptor. Solo se restauran los backups aprobados que pasan la validacion con clave.
 
+  - Las exportaciones en QR animado ahora transmiten los frames en vez de cachear hasta 100,
+    asi que las exportaciones grandes ya no tienen ese limite. Las secuencias no-UR tambien
+    tienen controles de reproduccion (pausa, paso a paso, saltar) y un contador de frames.
 
-  Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.
+  - Un atajo de teclado carga un QR directo en los campos de passphrase BIP-39 y clave KEF,
+    asi un secreto largo puede venir por QR en vez de tipeado.
 developer: odudex (firmware) / NubeApps (paquete)
 website: https://github.com/odudex/Kern
 dependencies: []

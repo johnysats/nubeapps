@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-keystone3
 category: Bitcoin
 name: Keystone 3 Pro
-version: "3.0.4-4"
+version: "3.1.0"
 tagline: The Keystone 3 Pro firmware in your browser, no device needed / El firmware del Keystone 3 Pro en tu navegador, sin dispositivo
 description: >-
   WARNING: this is a simulator, not a hardware wallet. It runs the real signing code, but not
@@ -78,34 +78,20 @@ description: >-
   El firmware habla espanol de fabrica (tambien ruso, chino y coreano): se elige durante la
   configuracion inicial, o despues en los ajustes del dispositivo.
 releaseNotes: >-
-  Follow-up to the previous update: if an app still opened another NubeApps simulator's
-  screen after updating, it was your browser showing a copy it had saved while the bug was
-  active. The simulator page is now sent with an explicit "check with the server first"
-  header, so the browser can no longer keep a stale page like that.
+  Firmware update to 3.1.0:
 
 
-  If you still see the wrong device, open that app and force a reload once: Ctrl+Shift+R
-  (Cmd+Shift+R on Mac).
-
-
-  No firmware change: same simulator, same controls, same data.
+  - Improved initial setup with new firmware update and secure backup reminders
 
 
   --- En espanol ---
 
 
-  Complemento de la actualizacion anterior: si despues de actualizar una app seguia abriendo
-  la pantalla de otro simulador de NubeApps, era tu navegador mostrando una copia que habia
-  guardado mientras estaba el bug. La pagina del simulador ahora sale con un encabezado que le
-  pide al navegador consultar siempre al servidor, asi ya no puede quedarse con una pagina
-  vieja de esa forma.
+  Actualizacion de firmware a 3.1.0:
 
 
-  Si todavia ves el dispositivo equivocado, abri esa app y forza la recarga una vez:
-  Ctrl+Shift+R (Cmd+Shift+R en Mac).
-
-
-  Sin cambios de firmware: mismo simulador, mismos controles, mismos datos.
+  - Configuracion inicial mejorada con nuevos recordatorios de actualizacion de firmware y
+    copia de seguridad segura
 developer: Keystone (firmware) / NubeApps (paquete)
 website: https://keyst.one
 dependencies: []

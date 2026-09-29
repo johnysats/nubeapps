@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-seedtool
 category: Bitcoin
 name: Bitcoin Seed Tool en Español
-version: "2.3.0"
+version: "2.4.0"
 tagline: Learn how seeds, entropy and derivation work / Aprende como funcionan las seeds, la entropia y la derivacion
 description: >-
   WARNING: this is a learning and verification tool that runs in your browser. It is not a
@@ -88,7 +88,41 @@ description: >-
 
   - Dos funciones si tocan la red desde tu navegador: los avatares PayNym (con un checkbox
     que hay que marcar) y el resolver DNS de BIP-353. Todo lo demas es local.
-releaseNotes: ""
+releaseNotes: >-
+  Firmware update to 2.4.0:
+
+
+  - QR scanning: read SeedQR, Compact SeedQR and seed-words QR codes with your camera or by
+    picking an image. Animated PSBT QR codes are also supported.
+
+  - Seed XOR split: split a seed into multiple shares that must be combined to recover it.
+
+  - New outputs: Nostr keys, output descriptors, BIP-85 base85 passwords and dice rolls.
+
+  - Printable backup sheets to fill in by hand.
+
+  - Security fixes: several places where the tool could show a wrong seed as valid, or leave
+    seed material on the page after Clear seed.
+
+
+  --- En espanol ---
+
+
+  Actualizacion de firmware a 2.4.0:
+
+
+  - Escaneo de QR: lee codigos SeedQR, Compact SeedQR y QR de palabras con la camara o
+    eligiendo una imagen. Tambien soporta codigos QR animados de PSBT.
+
+  - Seed XOR split: divide una seed en multiples partes que deben combinarse para recuperarla.
+
+  - Nuevas salidas: claves Nostr, descriptores de salida, passwords BIP-85 base85 y tiradas de
+    dados.
+
+  - Hojas de backup imprimibles para completar a mano.
+
+  - Correcciones de seguridad: varios lugares donde la herramienta podia mostrar una seed
+    incorrecta como valida, o dejar material de la seed en la pagina despues de limpiar.
 
 developer: Bitcoin QnA / SuperPhatArrow (herramienta) / NubeApps (paquete)
 website: https://bitcoiner.guide/seed
