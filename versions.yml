@@ -42,9 +42,9 @@ firmwares:
   krux:
     repo: selfcustody/krux
     tag_filter: '^v[0-9]{2}\.[0-9]{2}\.[0-9]+$'
-    tag: v26.08.0
+    tag: v26.09.0
     version_from: strip-v
-    version: "26.08.0-3"
+    version: "26.09.0"
     app: nubeapps-krux
     dockerfile: images/krux-sim/Dockerfile
     build_arg: KRUX_TAG
@@ -85,9 +85,9 @@ firmwares:
   seedtool:
     repo: BitcoinQnA/seedtool
     tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
-    tag: "2.4.0"
+    tag: "2.4.1"
     version_from: tag
-    version: "2.4.0"
+    version: "2.4.1"
     app: nubeapps-seedtool
     dockerfile: images/seedtool/Dockerfile
     build_arg: SEEDTOOL_TAG
@@ -97,9 +97,9 @@ firmwares:
     # nuevo puede no compilar en Linux: el PR del chequeo diario pide probar el simulador.
     repo: KeystoneHQ/keystone3-firmware
     tag_filter: '^[0-9]+\.[0-9]+\.[0-9]+$'
-    tag: "3.1.0"
+    tag: "3.1.2"
     version_from: tag
-    version: "3.1.0"
+    version: "3.1.2"
     app: nubeapps-keystone3
     dockerfile: images/keystone3-sim/Dockerfile
     build_arg: KEYSTONE_TAG
