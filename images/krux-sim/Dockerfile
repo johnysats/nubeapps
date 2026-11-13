@@ -1,7 +1,7 @@
 # Firmware de Krux (upstream, sin parches) + el shim kxemu que lo corre headless.
 # Umbrel no permite `build:` en los compose: la imagen tiene que venir hecha y multi-arch.
 # Lo unico nativo es el modulo uUR (un .c chico), asi que buildx con QEMU alcanza.
-ARG KRUX_TAG=v26.08.0
+ARG KRUX_TAG=v26.09.0
 
 FROM python:3.12-slim-bookworm AS builder
 ARG KRUX_TAG
