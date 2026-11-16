@@ -2,7 +2,7 @@ manifestVersion: 1
 id: nubeapps-krux
 category: Bitcoin
 name: Krux Simulator
-version: "26.08.0-5"
+version: "26.09.0"
 tagline: Krux firmware in your browser, no K210 device / El firmware de Krux en tu navegador, sin dispositivo K210
 description: >-
   WARNING: this is a simulator for learning and testing. It is not a secure wallet, it does not
