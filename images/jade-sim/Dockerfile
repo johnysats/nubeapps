@@ -12,7 +12,7 @@
 ARG JADE_BUILDER=sha256:8b739db85b6b99664db0e3ece57cddfa4e0fee4101a20ca930c391273f21e2f9
 FROM --platform=linux/amd64 blockstream/jade_builder@${JADE_BUILDER} AS fw
 
-ARG JADE_VERSION=1.0.41
+ARG JADE_VERSION=1.0.42
 WORKDIR /jade
 RUN git clone --depth 1 --branch "${JADE_VERSION}" --recursive \
         https://github.com/Blockstream/Jade.git /jade
